@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ПДД Онлайн Тест Платформасы (1103 Сұрақ)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- TOP NAVIGATION HEADER -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand" onclick="app.navigate('dashboard')">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="3" width="15" height="13"></rect>
+            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">PDD TEST</span>
+        </div>
+      </div>
+
+      <!-- Main Navigation Menu Links -->
+      <nav class="nav-links hidden" id="navMainLinks">
+        <button class="nav-link-btn active" id="navLinkDash" onclick="app.navigate('dashboard')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span>Жеке кабинет</span>
+        </button>
+        <button class="nav-link-btn" id="navLinkStudy" onclick="app.navigate('study')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+          <span>Сұрақтарды жаттау</span>
+        </button>
+        <button class="nav-link-btn nav-link-exam" onclick="app.startNewTest()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          <span>Емтихан (40 сұрақ)</span>
+        </button>
+        <button class="nav-link-btn nav-link-admin hidden" id="navLinkAdmin" onclick="app.navigate('admin')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+          <span>👑 Әкімші панелі</span>
+        </button>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Platform UI Language Selector -->
+        <div class="lang-selector-wrap">
+          <span class="lang-selector-label">Интерфейс:</span>
+          <div class="lang-selector">
+            <button class="lang-btn active" id="btnUiLang_kk" data-lang="kk" onclick="app.setUiLanguage('kk')" title="Интерфейс: Қазақша">🇰🇿 ҚАЗ</button>
+            <button class="lang-btn" id="btnUiLang_ru" data-lang="ru" onclick="app.setUiLanguage('ru')" title="Интерфейс: Русский">🇷🇺 РУС</button>
+            <button class="lang-btn" id="btnUiLang_en" data-lang="en" onclick="app.setUiLanguage('en')" title="Interface: English">🇬🇧 ENG</button>
+          </div>
+        </div>
+
+        <!-- User profile / Logout -->
+        <div id="navUserSection" class="user-menu hidden">
+          <div class="user-badge">
+            <span class="user-avatar" id="navAvatar">М</span>
+            <span class="user-name" id="navFullName">Пайдаланушы</span>
+          </div>
+          <button class="btn-logout" onclick="app.logout()" title="Шығу">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="main-content">
+
+    <!-- VIEW 1: AUTHENTICATION (LOGIN & REGISTER) -->
+    <section id="authView" class="view-section">
+      <div class="auth-wrapper">
+        <div class="auth-card">
+          <div class="auth-header">
+            <div class="auth-badge" id="authBadgeText">🚦 ЖОЛ ЕРЕЖЕСІ ЕМТИХАНЫ</div>
+            <h1 class="auth-title" id="authTitleText">Платформаға қош келдіңіз!</h1>
+            <p class="auth-desc" id="authDescText">ҚР Жол жүрісі қағидалары бойынша дайындық тесті (40 сұрақ)</p>
+          </div>
+
+          <!-- Auth Tabs -->
+          <div class="auth-tabs">
+            <button class="auth-tab active" id="tabLoginBtn" onclick="app.switchAuthTab('login')">Кіру</button>
+            <button class="auth-tab" id="tabRegisterBtn" onclick="app.switchAuthTab('register')">Тіркелу</button>
+          </div>
+
+          <!-- Notification / Error Box -->
+          <div id="authAlert" class="alert-box hidden"></div>
+
+          <!-- Login Form -->
+          <form id="loginForm" class="auth-form" onsubmit="app.handleLogin(event)">
+            <div class="form-group">
+              <label for="loginUsername" id="lblLoginUsername">Логин немесе Email</label>
+              <div class="input-icon-wrap">
+                <input type="text" id="loginUsername" placeholder="Мысалы: marat12" required autocomplete="username">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="loginPassword" id="lblLoginPassword">Құпия сөз</label>
+              <div class="input-icon-wrap password-wrap">
+                <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
+                <button type="button" class="btn-toggle-pwd" onclick="app.togglePasswordVisibility('loginPassword', this)" title="Құпия сөзді көрсету / жасыру">👁️</button>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" id="loginSubmitBtn">
+              <span id="loginSubmitText">Жүйеге кіру</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </form>
+
+          <!-- Register Form -->
+          <form id="registerForm" class="auth-form hidden" onsubmit="app.handleRegister(event)">
+            <div class="form-group">
+              <label for="regFullName" id="lblRegFullName">Аты-жөніңіз (Толық аты)</label>
+              <div class="input-icon-wrap">
+                <input type="text" id="regFullName" placeholder="Мысалы: Марат Серікұлы" required autocomplete="name">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="regUsername" id="lblRegUsername">Логин (жүйедегі атау)</label>
+              <div class="input-icon-wrap">
+                <input type="text" id="regUsername" placeholder="Мысалы: marat12" required autocomplete="username">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="regPassword" id="lblRegPassword">Құпия сөз (кемінде 4 таңба)</label>
+              <div class="input-icon-wrap password-wrap">
+                <input type="password" id="regPassword" placeholder="••••••••" minlength="4" required autocomplete="new-password">
+                <button type="button" class="btn-toggle-pwd" onclick="app.togglePasswordVisibility('regPassword', this)" title="Құпия сөзді көрсету / жасыру">👁️</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="regPasswordConfirm" id="lblRegPasswordConfirm">Құпия сөзді қайталаңыз</label>
+              <div class="input-icon-wrap password-wrap">
+                <input type="password" id="regPasswordConfirm" placeholder="Құпия сөзді қайта енгізіңіз" minlength="4" required autocomplete="new-password">
+                <button type="button" class="btn-toggle-pwd" onclick="app.togglePasswordVisibility('regPasswordConfirm', this)" title="Құпия сөзді көрсету / жасыру">👁️</button>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" id="registerSubmitBtn">
+              <span id="registerSubmitText">Тіркелу және бастау</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </form>
+
+          <div class="auth-footer">
+            <span id="authFooterText">🛡️ Сіздің деректеріңіз және барлық өткен тест нәтижелері сенімді сақталады</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: DASHBOARD (HOME) -->
+    <section id="dashboardView" class="view-section hidden">
+      <div class="container">
+        
+        <!-- Locked Account / Paywall Banner -->
+        <div id="lockedAccountBanner" class="locked-account-banner hidden">
+          <div class="locked-banner-content">
+            <div class="locked-badge">
+              <span>🔒 ҚОЛЖЕТІМДІЛІК ҚҰЛЫПТАЛҒАН (ДОСТУП ҚАЖЕТ)</span>
+            </div>
+            <h3 class="locked-title">Платформа функцияларын толық пайдалану үшін доступ сатып алыңыз</h3>
+            <p class="locked-desc">1103 сұрақтың толық ресми базасы, 40 сұрақтан тұратын емтихан және жаттау тренажеры тек әкімші рұқсатымен ашылады.</p>
+          </div>
+          <button class="btn btn-whatsapp btn-md" onclick="app.openWhatsAppPurchase()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.173.086.275.073.376-.043.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.099.824zm-3.423-14.416c-6.627 0-12 5.373-12 12 0 2.159.57 4.187 1.564 5.945l-1.656 6.055 6.223-1.633c1.706.924 3.655 1.455 5.727 1.455 6.627 0 12-5.373 12-12 0-6.627-5.373-12-12-12z"/></svg>
+            <span>WhatsApp арқылы доступ сатып алу</span>
+          </button>
+        </div>
+
+        <!-- In-progress / Paused Test Alert Banner -->
+        <div id="activeTestAlertBanner" class="active-test-banner hidden">
+          <div class="active-test-banner-content">
+            <div class="active-test-badge">
+              <span class="pulse-dot"></span>
+              <span>⏸️ АЯҚТАЛМАҒАН ТЕСТ БАР</span>
+            </div>
+            <h3 class="active-test-title">Сізде уақытша тоқтатылған тест бар</h3>
+            <p class="active-test-meta" id="activeTestMetaText">Қалған уақыт: 35:20 | Жауап берілген: 14 / 40 сұрақ</p>
+          </div>
+          <div class="active-test-actions">
+            <button class="btn btn-emerald btn-md" onclick="app.resumeTest()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span>Тестті жалғастыру</span>
+            </button>
+            <button class="btn btn-danger btn-md" onclick="app.confirmFinishActiveTest()">
+              <span>Аяқтау (Тапсыру)</span>
+            </button>
+            <button class="btn btn-outline-danger btn-sm" onclick="app.discardActiveTest()" title="Бұл тестті жою">
+              <span>Жою ✕</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Hero Welcome -->
+        <div class="dashboard-hero">
+          <div class="hero-text">
+            <div class="welcome-chip">Қош келдіңіз!</div>
+            <h1 class="hero-title" id="dashUserGreeting">Сәлеметсіз бе, Марат!</h1>
+            <p class="hero-desc">ҚР АвтоЦОН емтихан форматындағы кездейсоқ 40 сұрақтан тұратын мини-тестке дайынсыз ба?</p>
+          </div>
+          <div class="hero-action">
+            <div class="test-config-row">
+              <div class="test-lang-picker">
+                <span class="test-lang-label" id="lblTestLangPicker">Тест тапсыру тілі:</span>
+                <div class="test-lang-btns">
+                  <button class="test-lang-btn active" id="btnTlang_kk" data-tlang="kk" onclick="app.setTestLanguage('kk')">🇰🇿 Қазақша</button>
+                  <button class="test-lang-btn" id="btnTlang_ru" data-tlang="ru" onclick="app.setTestLanguage('ru')">🇷🇺 Русский</button>
+                  <button class="test-lang-btn" id="btnTlang_en" data-tlang="en" onclick="app.setTestLanguage('en')">🇬🇧 English</button>
+                </div>
+              </div>
+
+              <div class="test-time-picker">
+                <span class="test-lang-label" id="lblTimeModePicker">Уақыт режимі:</span>
+                <div class="test-time-btns">
+                  <button class="test-time-btn active" id="btnTimeModeTimed" onclick="app.setTimeMode(true)" title="Ресми 40 минуттық кері санақ таймері">
+                    <span>⏱️ Уақытпен (40 мин)</span>
+                  </button>
+                  <button class="test-time-btn" id="btnTimeModeUntimed" onclick="app.setTimeMode(false)" title="Ешқандай уақыт шектеусіз еркін тапсыру">
+                    <span>♾️ Уақытсыз (Шектеусіз)</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn btn-emerald btn-lg" onclick="app.startNewTest()">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span id="btnStartExamText">Жаңа тестті бастау (40 сұрақ)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Study Entry Banner -->
+        <div class="study-hero-banner">
+          <div class="study-hero-left">
+            <span class="study-pill">📖 ДАЙЫНДЫҚ ЖӘНЕ ЖАТТАУ БӨЛІМІ</span>
+            <h2 class="study-hero-h2">Сұрақтарды оқу және дұрыс жауаптарын жаттау</h2>
+            <p class="study-hero-p">Емтиханға кірмес бұрын барлық сұрақтарды дұрыс жауаптарымен оқып шығыңыз, сұрақ нөмірі бойынша іздеңіз немесе жаттау тренажерында жаттығыңыз.</p>
+          </div>
+          <button class="btn btn-primary btn-lg" onclick="app.navigate('study')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+            <span>Сұрақтарды жаттауға кіру</span>
+          </button>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon icon-blue">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value" id="statTotalTests">0</div>
+              <div class="stat-label">Барлық тесттер</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon icon-green">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value" id="statPassedTests">0</div>
+              <div class="stat-label">Сәтті тапсырылған</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon icon-purple">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value" id="statBestScore">0 <span class="stat-unit">/ 40</span></div>
+              <div class="stat-label">Ең жоғары балл</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon icon-amber">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            </div>
+            <div class="stat-info">
+              <div class="stat-value" id="statAvgScore">0 <span class="stat-unit">/ 40</span></div>
+              <div class="stat-label">Орташа нәтиже</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exam Rules Banner -->
+        <div class="info-banner">
+          <div class="info-item">
+            <span class="info-icon">⏱️</span>
+            <div><strong>40 минут</strong> — емтихан уақыты</div>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">❓</span>
+            <div><strong>40 сұрақ</strong> — 1103 базасынан кездейсоқ</div>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">🎯</span>
+            <div><strong>32 балл (80%)</strong> — өту шегі (АвтоЦОН стандарты)</div>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">🖼️</span>
+            <div><strong>Суреттер</strong> — белгілер мен нақты жол ситуациялары</div>
+          </div>
+        </div>
+
+        <!-- Test History Section -->
+        <div class="section-block">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">Сіздің тест нәтижелеріңіз</h2>
+              <p class="section-subtitle">Бұрын тапсырған тесттер тарихы мен толық талдауы</p>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="app.loadHistory()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+              <span>Жаңарту</span>
+            </button>
+          </div>
+
+          <div id="historyTableContainer" class="table-container">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>№</th>
+                  <th>Күні мен уақыты</th>
+                  <th>Тіл</th>
+                  <th>Нәтиже</th>
+                  <th>Пайыз</th>
+                  <th>Жұмсалған уақыт</th>
+                  <th>Мәртебе</th>
+                  <th>Әрекет</th>
+                </tr>
+              </thead>
+              <tbody id="historyTableBody">
+                <tr>
+                  <td colspan="8" class="text-center py-4 text-muted">Жүктелуде...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: ACTIVE TEST MODE (40 QUESTIONS) -->
+    <section id="testView" class="view-section hidden">
+      <div class="container test-container">
+        
+        <!-- Test Header Bar -->
+        <div class="test-header-bar">
+          <div class="test-meta">
+            <span class="badge-test-mode" id="badgeTestModeText">РЕСМИ ЕМТИХАН РЕЖИМІ</span>
+            <span class="test-progress-text" id="testProgressIndicator">Сұрақ: 1 / 40</span>
+          </div>
+
+          <!-- Question Language Switcher inside Test -->
+          <div class="test-in-q-lang">
+            <span class="test-in-q-label" id="lblTestInQLang">Сұрақ тілі:</span>
+            <div class="test-in-q-btns">
+              <button class="in-q-btn active" id="btnExamQLang_kk" onclick="app.setExamQuestionLanguage('kk')">🇰🇿 ҚАЗ</button>
+              <button class="in-q-btn" id="btnExamQLang_ru" onclick="app.setExamQuestionLanguage('ru')">🇷🇺 РУС</button>
+              <button class="in-q-btn" id="btnExamQLang_en" onclick="app.setExamQuestionLanguage('en')">🇬🇧 ENG</button>
+            </div>
+          </div>
+
+          <div class="test-timer-wrapper" id="timerBadge">
+            <span class="timer-icon" id="timerIcon">⏳</span>
+            <span class="timer-digits" id="testTimer">40:00</span>
+          </div>
+
+          <div class="test-actions-bar">
+            <button class="btn btn-warning btn-sm" id="btnPauseTest" onclick="app.pauseTest()" title="Уақытты тоқтату (Пауза)">
+              <span>⏸️ Үзіліс</span>
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="app.leaveTestToDashboard()" title="Тестті сақтап, жеке кабинетке шығу">
+              <span>🏠 Шығу</span>
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="app.confirmFinishTest()" title="Тестті аяқтау және нәтижені тапсыру">
+              <span>Тапсыру</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="test-layout">
+          <!-- Left / Main: Question Card -->
+          <div class="test-main-card">
+            
+            <div class="q-header">
+              <div class="q-number-pill" id="qNumberDisplay">Сұрақ № 1</div>
+              <button class="btn-bookmark" id="bookmarkBtn" onclick="app.toggleBookmark()" title="Кейінге сақтау / Белгілеу">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                <span id="bookmarkText">Белгілеу</span>
+              </button>
+            </div>
+
+            <!-- Question Image (if any) -->
+            <div id="qImageContainer" class="q-image-box hidden">
+              <img id="qImage" src="" alt="Жол ситуациясы" onclick="app.openImageModal(this.src)">
+              <div class="q-image-hint">🔍 Үлкейтіп көру үшін суретті басыңыз</div>
+            </div>
+
+            <!-- Question Text -->
+            <div class="q-body">
+              <h2 class="q-text" id="qText">Сұрақ жүктелуде...</h2>
+            </div>
+
+            <!-- Options List -->
+            <div class="q-options" id="qOptionsList">
+              <!-- Dynamically populated options -->
+            </div>
+
+            <!-- Card Bottom Navigation -->
+            <div class="q-footer">
+              <button class="btn btn-secondary" id="btnPrevQuestion" onclick="app.prevQuestion()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                <span>Алдыңғы сұрақ</span>
+              </button>
+
+              <div class="q-answered-status" id="qAnswerStatus">Жауап берілмеді</div>
+
+              <button class="btn btn-primary" id="btnNextQuestion" onclick="app.nextQuestion()">
+                <span>Келесі сұрақ</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Questions Palette Grid (1..40) -->
+          <aside class="test-sidebar">
+            <div class="palette-card">
+              <div class="palette-title">Сұрақтар картасы (40)</div>
+              
+              <div class="palette-legend">
+                <span class="legend-item"><span class="dot dot-answered"></span> Жауап берілді</span>
+                <span class="legend-item"><span class="dot dot-unanswered"></span> Жауап жоқ</span>
+                <span class="legend-item"><span class="dot dot-flagged"></span> Белгіленген</span>
+              </div>
+
+              <div class="palette-grid" id="paletteGrid">
+                <!-- 1 to 40 buttons -->
+              </div>
+
+              <div class="palette-finish">
+                <button class="btn btn-emerald btn-block" onclick="app.confirmFinishTest()">
+                  <span>Нәтижені тапсыру</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </button>
+              </div>
+            </div>
+          </aside>
+        <!-- PAUSE MODAL OVERLAY -->
+        <div id="pauseModal" class="modal-overlay hidden">
+          <div class="pause-card">
+            <div class="pause-icon">⏸️</div>
+            <h2 class="pause-title">Тест уақытша тоқтатылды</h2>
+            <p class="pause-desc">Уақыт тоқтатылды. Сіздің жауаптарыңыз бен тестіңіз сенімді сақталды. Қалаған уақытта жалғастыра аласыз немесе қазір аяқтай аласыз.</p>
+            <div class="pause-stats-mini" id="pauseStatsInfo">
+              Қалған уақыт: 35:10 | Жауап берілгені: 15 / 40
+            </div>
+            <div class="pause-actions">
+              <button class="btn btn-emerald btn-lg btn-block" onclick="app.resumeTest()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span>Тестті жалғастыру</span>
+              </button>
+              <button class="btn btn-danger btn-block" onclick="app.confirmFinishTest()">
+                <span>Тестті аяқтау (Нәтижені тапсыру)</span>
+              </button>
+              <button class="btn btn-secondary btn-block" onclick="app.navigate('dashboard')">
+                <span>Жеке кабинетке шығу (Тест сақталады)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW 4: TEST RESULT & DETAILED REVIEW -->
+    <section id="resultView" class="view-section hidden">
+      <div class="container">
+        
+        <!-- Score Banner Card -->
+        <div class="result-card" id="resultHeroCard">
+          <div class="result-status-icon" id="resultStatusIcon">🎉</div>
+          <div class="result-badge" id="resultStatusBadge">ЕМТИХАН ТАПСЫРЫЛДЫ</div>
+          
+          <div class="result-score-wrap">
+            <div class="result-score" id="resultScore">36</div>
+            <div class="result-total">/ 40 сұрақ</div>
+          </div>
+
+          <p class="result-msg" id="resultMessage">Құттықтаймыз! Сіз ҚР Жол ережесі бойынша емтиханнан сәтті өттіңіз.</p>
+
+          <div class="result-metrics">
+            <div class="metric-item">
+              <div class="metric-val" id="resultPercentage">90%</div>
+              <div class="metric-lbl">Дәлдік көрсеткіші</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-val" id="resultCorrectCount">36</div>
+              <div class="metric-lbl">Дұрыс жауаптар</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-val" id="resultWrongCount">4</div>
+              <div class="metric-lbl">Қате жауаптар</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-val" id="resultTimeSpent">14 мин 20 сек</div>
+              <div class="metric-lbl">Жұмсалған уақыт</div>
+            </div>
+          </div>
+
+          <div class="result-actions">
+            <button class="btn btn-emerald btn-lg" onclick="app.startNewTest()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 3"></polygon></svg>
+              <span>Қайтадан жаңа тест тапсыру</span>
+            </button>
+            <button class="btn btn-secondary btn-lg" onclick="app.navigate('dashboard')">
+              <span>Жеке кабинетке оралу</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Detailed Review / Mistake Breakdown -->
+        <div class="section-block">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title" id="lblReviewTitle">Барлық 40 сұрақ пен қателерді талдау</h2>
+              <p class="section-subtitle" id="lblReviewSub">Сіздің таңдаған жауабыңыз бен ресми дұрыс нұсқалар</p>
+            </div>
+            <div class="review-controls-right">
+              <div class="test-in-q-lang">
+                <span class="test-in-q-label" id="lblReviewQLang">Сұрақ тілі:</span>
+                <div class="test-in-q-btns">
+                  <button class="in-q-btn active" id="btnReviewQLang_kk" onclick="app.setReviewQuestionLanguage('kk')">🇰🇿 ҚАЗ</button>
+                  <button class="in-q-btn" id="btnReviewQLang_ru" onclick="app.setReviewQuestionLanguage('ru')">🇷🇺 РУС</button>
+                  <button class="in-q-btn" id="btnReviewQLang_en" onclick="app.setReviewQuestionLanguage('en')">🇬🇧 ENG</button>
+                </div>
+              </div>
+              <div class="review-filter-tabs">
+                <button class="review-filter-btn active" id="btnFilterAll" data-filter="all" onclick="app.filterReview('all')">Барлығы (40)</button>
+                <button class="review-filter-btn" id="btnFilterWrong" data-filter="wrong" onclick="app.filterReview('wrong')">Тек қателер</button>
+                <button class="review-filter-btn" id="btnFilterCorrect" data-filter="correct" onclick="app.filterReview('correct')">Тек дұрыстар</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="reviewQuestionsList" class="review-list">
+            <!-- Dynamically populated review questions -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW 5: STUDY & MEMORIZATION (ЖАТТАУ РЕЖИМІ) -->
+    <section id="studyView" class="view-section hidden">
+      <div class="container">
+        
+        <!-- Study Header -->
+        <div class="study-header-card">
+          <div class="study-header-main">
+            <div class="study-badge">📖 ЖАТТАУ ЖӘНЕ ДАЙЫНДЫҚ БӨЛІМІ</div>
+            <h1 class="study-title">Сұрақтарды оқу және жаттау базасы</h1>
+            <p class="study-desc">Мұнда сіз емтихан тапсырмас бұрын барлық сұрақтардың дұрыс жауаптарын асықпай оқып, жаттай аласыз.</p>
+          </div>
+
+          <!-- Study Mode Switcher -->
+          <div class="study-mode-switcher">
+            <button class="study-mode-btn active" id="btnModeList" onclick="app.setStudyMode('list')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+              <span>Тізім бойынша оқу</span>
+            </button>
+            <button class="study-mode-btn" id="btnModeTrainer" onclick="app.setStudyMode('trainer')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+              <span>Жаттау тренажеры (1 сұрақтан)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- SUB-VIEW A: LIST MODE -->
+        <div id="studyListView">
+          <!-- Toolbar -->
+          <div class="study-toolbar">
+            <div class="study-search-box">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="studySearchInput" placeholder="Сұрақтан немесе нөмірінен іздеу..." oninput="app.handleStudySearch(this.value)">
+              <button class="search-clear-btn hidden" id="studySearchClear" onclick="app.clearStudySearch()">&times;</button>
+            </div>
+
+            <div class="study-filter-group">
+              <!-- Question Language in Study Mode -->
+              <div class="test-in-q-lang">
+                <span class="test-in-q-label" id="lblStudyQLang">Сұрақ тілі:</span>
+                <div class="test-in-q-btns">
+                  <button class="in-q-btn active" id="btnStudyQLang_kk" onclick="app.setStudyQuestionLanguage('kk')">🇰🇿 ҚАЗ</button>
+                  <button class="in-q-btn" id="btnStudyQLang_ru" onclick="app.setStudyQuestionLanguage('ru')">🇷🇺 РУС</button>
+                  <button class="in-q-btn" id="btnStudyQLang_en" onclick="app.setStudyQuestionLanguage('en')">🇬🇧 ENG</button>
+                </div>
+              </div>
+
+              <select id="studyFilterSelect" class="study-select" onchange="app.handleStudyFilter(this.value)">
+                <option value="all">Барлық сұрақтар</option>
+                <option value="image">Тек суреті барлар</option>
+                <option value="no-image">Тек теория (суретсіз)</option>
+              </select>
+
+              <div class="study-toggle-answers">
+                <label class="toggle-label">
+                  <input type="checkbox" id="toggleAnswersCheckbox" checked onchange="app.toggleShowAnswers(this.checked)">
+                  <span class="toggle-switch"></span>
+                  <span id="lblToggleAnswers">Дұрыс жауапты көрсету</span>
+                </label>
+              </div>
+
+              <!-- Quick Jump Input -->
+              <div class="quick-jump-box">
+                <span>№:</span>
+                <input type="number" id="quickJumpInput" min="1" max="1103" placeholder="1" onkeydown="if(event.key==='Enter') app.jumpToQuestion()">
+                <button class="btn btn-secondary btn-sm" onclick="app.jumpToQuestion()">Өту</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question Count Info -->
+          <div class="study-count-info" id="studyCountInfo">Жүктелуде...</div>
+
+          <!-- Question Cards Container -->
+          <div class="study-cards-container" id="studyCardsContainer">
+            <!-- Populated via JS -->
+          </div>
+
+          <!-- Pagination Bar -->
+          <div class="study-pagination" id="studyPagination">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- SUB-VIEW B: TRAINER (SINGLE QUESTION FLASHCARD) -->
+        <div id="studyTrainerView" class="hidden">
+          <div class="trainer-card">
+            <div class="trainer-top-bar">
+              <div class="trainer-q-meta">
+                <span class="badge-test-mode">ТРЕНАЖЕР РЕЖИМІ</span>
+                <span class="trainer-q-num" id="trainerQNumber">Сұрақ № 1</span>
+              </div>
+              <div class="trainer-jump">
+                <span>Сұраққа өту:</span>
+                <input type="number" id="trainerJumpInput" min="1" max="1103" value="1" onchange="app.loadTrainerQuestion(parseInt(this.value))">
+                <span>/ 1103</span>
+              </div>
+            </div>
+
+            <div class="trainer-body">
+              <!-- Trainer Image -->
+              <div id="trainerImgBox" class="q-image-box hidden">
+                <img id="trainerImg" src="" alt="Жол ситуациясы" onclick="app.openImageModal(this.src)">
+                <div class="q-image-hint">🔍 Үлкейтіп көру үшін суретті басыңыз</div>
+              </div>
+
+              <!-- Question Text -->
+              <h2 class="trainer-q-text" id="trainerQText">Сұрақ жүктелуде...</h2>
+
+              <!-- Options -->
+              <div class="trainer-options" id="trainerOptionsList">
+                <!-- Populated via JS -->
+              </div>
+
+              <!-- Feedback Box -->
+              <div id="trainerFeedback" class="trainer-feedback hidden"></div>
+            </div>
+
+            <!-- Trainer Footer Nav -->
+            <div class="trainer-footer">
+              <button class="btn btn-secondary" onclick="app.prevTrainerQuestion()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                <span>Алдыңғы сұрақ</span>
+              </button>
+
+              <button class="btn btn-outline" onclick="app.randomTrainerQuestion()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+                <span>Кездейсоқ сұрақ</span>
+              </button>
+
+              <button class="btn btn-primary" onclick="app.nextTrainerQuestion()">
+                <span>Келесі сұрақ</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW 6: ADMIN CONTROL PANEL -->
+    <section id="adminView" class="view-section hidden">
+      <div class="container">
+        
+        <!-- Admin Header -->
+        <div class="admin-header-bar">
+          <div class="admin-title-wrap">
+            <span class="admin-chip">👑 БАС ӘКІМШІ БАСҚАРУ ПАНЕЛІ</span>
+            <h1 class="admin-title">Пайдаланушыларды басқару және доступ беру</h1>
+            <p class="admin-desc">Жаңа оқушыларды тіркеу, қолжетімділікті ашу/жабу, құрылғыны босату және WhatsApp байланысын баптау</p>
+          </div>
+          <button class="btn btn-secondary" onclick="app.loadAdminUsers()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            <span>Жаңарту</span>
+          </button>
+        </div>
+
+        <!-- Admin Stats Grid -->
+        <div class="admin-stats-grid">
+          <div class="admin-stat-card">
+            <div class="admin-stat-val" id="adminStatTotal">0</div>
+            <div class="admin-stat-lbl">👥 Барлық пайдаланушылар</div>
+          </div>
+          <div class="admin-stat-card stat-card-active">
+            <div class="admin-stat-val" id="adminStatActive">0</div>
+            <div class="admin-stat-lbl">🟢 Доступ берілген (Белсенді)</div>
+          </div>
+          <div class="admin-stat-card stat-card-locked">
+            <div class="admin-stat-val" id="adminStatLocked">0</div>
+            <div class="admin-stat-lbl">🔒 Құлыпталғандар (Доступ жоқ)</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="admin-stat-val" id="adminStatDevices">0</div>
+            <div class="admin-stat-lbl">📱 Құрылғы байланысқандар</div>
+          </div>
+        </div>
+
+        <!-- Admin Action Columns -->
+        <div class="admin-grid-layout">
+          
+          <!-- Column 1: Add New User Form -->
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h2 class="admin-card-title">➕ Жаңа пайдаланушыны тіркеу</h2>
+              <p class="admin-card-sub">Оқушыға логин, құпия сөз және толық доступ беріңіз</p>
+            </div>
+
+            <div id="adminCreateAlert" class="alert-box hidden"></div>
+
+            <form id="adminCreateUserForm" onsubmit="app.handleAdminCreateUser(event)">
+              <div class="form-group">
+                <label for="adminNewFullName">Аты-жөні (Толық)</label>
+                <input type="text" id="adminNewFullName" placeholder="Мысалы: Айдар Нұрланұлы" required>
+              </div>
+              <div class="form-group">
+                <label for="adminNewUsername">Логин (жүйеге кіретін аты)</label>
+                <input type="text" id="adminNewUsername" placeholder="Мысалы: aidar2026" required>
+              </div>
+              <div class="form-group">
+                <label for="adminNewPassword">Құпия сөз (кемінде 4 таңба)</label>
+                <input type="text" id="adminNewPassword" placeholder="Мысалы: pass123" required minlength="4">
+              </div>
+              <div class="form-group">
+                <label for="adminNewPhone">Телефон / WhatsApp (қалауыңыз бойынша)</label>
+                <input type="text" id="adminNewPhone" placeholder="+7 707 123 4567">
+              </div>
+              <div class="form-group checkbox-group">
+                <label class="custom-checkbox-label">
+                  <input type="checkbox" id="adminNewHasAccess" checked>
+                  <span><strong>Толық қолжетімділік (Доступ) бірден қосылсын</strong></span>
+                </label>
+              </div>
+              <button type="submit" class="btn btn-emerald btn-block" id="btnAdminCreate">
+                <span>Пайдаланушыны сақтау және доступ беру</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Column 2: Settings & Quick Tools -->
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h2 class="admin-card-title">⚙️ WhatsApp нөмірін баптау</h2>
+              <p class="admin-card-sub">Қолданушылар доступ сатып алу үшін осы WhatsApp нөміріне жазады</p>
+            </div>
+
+            <form id="adminSettingsForm" onsubmit="app.handleAdminSaveSettings(event)">
+              <div class="form-group">
+                <label for="adminSettingsWhatsapp">Әкімші WhatsApp нөмірі (халықаралық форматта)</label>
+                <div class="input-icon-wrap">
+                  <input type="text" id="adminSettingsWhatsapp" placeholder="77770000000" required>
+                </div>
+                <small class="form-help">Тек цифрлар: мысалы, <code>77071234567</code> (плюссіз, бос орынсыз)</small>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">
+                <span>WhatsApp нөмірін жаңарту</span>
+              </button>
+            </form>
+
+            <div class="admin-help-box">
+              <h3>📱 Бір құрылғы шектеуі қалай жұмыс істейді?</h3>
+              <p>Әрбір оқушы өз логинімен кіргенде, жүйе оның телефонын немесе компьютерін белсенді құрылғы ретінде есте сақтайды. Егер ол басқа құрылғыдан кірсе немесе біреуге логинін беріп қойса — бұрынғы құрылғы автоматты түрде жабылады. Егер оқушы телефонын жоғалтып не ауыстырса, төмендегі кестеден <strong>«Құрылғыны босату»</strong> батырмасын басыңыз.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Users Table -->
+        <div class="admin-card admin-table-card">
+          <div class="admin-table-header">
+            <div>
+              <h2 class="admin-card-title">📋 Пайдаланушылар тізімі</h2>
+              <p class="admin-card-sub">Барлық тіркелген қолданушылардың доступтары мен құрылғыларын басқару</p>
+            </div>
+            <div class="admin-search-wrap">
+              <input type="text" id="adminUserSearchInput" placeholder="Логин немесе аты бойынша іздеу..." oninput="app.filterAdminUsersTable()">
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Аты-жөні</th>
+                  <th>Логин</th>
+                  <th>Телефон / WhatsApp</th>
+                  <th>Статус (Доступ)</th>
+                  <th>Құрылғы байланысы</th>
+                  <th>Тіркелген күні</th>
+                  <th>Әрекеттер</th>
+                </tr>
+              </thead>
+              <tbody id="adminUsersTableBody">
+                <tr><td colspan="8" class="text-center py-4 text-muted">Жүктелуде...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- PAYWALL MODAL -->
+  <div id="paywallModal" class="modal-overlay hidden" onclick="app.closePaywallModal()">
+    <div class="modal-content paywall-modal-card" onclick="event.stopPropagation()">
+      <button class="modal-close-btn" onclick="app.closePaywallModal()">&times;</button>
+      <div class="paywall-icon">🔒</div>
+      <h2 class="paywall-title">Бұл функция құлыпталған!</h2>
+      <p class="paywall-desc">ҚР Жол ережесінің 1103 сұрақтан тұратын толық ресми базасын оқу, 40 сұрақтан тұратын емтихан тапсыру және жаттау тренажерын пайдалану үшін әкімшіден толық қолжетімділік (доступ) сатып алу қажет.</p>
+      
+      <div class="paywall-user-info">
+        <span>Сіздің логиніңіз:</span>
+        <strong id="paywallUsername">username</strong>
+      </div>
+
+      <div class="paywall-actions">
+        <button class="btn btn-whatsapp btn-lg btn-block" onclick="app.openWhatsAppPurchase()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.173.086.275.073.376-.043.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.099.824zm-3.423-14.416c-6.627 0-12 5.373-12 12 0 2.159.57 4.187 1.564 5.945l-1.656 6.055 6.223-1.633c1.706.924 3.655 1.455 5.727 1.455 6.627 0 12-5.373 12-12 0-6.627-5.373-12-12-12z"/></svg>
+          <span>WhatsApp арқылы доступ сатып алу</span>
+        </button>
+        <button class="btn btn-secondary btn-block" onclick="app.closePaywallModal()">
+          <span>Түсіндім, жабу</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SINGLE DEVICE CONFLICT MODAL -->
+  <div id="deviceConflictModal" class="modal-overlay hidden">
+    <div class="modal-content device-conflict-card" onclick="event.stopPropagation()">
+      <div class="device-conflict-icon">⚠️</div>
+      <h2 class="device-conflict-title">Басқа құрылғыдан кірді!</h2>
+      <p class="device-conflict-desc">Бұл аккаунт жаңа құрылғыдан (басқа телефон немесе компьютер) ашылды. Қауіпсіздік ережесі бойынша бір аккаунтпен бір мезгілде тек бір ғана құрылғыда жұмыс істеуге болады.</p>
+      <div class="device-conflict-actions">
+        <button class="btn btn-primary btn-block" onclick="app.handleDeviceConflictAcknowledge()">
+          <span>Түсіндім (Қайта кіру бетіне өту)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMAGE ZOOM MODAL -->
+  <div id="imageModal" class="modal-overlay hidden" onclick="app.closeImageModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="modal-close-btn" onclick="app.closeImageModal()">&times;</button>
+      <img id="modalImg" src="" alt="Үлкейтілген сурет">
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

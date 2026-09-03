@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@600;700&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Manrope', system-ui, -apple-system, sans-serif; background: #F1F1F7; color: #14141B; -webkit-font-smoothing: antialiased; }
+    a { color: #7A6CF0; text-decoration: none; }
+    a:hover { color: #5E4FD8; }
+    .lbl { font-size: 10px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; color: #9A9AAE; }
+  </style>
+</helmet>
+
+<div style="width: 390px; height: 844px; background: #F1F1F7; display: flex; flex-direction: column; overflow: hidden">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 8px; flex-shrink: 0">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14141B" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+    <div style="font-family: 'Unbounded', 'Manrope', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .16em">ӘДЕТТЕР</div>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14141B" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 11px; padding: 6px 20px 0; overflow: hidden">
+
+    <!-- streak first: habits are a reflex, not a goal -->
+    <div style="background: #14141B; border-radius: 22px; padding: 17px 18px; position: relative; overflow: hidden">
+      <div style="position: absolute; top: -46px; right: -34px; width: 190px; height: 190px; border-radius: 999px; background: radial-gradient(circle, rgba(138,124,246,.30), rgba(138,124,246,0) 70%)"></div>
+
+      <div style="position: relative">
+        <div style="font-size: 10px; font-weight: 800; letter-spacing: .13em; color: #8B7DF3">ЕҢ ҰЗАҚ ҮЗІЛІССІЗ СЕРИЯ</div>
+        <div style="display: flex; align-items: baseline; gap: 9px; margin-top: 7px">
+          <span style="font-family: 'Unbounded', 'Manrope', sans-serif; font-size: 38px; font-weight: 700; letter-spacing: -.05em; line-height: 1; color: #FFFFFF">24</span>
+          <span style="font-size: 12px; font-weight: 700; color: #8F8FA8">күн қатарынан</span>
+        </div>
+
+        <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-top: 16px">
+          <div>
+            <div style="font-size: 9px; font-weight: 800; letter-spacing: .11em; color: #6E6E86">БҮГІН</div>
+            <div style="font-size: 15px; font-weight: 800; color: #FFFFFF; margin-top: 4px">{{today.doneN}}/{{today.total}} орындалды</div>
+          </div>
+          <div style="text-align: right">
+            <div style="font-size: 9px; font-weight: 800; letter-spacing: .11em; color: #6E6E86">ТАМЫЗДАҒЫ ТҰРАҚТЫЛЫҚ</div>
+            <div style="font-size: 15px; font-weight: 800; color: #FFFFFF; margin-top: 4px">77%</div>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid #26262F; margin-top: 15px; padding-top: 12px; font-size: 10.5px; font-weight: 600; line-height: 1.5; color: #8F8FA8; text-wrap: pretty">Әдеттер мақсат пайызына қосылмайды. Бұл — жететін нәтиже емес, қанға сіңетін күнделікті рефлекс.</div>
+      </div>
+    </div>
+
+    <div class="lbl" style="padding-left: 4px; margin-top: 2px">Менің әдеттерім</div>
+
+    <div style="display: flex; flex-direction: column; gap: 9px; overflow: hidden">
+      <sc-for list="{{habits}}" as="h" hint-placeholder-count="5">
+        <div style="background: #FFFFFF; border-radius: 20px; padding: 14px 15px; box-shadow: 0 1px 2px rgba(20,20,45,.04), 0 8px 22px rgba(20,20,45,.045)">
+
+          <div style="display: flex; align-items: center; gap: 11px">
+            <div style="width: 9px; height: 9px; border-radius: 999px; flex-shrink: 0; background: {{h.c}}"></div>
+            <div style="flex-grow: 1; min-width: 0">
+              <div style="font-size: 13px; font-weight: 700; letter-spacing: -.01em">{{h.name}}</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6A59EC" stroke-width="2.4" stroke-linecap="round"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg>
+              <span style="font-size: 11.5px; font-weight: 800; color: #6A59EC">{{h.streak}}</span>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 9px; margin-top: 11px">
+            <div style="display: flex; gap: 5px; flex-grow: 1">
+              <sc-for list="{{h.days}}" as="d" hint-placeholder-count="7">
+                <div onClick="{{d.toggle}}" style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: {{d.cur}}">
+                  <span style="font-size: 8.5px; font-weight: 800; color: {{d.lc}}">{{d.n}}</span>
+                  <div style="width: 100%; height: 22px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: {{d.bg}}; border: 1.5px solid {{d.bd}}">
+                    <sc-if value="{{d.done}}" hint-placeholder-val="{{ true }}">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="text-align: right; flex-shrink: 0; width: 40px">
+              <div style="font-size: 13px; font-weight: 800">{{h.pct}}%</div>
+              <div style="font-size: 8px; font-weight: 800; letter-spacing: .06em; color: #B4B4C6; margin-top: 1px">30 КҮН</div>
+            </div>
+          </div>
+
+        </div>
+      </sc-for>
+    </div>
+
+  </div>
+
+  <div style="height: 78px; flex-shrink: 0; background: #FFFFFF; border-top: 1px solid #ECECF3; display: flex; align-items: center; justify-content: space-around; padding: 0 18px 12px; margin-top: 12px">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4B4C6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 10px"><path d="M3 10.5L12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/></svg>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4B4C6" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 2.5v5M16 2.5v5M3.5 10.5h17"/></svg>
+    <div style="width: 54px; height: 54px; border-radius: 999px; background: #7A6CF0; display: flex; align-items: center; justify-content: center; margin-top: -18px; box-shadow: 0 8px 20px rgba(122,108,240,.32)">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"><path d="M12 2.6l8.4 9.4L12 21.4 3.6 12z"/></svg>
+    </div>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4B4C6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 10px"><path d="M4 3.5h16v17l-8-4-8 4z"/></svg>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4B4C6" stroke-width="2" stroke-linecap="round" style="margin-top: 10px"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1.5-4 4.2-5.5 7.5-5.5s6 1.5 7.5 5.5"/></svg>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      grid: [
+        [1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 1, 1, 0, 1, 0],
+        [1, 1, 1, 1, 1, 1, 1],
+        [0, 1, 0, 0, 1, 0, 0],
+        [1, 1, 1, 0, 1, 1, 0],
+      ],
+    };
+  }
+
+  renderVals() {
+    const DOW = ['Дс', 'Сс', 'Ср', 'Бс', 'Жм', 'Сн', 'Жк'];
+    const TODAY = 1;
+
+    const meta = [
+      { name: 'Ерте тұру — 05:30', streak: 18, pct: 87, c: '#7A6CF0' },
+      { name: '2 литр су', streak: 6, pct: 72, c: '#8B7DF3' },
+      { name: 'Медитация, 10 мин', streak: 24, pct: 93, c: '#9A8DF5' },
+      { name: 'Экрансыз кеш (22:00-ден кейін)', streak: 3, pct: 55, c: '#AA9EF7' },
+      { name: 'Күнделік жазу', streak: 12, pct: 80, c: '#BDB4FA' },
+    ];
+
+    const g = this.state.grid;
+
+    const habits = meta.map((m, i) => ({
+      name: m.name,
+      streak: m.streak,
+      pct: m.pct,
+      c: m.c,
+      days: DOW.map((n, d) => {
+        const done = !!g[i][d];
+        const future = d > TODAY;
+        const isToday = d === TODAY;
+        return {
+          n,
+          done,
+          cur: future ? 'default' : 'pointer',
+          lc: isToday ? '#6A59EC' : '#B4B4C6',
+          bg: done ? m.c : (future ? '#FBFBFD' : '#F5F5FA'),
+          bd: done ? m.c : (isToday ? '#C6BEFB' : '#EDEDF4'),
+          toggle: () => {
+            if (future) return;
+            const next = this.state.grid.map((r) => r.slice());
+            next[i][d] = next[i][d] ? 0 : 1;
+            this.setState({ grid: next });
+          },
+        };
+      }),
+    }));
+
+    const doneN = g.filter((r) => r[TODAY]).length;
+    const pct = Math.round((doneN / meta.length) * 100);
+
+    return { habits, today: { doneN, total: meta.length, pct, w: pct + '%' } };
+  }
+}
+</script>
+</body>
+</html>

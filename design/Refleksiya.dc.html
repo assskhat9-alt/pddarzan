@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@600;700&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Manrope', system-ui, -apple-system, sans-serif; background: #F1F1F7; color: #14141B; -webkit-font-smoothing: antialiased; }
+    a { color: #7A6CF0; text-decoration: none; }
+    a:hover { color: #5E4FD8; }
+    .lbl { font-size: 10px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; color: #9A9AAE; }
+    textarea { font-family: 'Manrope', system-ui, sans-serif; }
+    textarea::placeholder { color: #B4B4C6; }
+  </style>
+</helmet>
+
+<div style="width: 390px; height: 844px; background: #F1F1F7; position: relative; overflow: hidden">
+
+  <!-- dimmed screen behind -->
+  <div style="position: absolute; inset: 0; padding: 22px 20px; filter: blur(3px); opacity: .5">
+    <div style="font-family: 'Unbounded', 'Manrope', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: .16em; text-align: center">БҮГІН</div>
+    <div style="font-size: 20px; font-weight: 800; margin-top: 18px">25 тамыз, сейсенбі</div>
+    <div style="background: #FFFFFF; border-radius: 22px; height: 150px; margin-top: 16px"></div>
+    <div style="background: #FFFFFF; border-radius: 22px; height: 220px; margin-top: 12px"></div>
+  </div>
+  <div style="position: absolute; inset: 0; background: rgba(20,20,32,.42)"></div>
+
+  <!-- sheet -->
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 676px; background: #FFFFFF; border-radius: 30px 30px 0 0; padding: 12px 22px 24px; display: flex; flex-direction: column; box-shadow: 0 -12px 44px rgba(20,20,45,.22)">
+
+    <div style="width: 38px; height: 4px; border-radius: 999px; background: #E2E2EC; margin: 0 auto 16px"></div>
+
+    <!-- confirmation -->
+    <div style="display: flex; align-items: center; gap: 13px">
+      <div style="width: 46px; height: 46px; border-radius: 999px; flex-shrink: 0; background: #7A6CF0; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(122,108,240,.35)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>
+      </div>
+      <div>
+        <div class="lbl" style="color: #6A59EC">Орындалды · 08:47</div>
+        <div style="font-size: 16px; font-weight: 800; letter-spacing: -.02em; margin-top: 3px">Ағылшын тыңдалым, 45 мин</div>
+      </div>
+    </div>
+
+    <!-- cascade impact -->
+    <div style="background: #F7F6FF; border: 1px solid #EAE6FD; border-radius: 20px; padding: 15px 16px; margin-top: 16px">
+      <div class="lbl" style="color: #6A59EC; margin-bottom: 12px">Бұл қай мақсаттарды жылжытты</div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <sc-for list="{{impact}}" as="im" hint-placeholder-count="4">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <span style="font-size: 11.5px; font-weight: 700; color: #43435A; width: 74px; flex-shrink: 0">{{im.name}}</span>
+            <div style="flex-grow: 1; position: relative; height: 7px; border-radius: 999px; background: #E8E5FB; overflow: hidden">
+              <div style="position: absolute; left: 0; top: 0; height: 7px; border-radius: 999px; background: #C6BEFB; width: {{im.fromW}}"></div>
+              <div style="position: absolute; top: 0; height: 7px; background: #7A6CF0; left: {{im.fromW}}; width: {{im.gainW}}"></div>
+            </div>
+            <span style="font-size: 11.5px; font-weight: 800; width: 38px; text-align: right">{{im.to}}%</span>
+            <span style="font-size: 10.5px; font-weight: 800; color: #6A59EC; width: 32px; text-align: right">+{{im.gain}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- rating -->
+    <div style="margin-top: 18px">
+      <div class="lbl" style="margin-bottom: 10px">Қалай өтті?</div>
+      <div style="display: flex; gap: 7px">
+        <sc-for list="{{moods}}" as="m" hint-placeholder-count="4">
+          <div onClick="{{m.pick}}" style="flex-grow: 1; text-align: center; padding: 11px 4px; border-radius: 14px; cursor: pointer; background: {{m.bg}}; border: 1.5px solid {{m.bd}}">
+            <div style="font-size: 11.5px; font-weight: 800; color: {{m.fg}}">{{m.name}}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- note -->
+    <div style="margin-top: 18px; flex-grow: 1; display: flex; flex-direction: column">
+      <div class="lbl" style="margin-bottom: 10px">Коментарий</div>
+      <textarea placeholder="Не жақсы өтті? Не кедергі болды? Келесі жолы нені өзгертесің?" style="flex-grow: 1; width: 100%; resize: none; border: 1.5px solid #ECECF3; border-radius: 18px; background: #FBFBFD; padding: 14px 15px; font-size: 13px; font-weight: 500; line-height: 1.55; color: #14141B; outline: none"></textarea>
+      <div style="display: flex; align-items: center; gap: 7px; margin-top: 9px">
+        <sc-for list="{{quick}}" as="q" hint-placeholder-count="3">
+          <span style="font-size: 10.5px; font-weight: 700; color: #6A59EC; background: #EFEDFE; border-radius: 999px; padding: 5px 10px">{{q}}</span>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- actions -->
+    <div style="display: flex; gap: 10px; margin-top: 18px">
+      <div style="padding: 15px 20px; border-radius: 17px; background: #F4F4F9; font-size: 13px; font-weight: 800; color: #6E6E86; cursor: pointer">Кейін</div>
+      <div style="flex-grow: 1; padding: 15px; border-radius: 17px; background: #7A6CF0; text-align: center; font-size: 13.5px; font-weight: 800; color: #FFFFFF; cursor: pointer; box-shadow: 0 8px 20px rgba(122,108,240,.32)">Сақтау және жабу</div>
+    </div>
+
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { mood: 2 };
+  }
+
+  renderVals() {
+    const raw = [
+      { name: 'Күн', from: 25, to: 50 },
+      { name: 'Апта', from: 50, to: 62 },
+      { name: 'Тамыз', from: 51, to: 55 },
+      { name: 'Ағылшын C1', from: 57, to: 58 },
+    ];
+
+    const impact = raw.map((r) => ({
+      name: r.name,
+      to: r.to,
+      gain: r.to - r.from,
+      fromW: r.from + '%',
+      gainW: (r.to - r.from) + '%',
+    }));
+
+    const names = ['Қиын', 'Орташа', 'Жақсы', 'Керемет'];
+    const moods = names.map((name, i) => {
+      const on = this.state.mood === i;
+      return {
+        name,
+        bg: on ? '#7A6CF0' : '#FBFBFD',
+        bd: on ? '#7A6CF0' : '#ECECF3',
+        fg: on ? '#FFFFFF' : '#6E6E86',
+        pick: () => this.setState({ mood: i }),
+      };
+    });
+
+    return { impact, moods, quick: ['Фокус жақсы', 'Уақыт жетпеді', 'Қайталау керек'] };
+  }
+}
+</script>
+</body>
+</html>

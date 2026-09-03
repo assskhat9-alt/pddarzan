@@ -1,0 +1,21 @@
+{
+  "name": "pdd-quiz-platform",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "PDD Test Platform with 1100+ questions, user auth, and test history",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "cleanup": "node scripts/cleanup_test_data.js",
+    "audit": "node scripts/comprehensive_audit.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1",
+    "pdf-parse": "^2.4.5",
+    "sqlite3": "^6.0.1"
+  }
+}

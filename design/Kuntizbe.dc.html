@@ -1,0 +1,314 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@600;700&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Manrope', system-ui, -apple-system, sans-serif; background: #F1F1F7; color: #14141B; -webkit-font-smoothing: antialiased; }
+    a { color: #7A6CF0; text-decoration: none; }
+    a:hover { color: #5E4FD8; }
+    .lbl { font-size: 10px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; color: #9A9AAE; }
+    input { font-family: 'Manrope', system-ui, sans-serif; }
+    input::placeholder { color: #B4B4C6; }
+  </style>
+</helmet>
+
+<div style="width: 390px; height: 844px; background: #F1F1F7; display: flex; flex-direction: column; overflow: hidden; position: relative">
+
+  <!-- header -->
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 6px; flex-shrink: 0">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14141B" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+    <div style="display: flex; align-items: center; gap: 14px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B4B4C6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      <span style="font-family: 'Unbounded', 'Manrope', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .14em">ТАМЫЗ 2026</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B4B4C6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+    </div>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14141B" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+  </div>
+
+  <!-- collapsible period switcher -->
+  <div style="padding: 6px 20px 0; flex-shrink: 0">
+    <div style="display: flex; align-items: center; gap: 8px">
+      <div style="flex-grow: 1; overflow: hidden; transition: max-width .28s ease; max-width: {{seg.maxW}}">
+        <div style="display: flex; gap: 3px; background: #E7E7F0; border-radius: 14px; padding: 3px">
+          <sc-for list="{{seg.items}}" as="s" hint-placeholder-count="4">
+            <div onClick="{{s.pick}}" style="flex-grow: 1; text-align: center; padding: 8px 0; border-radius: 11px; cursor: pointer; font-size: 11.5px; font-weight: 800; letter-spacing: .04em; background: {{s.bg}}; color: {{s.fg}}; box-shadow: {{s.sh}}">{{s.n}}</div>
+          </sc-for>
+        </div>
+      </div>
+      <div onClick="{{seg.toggle}}" style="flex-shrink: 0; display: flex; align-items: center; gap: 6px; height: 38px; padding: 0 12px; border-radius: 13px; background: #FFFFFF; border: 1px solid #E6E6EF; cursor: pointer">
+        <span style="font-size: 11.5px; font-weight: 800; color: #6A59EC">{{seg.label}}</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9A9AAE" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="transform: {{seg.rot}}; transition: transform .28s ease"><path d="M5 15l7-7 7 7"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALENDAR — always visible; only compresses when the form opens -->
+  <div style="flex-shrink: 0; background: #FFFFFF; border-radius: 24px; margin: 11px 14px 0; padding: 12px 10px 10px; box-shadow: 0 1px 2px rgba(20,20,45,.04), 0 8px 24px rgba(20,20,45,.05)">
+
+    <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0; margin-bottom: 4px">
+      <sc-for list="{{wd}}" as="w" hint-placeholder-count="7">
+        <div style="text-align: center; font-size: 9.5px; font-weight: 800; letter-spacing: .05em; color: {{w.c}}">{{w.n}}</div>
+      </sc-for>
+    </div>
+
+    <div style="overflow: hidden; transition: height .3s cubic-bezier(.4,0,.2,1); height: {{cal.h}}">
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-auto-rows: 44px; transition: transform .3s cubic-bezier(.4,0,.2,1); transform: {{cal.shift}}">
+        <sc-for list="{{cells}}" as="c" hint-placeholder-count="42">
+          <div onClick="{{c.pick}}" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; border-radius: 13px; background: {{c.bg}}; border: 1.5px solid {{c.bd}}">
+            <span style="font-size: 13px; font-weight: {{c.fw}}; color: {{c.fg}}">{{c.d}}</span>
+            <div style="display: flex; gap: 2.5px; height: 4px">
+              <sc-for list="{{c.dots}}" as="dt" hint-placeholder-count="3">
+                <div style="width: 4px; height: 4px; border-radius: 999px; background: {{dt}}"></div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <sc-if value="{{cal.collapsed}}" hint-placeholder-val="{{ true }}">
+      <div onClick="{{cal.expand}}" style="display: flex; align-items: center; justify-content: center; gap: 6px; padding-top: 8px; cursor: pointer">
+        <div style="width: 34px; height: 3.5px; border-radius: 999px; background: #E2E2EC"></div>
+      </div>
+    </sc-if>
+  </div>
+
+  <!-- LIST STATE -->
+  <sc-if value="{{isList}}" hint-placeholder-val="{{ true }}">
+    <div style="flex-grow: 1; display: flex; flex-direction: column; padding: 14px 20px 0; overflow: hidden">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px">
+        <div class="lbl">{{sel.long}} · {{sel.count}} тапсырма</div>
+        <span style="font-size: 11px; font-weight: 800; color: #7A6CF0">{{sel.pct}}% орындалды</span>
+      </div>
+
+      <div style="background: #FFFFFF; border-radius: 20px; padding: 6px 15px; box-shadow: 0 1px 2px rgba(20,20,45,.04), 0 8px 22px rgba(20,20,45,.045)">
+        <sc-for list="{{dayTasks}}" as="t" hint-placeholder-count="4">
+          <div style="display: flex; align-items: center; gap: 11px; padding: 11px 0; border-bottom: 1px solid #F4F4F9">
+            <div style="width: 21px; height: 21px; border-radius: 7px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: {{t.boxBg}}; border: 2px solid {{t.boxBd}}">
+              <sc-if value="{{t.done}}" hint-placeholder-val="{{ true }}">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>
+              </sc-if>
+            </div>
+            <div style="flex-grow: 1; min-width: 0">
+              <div style="font-size: 12.5px; font-weight: 600; color: {{t.fg}}; text-decoration: {{t.strike}}">{{t.title}}</div>
+              <span style="font-size: 10px; font-weight: 700; color: #6A59EC; background: #EFEDFE; border-radius: 999px; padding: 2px 7px; display: inline-block; margin-top: 4px">{{t.goal}}</span>
+            </div>
+            <span style="font-size: 10.5px; font-weight: 800; color: #B4B4C6">{{t.time}}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div onClick="{{openForm}}" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 14px; padding: 15px; border-radius: 18px; background: #7A6CF0; cursor: pointer; box-shadow: 0 8px 20px rgba(122,108,240,.30)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        <span style="font-size: 13.5px; font-weight: 800; color: #FFFFFF">{{sel.short}} тапсырма қосу</span>
+      </div>
+    </div>
+
+    <div style="height: 78px; flex-shrink: 0; background: #FFFFFF; border-top: 1px solid #ECECF3; display: flex; align-items: center; justify-content: space-around; padding: 0 18px 12px; margin-top: 14px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4B4C6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 10px"><path d="M3 10.5L12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/></svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7A6CF0" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 2.5v5M16 2.5v5M3.5 10.5h17"/></svg>
+      <div style="width: 54px; height: 54px; border-radius: 999px; background: #FFFFFF; border: 2px solid #DCD6FB; display: flex; align-items: center; justify-content: center; margin-top: -18px; box-shadow: 0 8px 20px rgba(122,108,240,.22)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7A6CF0" stroke-width="2" stroke-linejoin="round"><path d="M12 2.6l8.4 9.4L12 21.4 3.6 12z"/></svg>
+      </div>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4B4C6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 10px"><path d="M4 3.5h16v17l-8-4-8 4z"/></svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4B4C6" stroke-width="2" stroke-linecap="round" style="margin-top: 10px"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1.5-4 4.2-5.5 7.5-5.5s6 1.5 7.5 5.5"/></svg>
+    </div>
+  </sc-if>
+
+  <!-- FORM STATE — calendar above stays on screen -->
+  <sc-if value="{{isAdd}}" hint-placeholder-val="{{ true }}">
+    <div style="flex-grow: 1; background: #FFFFFF; border-radius: 28px 28px 0 0; margin-top: 12px; padding: 12px 20px 20px; display: flex; flex-direction: column; box-shadow: 0 -10px 34px rgba(20,20,45,.10)">
+
+      <div style="width: 38px; height: 4px; border-radius: 999px; background: #E2E2EC; margin: 0 auto 12px"></div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <div style="font-size: 15px; font-weight: 800; letter-spacing: -.02em">Жаңа тапсырма</div>
+        <div onClick="{{closeForm}}" style="width: 28px; height: 28px; border-radius: 999px; background: #F4F4F9; display: flex; align-items: center; justify-content: center; cursor: pointer">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6E6E86" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </div>
+      </div>
+
+      <!-- live target date -->
+      <div style="display: flex; align-items: center; gap: 11px; margin-top: 13px; background: #F7F6FF; border: 1px solid #EAE6FD; border-radius: 16px; padding: 12px 14px">
+        <div style="width: 36px; height: 36px; border-radius: 12px; background: #7A6CF0; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+          <span style="font-size: 14px; font-weight: 800; color: #FFFFFF">{{sel.d}}</span>
+        </div>
+        <div style="flex-grow: 1; min-width: 0">
+          <div style="font-size: 13px; font-weight: 800">{{sel.long}}</div>
+          <div style="font-size: 10.5px; font-weight: 600; color: #7A7A92; margin-top: 2px">Күнді ауыстыру үшін жоғарыдағы календарьды басыңыз</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 15px">
+        <div class="lbl" style="margin-bottom: 8px">Тапсырма</div>
+        <input placeholder="Не істеу керек?" style="width: 100%; border: 1.5px solid #ECECF3; border-radius: 15px; background: #FBFBFD; padding: 14px 15px; font-size: 13.5px; font-weight: 600; color: #14141B; outline: none">
+      </div>
+
+      <div style="margin-top: 15px">
+        <div class="lbl" style="margin-bottom: 8px">Уақыт</div>
+        <div style="display: flex; gap: 6px">
+          <sc-for list="{{times}}" as="t" hint-placeholder-count="5">
+            <div onClick="{{t.pick}}" style="flex-grow: 1; text-align: center; padding: 10px 0; border-radius: 12px; cursor: pointer; font-size: 11.5px; font-weight: 800; background: {{t.bg}}; color: {{t.fg}}; border: 1.5px solid {{t.bd}}">{{t.n}}</div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="margin-top: 15px">
+        <div class="lbl" style="margin-bottom: 8px">Қай мақсатқа жатады</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px">
+          <sc-for list="{{goals}}" as="g" hint-placeholder-count="4">
+            <div onClick="{{g.pick}}" style="padding: 9px 13px; border-radius: 999px; cursor: pointer; font-size: 11.5px; font-weight: 800; background: {{g.bg}}; color: {{g.fg}}; border: 1.5px solid {{g.bd}}">{{g.n}}</div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="margin-top: 15px">
+        <div class="lbl" style="margin-bottom: 8px">Қайталау</div>
+        <div style="display: flex; gap: 6px">
+          <sc-for list="{{reps}}" as="r" hint-placeholder-count="3">
+            <div onClick="{{r.pick}}" style="flex-grow: 1; text-align: center; padding: 10px 0; border-radius: 12px; cursor: pointer; font-size: 11.5px; font-weight: 800; background: {{r.bg}}; color: {{r.fg}}; border: 1.5px solid {{r.bd}}">{{r.n}}</div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="flex-grow: 1"></div>
+
+      <div onClick="{{closeForm}}" style="display: flex; align-items: center; justify-content: center; padding: 16px; border-radius: 18px; background: #7A6CF0; cursor: pointer; box-shadow: 0 8px 20px rgba(122,108,240,.30)">
+        <span style="font-size: 13.5px; font-weight: 800; color: #FFFFFF">{{sel.short}} қосу</span>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { mode: 'list', sel: 25, time: 1, goal: 0, rep: 0, period: 2, segOpen: true };
+  }
+
+  renderVals() {
+    const MONTH = 'тамыз';
+    const DOW = ['Дс', 'Сс', 'Ср', 'Бс', 'Жм', 'Сн', 'Жк'];
+    const LONG = ['дүйсенбі', 'сейсенбі', 'сәрсенбі', 'бейсенбі', 'жұма', 'сенбі', 'жексенбі'];
+    const TODAY = 25;
+
+    // August 2026 starts on Saturday; grid is Monday-first, 6 rows
+    const cellsRaw = [];
+    for (let i = 27; i <= 31; i++) cellsRaw.push({ d: i, out: true });
+    for (let i = 1; i <= 31; i++) cellsRaw.push({ d: i, out: false });
+    for (let i = 1; i <= 6; i++) cellsRaw.push({ d: i, out: true });
+
+    const load = { 3: [2, 2], 4: [3, 3], 5: [2, 1], 6: [3, 3], 7: [1, 1],
+      10: [3, 3], 11: [2, 2], 12: [3, 2], 13: [2, 2], 14: [1, 1],
+      17: [3, 3], 18: [2, 2], 19: [3, 3], 20: [2, 1], 21: [2, 2],
+      24: [3, 3], 25: [3, 1], 26: [2, 0], 27: [3, 0], 28: [2, 0], 31: [1, 0] };
+
+    const sel = this.state.sel;
+    const selIdx = cellsRaw.findIndex((c) => !c.out && c.d === sel);
+    const selRow = Math.floor(selIdx / 7);
+    const collapsed = this.state.mode === 'add';
+
+    const cells = cellsRaw.map((c, i) => {
+      const isToday = !c.out && c.d === TODAY;
+      const isSel = !c.out && c.d === sel;
+      const l = c.out ? null : load[c.d];
+      const dots = [];
+      if (l) {
+        for (let k = 0; k < l[0]; k++) dots.push(k < l[1] ? (isSel ? '#FFFFFF' : '#7A6CF0') : (isSel ? 'rgba(255,255,255,.42)' : '#DCD6FB'));
+      }
+      return {
+        d: c.d,
+        dots,
+        bg: isSel ? '#7A6CF0' : (isToday ? '#F1EFFE' : 'transparent'),
+        bd: isSel ? '#7A6CF0' : 'transparent',
+        fg: isSel ? '#FFFFFF' : (c.out ? '#CFCFDC' : (isToday ? '#6A59EC' : '#14141B')),
+        fw: isSel || isToday ? '800' : '600',
+        pick: () => { if (!c.out) this.setState({ sel: c.d }); },
+      };
+    });
+
+    const wd = DOW.map((n, i) => ({ n, c: i > 4 ? '#C4C4D4' : '#9A9AAE' }));
+
+    const dayIdx = (selIdx % 7);
+    const selInfo = {
+      d: sel,
+      short: sel + ' ' + MONTH + '-ға',
+      long: sel + ' ' + MONTH + ', ' + LONG[dayIdx],
+      count: load[sel] ? load[sel][0] + 2 : 2,
+      pct: load[sel] ? Math.round((load[sel][1] / load[sel][0]) * 100) : 0,
+    };
+
+    const taskPool = [
+      { title: 'Таңғы жаттығу — 5 км', time: '06:30', goal: 'Дене · 78 кг', done: true },
+      { title: 'Ағылшын тыңдалым, 45 мин', time: '08:00', goal: 'Ағылшын C1', done: true },
+      { title: 'Жобаның авторизациясы', time: '14:00', goal: 'Жеке жоба', done: false },
+      { title: '20 бет оқу', time: '21:00', goal: '12 кітап', done: false },
+    ];
+    const dayTasks = taskPool.map((t) => ({
+      ...t,
+      boxBg: t.done ? '#7A6CF0' : '#FFFFFF',
+      boxBd: t.done ? '#7A6CF0' : '#DEDEE9',
+      fg: t.done ? '#A6A6B8' : '#14141B',
+      strike: t.done ? 'line-through' : 'none',
+    }));
+
+    const mk = (arr, key, cur) => arr.map((n, i) => ({
+      n,
+      bg: cur === i ? '#7A6CF0' : '#FBFBFD',
+      fg: cur === i ? '#FFFFFF' : '#6E6E86',
+      bd: cur === i ? '#7A6CF0' : '#ECECF3',
+      pick: () => { const s = {}; s[key] = i; this.setState(s); },
+    }));
+
+    const pNames = ['КҮН', 'АПТА', 'АЙ', 'ЖЫЛ'];
+    const p = this.state.period;
+    const open = this.state.segOpen;
+    const seg = {
+      maxW: open ? '260px' : '0px',
+      label: pNames[p],
+      rot: open ? 'rotate(0deg)' : 'rotate(180deg)',
+      toggle: () => this.setState({ segOpen: !this.state.segOpen }),
+      items: pNames.map((n, i) => ({
+        n,
+        bg: p === i ? '#FFFFFF' : 'transparent',
+        fg: p === i ? '#14141B' : '#7C7C92',
+        sh: p === i ? '0 1px 3px rgba(20,20,45,.10)' : 'none',
+        pick: () => this.setState({ period: i }),
+      })),
+    };
+
+    return {
+      cells,
+      wd,
+      seg,
+      sel: selInfo,
+      dayTasks,
+      isList: this.state.mode === 'list',
+      isAdd: collapsed,
+      cal: {
+        h: collapsed ? '46px' : '264px',
+        shift: collapsed ? 'translateY(-' + selRow * 44 + 'px)' : 'translateY(0px)',
+        collapsed,
+        expand: () => this.setState({ mode: 'list' }),
+      },
+      times: mk(['06:00', '08:00', '14:00', '21:00', 'Уақытсыз'], 'time', this.state.time),
+      goals: mk(['Ағылшын C1', 'Дене · 78 кг', 'Жеке жоба', '12 кітап'], 'goal', this.state.goal),
+      reps: mk(['Бір рет', 'Күн сайын', 'Апта сайын'], 'rep', this.state.rep),
+      openForm: () => this.setState({ mode: 'add' }),
+      closeForm: () => this.setState({ mode: 'list' }),
+    };
+  }
+}
+</script>
+</body>
+</html>

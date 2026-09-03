@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@600;700&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Manrope', system-ui, -apple-system, sans-serif; background: #0F0F16; color: #FFFFFF; -webkit-font-smoothing: antialiased; }
+    a { color: #A79BF8; text-decoration: none; }
+    a:hover { color: #C6BEFB; }
+    .lbl { font-size: 10px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; color: #6E6E86; }
+  </style>
+</helmet>
+
+<div style="width: 390px; height: 844px; background: #0F0F16; display: flex; flex-direction: column; overflow: hidden; position: relative">
+
+  <div style="position: absolute; top: 120px; left: 50%; margin-left: -190px; width: 380px; height: 380px; border-radius: 999px; background: radial-gradient(circle, rgba(122,108,240,.20), rgba(122,108,240,0) 68%)"></div>
+
+  <div style="position: relative; display: flex; align-items: center; justify-content: space-between; padding: 20px 22px 8px; flex-shrink: 0">
+    <div style="width: 30px; height: 30px; border-radius: 999px; background: #1C1C26; display: flex; align-items: center; justify-content: center; cursor: pointer">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8F8FA8" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </div>
+    <div style="font-family: 'Unbounded', 'Manrope', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .18em; color: #FFFFFF">ФОКУС</div>
+    <div style="width: 30px; height: 30px; border-radius: 999px; background: #1C1C26; display: flex; align-items: center; justify-content: center; cursor: pointer">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8F8FA8" stroke-width="2" stroke-linecap="round"><path d="M4 8h16M4 16h16"/><circle cx="9" cy="8" r="2.4" fill="#0F0F16"/><circle cx="15" cy="16" r="2.4" fill="#0F0F16"/></svg>
+    </div>
+  </div>
+
+  <div style="position: relative; flex-grow: 1; display: flex; flex-direction: column; padding: 0 22px 24px">
+
+    <!-- current task -->
+    <div style="background: #1A1A24; border: 1px solid #26262F; border-radius: 20px; padding: 15px 16px; margin-top: 10px">
+      <div class="lbl">Ағымдағы тапсырма</div>
+      <div style="font-size: 15px; font-weight: 800; letter-spacing: -.02em; margin-top: 7px">Ағылшын тыңдалым, 45 мин</div>
+      <div style="display: flex; align-items: center; gap: 7px; margin-top: 9px">
+        <span style="font-size: 10px; font-weight: 800; letter-spacing: .05em; color: #A79BF8; background: rgba(122,108,240,.16); border-radius: 999px; padding: 3px 9px">Ағылшын C1 · 58%</span>
+        <span style="font-size: 10.5px; font-weight: 700; color: #6E6E86">34-апта · 3/5</span>
+      </div>
+    </div>
+
+    <!-- timer -->
+    <div style="display: flex; align-items: center; justify-content: center; margin-top: 26px">
+      <div style="position: relative; width: 260px; height: 260px">
+        <svg width="260" height="260" viewBox="0 0 260 260">
+          <circle cx="130" cy="130" r="116" fill="none" stroke="#1C1C26" stroke-width="14"></circle>
+          <circle cx="130" cy="130" r="116" fill="none" stroke="#7A6CF0" stroke-width="14" stroke-linecap="round" stroke-dasharray="728.85" stroke-dashoffset="{{ring.offset}}" transform="rotate(-90 130 130)" style="transition: stroke-dashoffset .3s ease"></circle>
+          <circle cx="130" cy="130" r="98" fill="none" stroke="#191921" stroke-width="1.5" stroke-dasharray="2 8"></circle>
+        </svg>
+        <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center">
+          <div style="font-family: 'Unbounded', 'Manrope', sans-serif; font-size: 46px; font-weight: 700; letter-spacing: -.05em; line-height: 1">{{ring.clock}}</div>
+          <div style="font-size: 10px; font-weight: 800; letter-spacing: .16em; color: #6E6E86; margin-top: 9px">{{ring.state}}</div>
+          <div style="display: flex; align-items: center; gap: 6px; margin-top: 12px">
+            <div style="width: 5px; height: 5px; border-radius: 999px; background: #7A6CF0"></div>
+            <span style="font-size: 11px; font-weight: 700; color: #8F8FA8">{{ring.pct}}% өтті</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- presets -->
+    <div style="margin-top: 26px">
+      <div class="lbl" style="margin-bottom: 10px">Сессия ұзақтығы</div>
+      <div style="display: flex; gap: 7px">
+        <sc-for list="{{presets}}" as="p" hint-placeholder-count="4">
+          <div onClick="{{p.pick}}" style="flex-grow: 1; text-align: center; padding: 12px 0; border-radius: 14px; cursor: pointer; font-size: 12px; font-weight: 800; background: {{p.bg}}; color: {{p.fg}}; border: 1.5px solid {{p.bd}}">{{p.n}}</div>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- controls -->
+    <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 26px">
+      <div onClick="{{reset}}" style="width: 52px; height: 52px; border-radius: 999px; background: #1A1A24; border: 1px solid #26262F; display: flex; align-items: center; justify-content: center; cursor: pointer">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#8F8FA8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.5 4.5V10h5.5"/></svg>
+      </div>
+
+      <div onClick="{{playToggle}}" style="width: 78px; height: 78px; border-radius: 999px; background: #7A6CF0; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 12px 30px rgba(122,108,240,.40)">
+        <sc-if value="{{running}}" hint-placeholder-val="{{ true }}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#FFFFFF"><rect x="6.5" y="4.5" width="4.4" height="15" rx="1.6"/><rect x="13.1" y="4.5" width="4.4" height="15" rx="1.6"/></svg>
+        </sc-if>
+        <sc-if value="{{paused}}" hint-placeholder-val="{{ true }}">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M7.5 4.8v14.4c0 1 1.1 1.6 1.9 1.1l11.1-7.2c.8-.5.8-1.7 0-2.2L9.4 3.7c-.8-.5-1.9.1-1.9 1.1z"/></svg>
+        </sc-if>
+      </div>
+
+      <div style="width: 52px; height: 52px; border-radius: 999px; background: #1A1A24; border: 1px solid #26262F; display: flex; align-items: center; justify-content: center; cursor: pointer">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#8F8FA8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>
+      </div>
+    </div>
+
+    <div style="flex-grow: 1"></div>
+
+    <!-- today total -->
+    <div style="background: #1A1A24; border: 1px solid #26262F; border-radius: 20px; padding: 15px 16px">
+      <div style="display: flex; align-items: flex-start; justify-content: space-between">
+        <div>
+          <div class="lbl">Бүгін фокуста</div>
+          <div style="display: flex; align-items: baseline; gap: 6px; margin-top: 5px">
+            <span style="font-family: 'Unbounded', 'Manrope', sans-serif; font-size: 24px; font-weight: 700; letter-spacing: -.04em">4:40</span>
+            <span style="font-size: 11px; font-weight: 700; color: #6E6E86">сағат</span>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; background: rgba(122,108,240,.16); border-radius: 999px; padding: 8px 13px; cursor: pointer">
+          <span style="font-size: 10.5px; font-weight: 800; color: #A79BF8">Толық есеп</span>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#A79BF8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+
+      <div style="display: flex; height: 8px; border-radius: 999px; overflow: hidden; margin-top: 15px">
+        <sc-for list="{{split}}" as="s" hint-placeholder-count="5">
+          <div style="background: {{s.c}}; width: {{s.w}}"></div>
+        </sc-for>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 6px 13px; margin-top: 12px">
+        <sc-for list="{{split}}" as="s" hint-placeholder-count="5">
+          <div style="display: flex; align-items: center; gap: 5px">
+            <div style="width: 6px; height: 6px; border-radius: 999px; background: {{s.c}}"></div>
+            <span style="font-size: 10px; font-weight: 700; color: #8F8FA8">{{s.n}}</span>
+            <span style="font-size: 10px; font-weight: 800; color: #FFFFFF">{{s.t}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="font-size: 10.5px; font-weight: 600; color: #6E6E86; text-align: center; margin-top: 12px">Бұл сессияның уақыты «Ағылшын C1» мақсатына жазылады</div>
+
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { preset: 1, elapsed: 17, running: true };
+  }
+
+  renderVals() {
+    const mins = [25, 45, 60, 90];
+    const labels = ['25 мин', '45 мин', '60 мин', '90 мин'];
+    const p = this.state.preset;
+    const total = mins[p];
+    const elapsed = Math.min(this.state.elapsed, total);
+    const left = total - elapsed;
+    const pct = Math.round((elapsed / total) * 100);
+
+    const mm = String(left).padStart(2, '0');
+    const clock = mm + ':00';
+
+    const presets = labels.map((n, i) => ({
+      n,
+      bg: p === i ? '#7A6CF0' : '#1A1A24',
+      fg: p === i ? '#FFFFFF' : '#8F8FA8',
+      bd: p === i ? '#7A6CF0' : '#26262F',
+      pick: () => this.setState({ preset: i, elapsed: 0 }),
+    }));
+
+    const splitRaw = [
+      { n: 'Ағылшын', m: 75, c: '#7A6CF0' },
+      { n: 'Жоба', m: 75, c: '#8B7DF3' },
+      { n: 'Кітап', m: 60, c: '#AA9EF7' },
+      { n: 'Дене', m: 55, c: '#9A8DF5' },
+      { n: 'Басқа', m: 15, c: '#C6BEFB' },
+    ];
+    const splitTotal = splitRaw.reduce((a, b) => a + b.m, 0);
+    const split = splitRaw.map((s) => ({
+      n: s.n,
+      c: s.c,
+      w: Math.round((s.m / splitTotal) * 1000) / 10 + '%',
+      t: Math.floor(s.m / 60) + ':' + String(s.m % 60).padStart(2, '0'),
+    }));
+
+    return {
+      presets,
+      split,
+      running: this.state.running,
+      paused: !this.state.running,
+      ring: {
+        clock,
+        pct,
+        state: this.state.running ? 'ФОКУСТА' : 'КІДІРТІЛДІ',
+        offset: 728.85 * (1 - pct / 100),
+      },
+      playToggle: () => this.setState({ running: !this.state.running }),
+      reset: () => this.setState({ elapsed: 0, running: false }),
+    };
+  }
+}
+</script>
+</body>
+</html>

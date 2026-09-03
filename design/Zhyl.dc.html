@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@600;700&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Manrope', system-ui, -apple-system, sans-serif; background: #F1F1F7; color: #14141B; -webkit-font-smoothing: antialiased; }
+    a { color: #7A6CF0; text-decoration: none; }
+    a:hover { color: #5E4FD8; }
+    .lbl { font-size: 10px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; color: #9A9AAE; }
+  </style>
+</helmet>
+
+<div style="width: 390px; height: 844px; background: #F1F1F7; display: flex; flex-direction: column; overflow: hidden">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 10px">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14141B" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+    <div style="font-family: 'Unbounded', 'Manrope', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: .16em">2026 ЖЫЛ</div>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14141B" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 12px; padding: 6px 20px 0; overflow: hidden">
+
+    <!-- year pacing card -->
+    <div style="background: #FFFFFF; border-radius: 22px; padding: 18px; box-shadow: 0 1px 2px rgba(20,20,45,.04), 0 10px 28px rgba(20,20,45,.05)">
+      <div style="display: flex; align-items: flex-start; justify-content: space-between">
+        <div>
+          <div class="lbl">Жылдық орындалу</div>
+          <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 6px">
+            <span style="font-family: 'Unbounded', 'Manrope', sans-serif; font-size: 40px; font-weight: 700; letter-spacing: -.04em; line-height: 1">42%</span>
+            <span style="font-size: 12px; font-weight: 700; color: #8A8A9E">5 мақсаттан</span>
+          </div>
+        </div>
+        <div style="text-align: right">
+          <div class="lbl">Орташа қарқын</div>
+          <div style="font-size: 20px; font-weight: 800; color: #6E6E86; margin-top: 6px">−10%</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 16px; position: relative; height: 10px; border-radius: 999px; background: #F0F0F6">
+        <div style="position: absolute; left: 0; top: 0; height: 10px; width: 42%; border-radius: 999px; background: #7A6CF0"></div>
+        <div style="position: absolute; left: 65%; top: -4px; width: 2px; height: 18px; border-radius: 2px; background: #14141B"></div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 9px">
+        <span style="font-size: 11px; font-weight: 700; color: #7A6CF0">Орындалды 42%</span>
+        <span style="font-size: 11px; font-weight: 700; color: #6E6E86">Жыл өтті 65%</span>
+      </div>
+      <div style="font-size: 10.5px; font-weight: 600; color: #A6A6B8; margin-top: 8px; padding-top: 8px; border-top: 1px solid #F4F4F9">5 мақсаттың 1-еуі алда, 4-еуі артта. Әрқайсысының өз мерзімі бар.</div>
+    </div>
+
+    <div class="lbl" style="padding-left: 4px">Жылдық мақсаттар</div>
+
+    <!-- goals -->
+    <div style="display: flex; flex-direction: column; gap: 10px; overflow: hidden">
+      <sc-for list="{{goals}}" as="g" hint-placeholder-count="4">
+        <div onClick="{{g.toggle}}" style="background: #FFFFFF; border-radius: 20px; padding: 15px 16px; cursor: pointer; box-shadow: 0 1px 2px rgba(20,20,45,.04), 0 8px 22px rgba(20,20,45,.045)">
+
+          <div style="display: flex; align-items: center; gap: 12px">
+            <div style="position: relative; width: 44px; height: 44px; flex-shrink: 0">
+              <svg width="44" height="44" viewBox="0 0 44 44">
+                <circle cx="22" cy="22" r="18" fill="none" stroke="#F0EEFE" stroke-width="5"></circle>
+                <circle cx="22" cy="22" r="18" fill="none" stroke="{{g.color}}" stroke-width="5" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="{{g.offset}}" transform="rotate(-90 22 22)"></circle>
+              </svg>
+              <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800">{{g.pct}}</div>
+            </div>
+
+            <div style="flex-grow: 1; min-width: 0">
+              <div style="font-size: 13.5px; font-weight: 700; letter-spacing: -.01em">{{g.title}}</div>
+              <div style="display: flex; align-items: center; gap: 5px; margin-top: 5px">
+                <span style="display: flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 800; color: #43435A; background: #F2F2F8; border-radius: 999px; padding: 3px 8px">
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#8A8A9E" stroke-width="2.6" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10.5h17"/></svg>
+                  {{g.due}}
+                </span>
+                <span style="font-size: 10px; font-weight: 800; border-radius: 999px; padding: 3px 8px; background: {{g.paceBg}}; color: {{g.paceFg}}">{{g.pace}}</span>
+                <span style="font-size: 10px; font-weight: 700; color: #A6A6B8">{{g.sub}}</span>
+              </div>
+            </div>
+
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C4C4D4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="transform: {{g.rot}}"><path d="M9 5l7 7-7 7"/></svg>
+          </div>
+
+          <sc-if value="{{g.open}}" hint-placeholder-val="{{ true }}">
+            <div style="margin-top: 14px; padding-top: 13px; border-top: 1px solid #F2F2F8">
+              <div class="lbl" style="margin-bottom: 9px">Айлар бойынша</div>
+              <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 4px">
+                <sc-for list="{{g.months}}" as="m" hint-placeholder-count="12">
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 4px">
+                    <div style="width: 100%; height: 26px; border-radius: 6px; background: #F2F2F8; display: flex; align-items: flex-end; overflow: hidden">
+                      <div style="width: 100%; border-radius: 6px; background: {{m.c}}; height: {{m.h}}"></div>
+                    </div>
+                    <span style="font-size: 7px; font-weight: 800; color: #B4B4C6">{{m.n}}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 11px">
+                <span style="font-size: 11px; font-weight: 600; color: #6E6E86">{{g.detail}}</span>
+                <span style="font-size: 11px; font-weight: 800; color: #7A6CF0">Толығырақ →</span>
+              </div>
+            </div>
+          </sc-if>
+
+        </div>
+      </sc-for>
+    </div>
+
+  </div>
+
+  <div style="height: 78px; flex-shrink: 0; background: #FFFFFF; border-top: 1px solid #ECECF3; display: flex; align-items: center; justify-content: space-around; padding: 0 18px 12px">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4B4C6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 10px"><path d="M3 10.5L12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/></svg>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4B4C6" stroke-width="2" stroke-linecap="round" style="margin-top: 10px"><path d="M4 20V11M10 20V5M16 20v-6M22 20H2"/></svg>
+    <div style="width: 54px; height: 54px; border-radius: 999px; background: #7A6CF0; display: flex; align-items: center; justify-content: center; margin-top: -18px; box-shadow: 0 8px 20px rgba(122,108,240,.32)">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"><path d="M12 2.6l8.4 9.4L12 21.4 3.6 12z"/></svg>
+    </div>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4B4C6" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 2.5v5M16 2.5v5M3.5 10.5h17"/></svg>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4B4C6" stroke-width="2" stroke-linecap="round" style="margin-top: 10px"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1.5-4 4.2-5.5 7.5-5.5s6 1.5 7.5 5.5"/></svg>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { open: 0 };
+  }
+
+  renderVals() {
+    const M = ['Қ','А','Н','С','М','М','Ш','Т','Қ','Қ','Қ','Ж'];
+
+    const raw = [
+      { title: 'Ағылшын тілін C1 деңгейіне жеткізу', due: '31 жел', gap: -7, pct: 58, sub: '7/12 ай', detail: '1 қаңтардан бері · тамыз 45%',
+        m: [100, 100, 90, 100, 80, 70, 100, 45, 0, 0, 0, 0] },
+      { title: '12 кітап оқу', due: '31 жел', gap: 10, pct: 75, sub: '9/12 кітап', detail: '1 қаңтардан бері · тамыз 70%',
+        m: [100, 100, 100, 100, 100, 100, 100, 70, 0, 0, 0, 0] },
+      { title: 'Дене салмағын 78 кг-ға түсіру', due: '1 қар', gap: -38, pct: 40, sub: '84,2 → 78 кг', detail: 'Мерзімге 68 күн · қарқын жеткіліксіз',
+        m: [70, 60, 55, 40, 30, 20, 45, 60, 0, 0, 0, 0] },
+      { title: 'Жеке жобаны іске қосу', due: '31 жел', gap: -15, pct: 25, sub: 'маусымнан бері', detail: '1 маусымда басталды · тамыз 30%',
+        m: [0, 0, 0, 0, 0, 20, 25, 30, 0, 0, 0, 0] },
+      { title: '5 000 000 ₸ жинау', due: '31 жел', gap: -2, pct: 63, sub: '3,15 млн ₸', detail: '1 қаңтардан бері · тамыз 80%',
+        m: [90, 85, 60, 70, 55, 50, 75, 80, 0, 0, 0, 0] },
+    ];
+
+    const C = 113.1;
+    const shades = ['#7A6CF0', '#8B7DF3', '#9A8DF5', '#AA9EF7', '#BDB4FA'];
+
+    const goals = raw.map((g, i) => ({
+      title: g.title,
+      due: g.due,
+      pace: (g.gap > 0 ? '+' : '') + g.gap + '%',
+      paceBg: g.gap > 0 ? '#EFEDFE' : (g.gap <= -20 ? '#14141B' : '#F2F2F8'),
+      paceFg: g.gap > 0 ? '#6A59EC' : (g.gap <= -20 ? '#FFFFFF' : '#6E6E86'),
+      pct: g.pct,
+      sub: g.sub,
+      detail: g.detail,
+      color: shades[i % shades.length],
+      offset: C * (1 - g.pct / 100),
+      open: this.state.open === i,
+      rot: this.state.open === i ? 'rotate(90deg)' : 'rotate(0deg)',
+      months: g.m.map((v, k) => ({
+        n: M[k],
+        h: Math.max(v, 6) + '%',
+        c: v === 0 ? '#E6E6EF' : (k === 7 ? '#7A6CF0' : '#C6BEFB'),
+      })),
+      toggle: () => this.setState({ open: this.state.open === i ? -1 : i }),
+    }));
+
+    return { goals };
+  }
+}
+</script>
+</body>
+</html>

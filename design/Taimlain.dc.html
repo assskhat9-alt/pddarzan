@@ -1,0 +1,302 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@600;700&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Manrope', system-ui, -apple-system, sans-serif; background: #F1F1F7; color: #14141B; -webkit-font-smoothing: antialiased; }
+    a { color: #7A6CF0; text-decoration: none; }
+    a:hover { color: #5E4FD8; }
+    .lbl { font-size: 10px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; color: #9A9AAE; }
+  </style>
+</helmet>
+
+<div style="width: 1194px; height: 834px; background: #F1F1F7; display: flex; overflow: hidden">
+
+  <!-- sidebar -->
+  <div style="width: 232px; flex-shrink: 0; background: #FFFFFF; border-right: 1px solid #ECECF3; display: flex; flex-direction: column; padding: 26px 18px 20px">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 0 6px">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#7A6CF0" stroke-width="2" stroke-linejoin="round"><path d="M12 2.6l8.4 9.4L12 21.4 3.6 12z"/></svg>
+      <span style="font-family: 'Unbounded', 'Manrope', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: .16em">FORMA</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 30px">
+      <sc-for list="{{nav}}" as="n" hint-placeholder-count="7">
+        <div style="display: flex; align-items: center; gap: 11px; padding: 11px 12px; border-radius: 13px; cursor: pointer; background: {{n.bg}}">
+          <div style="width: 7px; height: 7px; border-radius: 999px; background: {{n.dot}}"></div>
+          <span style="font-size: 13px; font-weight: 700; color: {{n.fg}}">{{n.name}}</span>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="flex-grow: 1"></div>
+
+    <div style="background: #F7F6FF; border: 1px solid #EAE6FD; border-radius: 18px; padding: 15px">
+      <div class="lbl" style="color: #6A59EC">Мерзімі жақын</div>
+      <div style="font-size: 12.5px; font-weight: 800; margin-top: 7px">Дене · 78 кг</div>
+      <div style="font-size: 11px; font-weight: 600; color: #7A7A92; margin-top: 3px">1 қарашаға 68 күн</div>
+    </div>
+  </div>
+
+  <!-- main -->
+  <div style="flex-grow: 1; display: flex; flex-direction: column; padding: 24px; min-width: 0">
+
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px">
+      <div>
+        <div style="font-size: 21px; font-weight: 800; letter-spacing: -.025em">Мерзімдер</div>
+        <div style="font-size: 12px; font-weight: 600; color: #8A8A9E; margin-top: 3px">Әр мақсаттың өз мерзімі бар — жыл соңы болуы міндетті емес</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px">
+        <div style="display: flex; align-items: center; gap: 7px">
+          <div style="width: 16px; height: 8px; border-radius: 999px; background: #7A6CF0"></div>
+          <span style="font-size: 10.5px; font-weight: 700; color: #8A8A9E">Орындалды</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 7px">
+          <div style="width: 2px; height: 13px; background: #14141B"></div>
+          <span style="font-size: 10.5px; font-weight: 700; color: #8A8A9E">Керек еді</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 7px; background: #7A6CF0; border-radius: 12px; padding: 10px 16px; cursor: pointer; box-shadow: 0 6px 16px rgba(122,108,240,.28)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          <span style="font-size: 12px; font-weight: 800; color: #FFFFFF">Мақсат</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- timeline -->
+    <div style="background: #FFFFFF; border-radius: 22px; padding: 16px 18px 10px; box-shadow: 0 1px 2px rgba(20,20,45,.04), 0 8px 24px rgba(20,20,45,.05); flex-shrink: 0">
+
+      <div style="display: flex; align-items: center; gap: 14px; padding-bottom: 9px; border-bottom: 1px solid #F2F2F8">
+        <div style="width: 196px; flex-shrink: 0"></div>
+        <div style="flex-grow: 1; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr))">
+          <sc-for list="{{months}}" as="m" hint-placeholder-count="12">
+            <div style="text-align: center; font-size: 9px; font-weight: 800; letter-spacing: .04em; color: {{m.c}}">{{m.n}}</div>
+          </sc-for>
+        </div>
+        <div style="width: 70px; flex-shrink: 0"></div>
+      </div>
+
+      <sc-for list="{{goals}}" as="g" hint-placeholder-count="5">
+        <div onClick="{{g.pick}}" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #F7F7FB; cursor: pointer; border-radius: 10px; background: {{g.rowBg}}">
+
+          <div style="width: 196px; flex-shrink: 0; padding-left: 8px">
+            <div style="font-size: 12.5px; font-weight: 700; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{g.title}}</div>
+            <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#B4B4C6" stroke-width="2.4" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10.5h17"/></svg>
+              <span style="font-size: 10px; font-weight: 700; color: #A6A6B8">{{g.due}}</span>
+            </div>
+          </div>
+
+          <div style="flex-grow: 1; position: relative; height: 30px">
+            <div style="position: absolute; inset: 0; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr))">
+              <sc-for list="{{months}}" as="m" hint-placeholder-count="12">
+                <div style="border-right: 1px solid #F5F5FA"></div>
+              </sc-for>
+            </div>
+
+            <div style="position: absolute; top: 4px; height: 22px; border-radius: 999px; background: #F0EFFA; overflow: hidden; left: {{g.left}}; width: {{g.width}}">
+              <div style="height: 22px; background: {{g.c}}; width: {{g.fill}}"></div>
+            </div>
+
+            <div style="position: absolute; top: 1px; width: 2px; height: 28px; border-radius: 2px; background: #14141B; left: {{g.needAt}}"></div>
+
+            <div style="position: absolute; top: 0; bottom: 0; width: 1.5px; background: rgba(122,108,240,.42); left: 64.9%"></div>
+          </div>
+
+          <div style="width: 70px; flex-shrink: 0; text-align: right">
+            <span style="font-size: 11px; font-weight: 800; border-radius: 999px; padding: 4px 9px; background: {{g.paceBg}}; color: {{g.paceFg}}">{{g.pace}}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- redistribute -->
+    <div style="background: #14141B; border-radius: 22px; padding: 18px 20px; margin-top: 14px; flex-grow: 1; display: flex; flex-direction: column; position: relative; overflow: hidden">
+      <div style="position: absolute; top: -60px; right: -40px; width: 220px; height: 220px; border-radius: 999px; background: radial-gradient(circle, rgba(138,124,246,.24), rgba(138,124,246,0) 70%)"></div>
+
+      <div style="position: relative; display: flex; align-items: flex-start; justify-content: space-between">
+        <div>
+          <div style="font-size: 10px; font-weight: 800; letter-spacing: .13em; color: #8B7DF3">ҚАЙТА ТАРАТУ</div>
+          <div style="font-size: 16px; font-weight: 800; letter-spacing: -.02em; color: #FFFFFF; margin-top: 7px">{{sel.title}} — {{sel.gap}}</div>
+          <div style="font-size: 11.5px; font-weight: 600; color: #8F8FA8; margin-top: 5px">{{sel.sub}}</div>
+        </div>
+        <div style="text-align: right; flex-shrink: 0">
+          <div style="font-size: 9px; font-weight: 800; letter-spacing: .11em; color: #6E6E86">ҚАЛДЫ</div>
+          <div style="font-size: 17px; font-weight: 800; color: #FFFFFF; margin-top: 4px">{{sel.left}}</div>
+        </div>
+      </div>
+
+      <div style="position: relative; display: flex; gap: 10px; margin-top: 16px">
+        <sc-for list="{{options}}" as="o" hint-placeholder-count="3">
+          <div onClick="{{o.pick}}" style="flex-grow: 1; flex-basis: 0; border-radius: 16px; padding: 14px 15px; cursor: pointer; background: {{o.bg}}; border: 1.5px solid {{o.bd}}">
+            <div style="display: flex; align-items: center; gap: 9px">
+              <div style="width: 17px; height: 17px; border-radius: 999px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 2px solid {{o.rbd}}; background: {{o.rbg}}">
+                <sc-if value="{{o.on}}" hint-placeholder-val="{{ true }}">
+                  <div style="width: 6px; height: 6px; border-radius: 999px; background: #14141B"></div>
+                </sc-if>
+              </div>
+              <span style="font-size: 12.5px; font-weight: 800; color: {{o.fg}}">{{o.n}}</span>
+            </div>
+            <div style="font-size: 11px; font-weight: 600; line-height: 1.45; color: {{o.sc}}; margin-top: 9px">{{o.d}}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="flex-grow: 1"></div>
+
+      <div style="position: relative; display: flex; align-items: center; justify-content: space-between; margin-top: 14px">
+        <div style="font-size: 11px; font-weight: 600; color: #6E6E86">{{sel.hint}}</div>
+        <div style="display: flex; align-items: center; gap: 8px; background: #7A6CF0; border-radius: 14px; padding: 12px 20px; cursor: pointer; box-shadow: 0 8px 20px rgba(122,108,240,.34)">
+          <span style="font-size: 12.5px; font-weight: 800; color: #FFFFFF">Жоспарды жаңарту</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":1194,"height":834}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sel: 2, opt: 0 };
+  }
+
+  renderVals() {
+    const M = ['Қаң', 'Ақп', 'Нау', 'Сәу', 'Мам', 'Мау', 'Шіл', 'Там', 'Қыр', 'Қаз', 'Қар', 'Жел'];
+    const TODAY = 64.9; // 25 тамыз — жылдың 64,9%-ы
+
+    const raw = [
+      {
+        title: 'Ағылшын тілін C1 деңгейіне',
+        due: '31 желтоқсан', start: 0, end: 100, pct: 58, c: '#7A6CF0',
+        left: '128 күн',
+        opts: [
+          { n: 'Қарқынды күшейту', d: 'Аптасына 4 → 5 сабақ. Мерзім өзгермейді.' },
+          { n: 'Мерзімді жылжыту', d: '31 желтоқсан → 15 ақпан. Қарқын сол күйінде.' },
+          { n: 'Көлемді азайту', d: '80 → 72 сабақ. Мерзім де, қарқын да сақталады.' },
+        ],
+      },
+      {
+        title: '12 кітап оқу',
+        due: '31 желтоқсан', start: 0, end: 100, pct: 75, c: '#8B7DF3',
+        left: '128 күн',
+        opts: [
+          { n: 'Қарқынды сақтау', d: 'Бәрі жоспарда. Ештеңе өзгертудің қажеті жоқ.' },
+          { n: 'Мерзімді жақындату', d: '31 желтоқсан → 15 қараша. Қарқын сол күйінде.' },
+          { n: 'Көлемді ұлғайту', d: '12 → 14 кітап. Мерзім сақталады.' },
+        ],
+      },
+      {
+        title: 'Дене салмағын 78 кг-ға түсіру',
+        due: '1 қараша', start: 0, end: 83.3, pct: 40, c: '#9A8DF5',
+        left: '68 күн',
+        opts: [
+          { n: 'Қарқынды күшейту', d: 'Аптасына 4 → 7 жаттығу. Мерзім өзгермейді.' },
+          { n: 'Мерзімді жылжыту', d: '1 қараша → 15 желтоқсан. Аптасына 4 жаттығу қалады.' },
+          { n: 'Мақсатты жеңілдету', d: '78 → 80 кг. Мерзім де, қарқын да сақталады.' },
+        ],
+      },
+      {
+        title: 'Жеке жобаны іске қосу',
+        due: '31 желтоқсан', start: 41.6, end: 100, pct: 25, c: '#AA9EF7',
+        left: '128 күн',
+        opts: [
+          { n: 'Қарқынды күшейту', d: 'Аптасына 2 → 3 кезең. Мерзім өзгермейді.' },
+          { n: 'Мерзімді жылжыту', d: '31 желтоқсан → 1 наурыз. Қарқын сол күйінде.' },
+          { n: 'Ауқымды қысқарту', d: '12 → 8 кезең. Тек негізгі функциялар.' },
+        ],
+      },
+      {
+        title: '5 000 000 ₸ жинау',
+        due: '31 желтоқсан', start: 0, end: 100, pct: 63, c: '#BDB4FA',
+        left: '128 күн',
+        opts: [
+          { n: 'Қарқынды сақтау', d: 'Айына 415 000 ₸. Жоспармен тең жүрсіз.' },
+          { n: 'Мерзімді жылжыту', d: '31 желтоқсан → 31 қаңтар. Айлық сома азаяды.' },
+          { n: 'Соманы азайту', d: '5,0 → 4,6 млн ₸. Мерзім сақталады.' },
+        ],
+      },
+    ];
+
+    const sel = this.state.sel;
+
+    const goals = raw.map((g, i) => {
+      const span = g.end - g.start;
+      const elapsed = Math.max(Math.min(((TODAY - g.start) / span) * 100, 100), 0);
+      const gap = Math.round(g.pct - elapsed);
+      const behind = gap < 0;
+      const bad = gap <= -20;
+      return {
+        title: g.title,
+        due: g.due,
+        c: g.c,
+        left: g.start + '%',
+        width: span + '%',
+        fill: g.pct + '%',
+        needAt: (g.start + (span * elapsed) / 100) + '%',
+        pace: (gap > 0 ? '+' : '') + gap + '%',
+        paceBg: behind ? (bad ? '#14141B' : '#F2F2F8') : '#EFEDFE',
+        paceFg: behind ? (bad ? '#FFFFFF' : '#6E6E86') : '#6A59EC',
+        rowBg: sel === i ? '#FAFAFD' : 'transparent',
+        pick: () => this.setState({ sel: i, opt: 0 }),
+      };
+    });
+
+    const g = raw[sel];
+    const span = g.end - g.start;
+    const elapsed = Math.max(Math.min(((TODAY - g.start) / span) * 100, 100), 0);
+    const gap = Math.round(g.pct - elapsed);
+
+    const opt = this.state.opt;
+    const options = g.opts.map((o, i) => {
+      const on = opt === i;
+      return {
+        n: o.n,
+        d: o.d,
+        on,
+        bg: on ? '#FFFFFF' : '#1A1A24',
+        bd: on ? '#FFFFFF' : '#26262F',
+        fg: on ? '#14141B' : '#FFFFFF',
+        sc: on ? '#5A5A70' : '#8F8FA8',
+        rbd: on ? '#14141B' : '#3A3A48',
+        rbg: on ? '#FFFFFF' : 'transparent',
+        pick: () => this.setState({ opt: i }),
+      };
+    });
+
+    const months = M.map((n, i) => ({ n, c: i === 7 ? '#6A59EC' : '#B4B4C6' }));
+
+    const nav = [
+      { name: 'Бүгін' }, { name: 'Календарь' }, { name: 'Мерзімдер', on: true }, { name: 'Апта' },
+      { name: 'Жыл' }, { name: 'Уақыт есебі' }, { name: 'Архив' },
+    ].map((n) => ({
+      name: n.name,
+      bg: n.on ? '#F4F2FE' : 'transparent',
+      fg: n.on ? '#14141B' : '#6E6E86',
+      dot: n.on ? '#7A6CF0' : '#DCDCE8',
+    }));
+
+    return {
+      goals, months, options, nav,
+      sel: {
+        title: g.title,
+        gap: gap < 0 ? Math.abs(gap) + '% артта' : (gap > 0 ? gap + '% алда' : 'жоспармен тең'),
+        sub: 'Мерзімге дейін ' + g.left + ' қалды. Қазіргі қарқынмен ' + Math.round(g.pct + (100 - elapsed) * (g.pct / Math.max(elapsed, 1))) + '%-ға жетесіз.',
+        left: g.left,
+        hint: 'Таңдағаныңыз апта мен күн деңгейіне автоматты түрде таралады',
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

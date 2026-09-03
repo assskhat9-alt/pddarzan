@@ -1,0 +1,12 @@
+services:
+  pdd-platform:
+    build: .
+    container_name: pdd-quiz-platform
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./pdd_database.db:/app/pdd_database.db
+    environment:
+      - NODE_ENV=production
+      - PORT=3000

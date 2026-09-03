@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@600;700&family=Caveat:wght@500;600;700&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Manrope', system-ui, -apple-system, sans-serif; background: #F1F1F7; color: #14141B; -webkit-font-smoothing: antialiased; }
+    a { color: #7A6CF0; text-decoration: none; }
+    a:hover { color: #5E4FD8; }
+    .lbl { font-size: 10px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; color: #9A9AAE; }
+    .hand { font-family: 'Caveat', 'Manrope', cursive; }
+  </style>
+</helmet>
+
+<div style="width: 390px; height: 844px; background: #F1F1F7; display: flex; flex-direction: column; overflow: hidden">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 8px; flex-shrink: 0">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14141B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+    <div style="font-family: 'Unbounded', 'Manrope', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .15em">МЕНІҢ ОЙЛАРЫМ</div>
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#14141B" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+  </div>
+
+  <!-- recent notes strip -->
+  <div style="flex-shrink: 0; padding: 8px 20px 0">
+    <div style="display: flex; gap: 9px">
+      <sc-for list="{{strip}}" as="s" hint-placeholder-count="3">
+        <div onClick="{{s.pick}}" style="flex-grow: 1; height: 88px; border-radius: 16px; padding: 11px; cursor: pointer; overflow: hidden; background: {{s.bg}}; border: 1.5px solid {{s.bd}}">
+          <div style="display: flex; align-items: center; gap: 5px">
+            <div style="width: 5px; height: 5px; border-radius: 999px; background: {{s.dot}}"></div>
+            <span style="font-size: 8.5px; font-weight: 800; letter-spacing: .06em; color: {{s.dc}}">{{s.date}}</span>
+          </div>
+          <div style="font-size: 10.5px; font-weight: 700; line-height: 1.35; color: {{s.fg}}; margin-top: 6px">{{s.t}}</div>
+          <sc-if value="{{s.drawn}}" hint-placeholder-val="{{ true }}">
+            <svg width="46" height="16" viewBox="0 0 46 16" fill="none" style="margin-top: 6px"><path d="M2 11c5-7 9 3 13-4s7 6 11 0 7 2 9-1" stroke="{{s.dot}}" stroke-width="2" stroke-linecap="round"/></svg>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- open note -->
+  <div style="flex-grow: 1; margin: 12px 20px 0; background: #FFFFFF; border-radius: 24px; padding: 18px; overflow: hidden; box-shadow: 0 1px 2px rgba(20,20,45,.04), 0 10px 28px rgba(20,20,45,.05); display: flex; flex-direction: column">
+
+    <div style="display: flex; align-items: flex-start; justify-content: space-between">
+      <div>
+        <div style="font-size: 16px; font-weight: 800; letter-spacing: -.02em">Тамыздың ортасындағы ой</div>
+        <div style="font-size: 10.5px; font-weight: 700; color: #A6A6B8; margin-top: 4px">18 тамыз, 23:14 · Ағылшын C1</div>
+      </div>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4C4D4" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+    </div>
+
+    <div style="font-size: 12.5px; font-weight: 500; line-height: 1.6; color: #3A3A52; margin-top: 14px; text-wrap: pretty">Апта бойы жоспарды орындадым, бірақ ішім пысты. Себебін таптым: тапсырманы неге істеп жүргенімді ұмытып кетемін. Сондықтан әр аптаның басында мақсат тізбегін қайта сызып шығуым керек.</div>
+
+    <div class="hand" style="font-size: 20px; font-weight: 600; color: #6A59EC; line-height: 1.25; margin-top: 12px">жүйе есте сақтайды, мен емес →</div>
+
+    <!-- drawing -->
+    <div style="flex-grow: 1; margin-top: 8px; border-radius: 16px; background: #FBFBFD; border: 1px solid #F2F2F8; display: flex; align-items: center; justify-content: center; overflow: hidden">
+      <svg width="310" height="168" viewBox="0 0 310 168" fill="none">
+        <path d="M14 5.5h282" stroke="#F0F0F6" stroke-width="0" />
+
+        <ellipse cx="56" cy="30" rx="40" ry="20" stroke="#14141B" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="0" transform="rotate(-2 56 30)"></ellipse>
+        <text x="56" y="36" text-anchor="middle" font-family="Caveat, cursive" font-size="20" font-weight="700" fill="#14141B">2026</text>
+
+        <path d="M56 51c-1 6 1 9 0 14" stroke="#14141B" stroke-width="2.2" stroke-linecap="round"></path>
+        <path d="M51.5 60.5L56 66l4.5-5.5" stroke="#14141B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+
+        <rect x="19" y="68" width="75" height="26" rx="8" stroke="#14141B" stroke-width="2.2" transform="rotate(-1 56 81)"></rect>
+        <text x="56" y="86" text-anchor="middle" font-family="Caveat, cursive" font-size="18" font-weight="600" fill="#14141B">тамыз</text>
+
+        <path d="M56 95c-1 6 1 9 0 14" stroke="#14141B" stroke-width="2.2" stroke-linecap="round"></path>
+        <path d="M51.5 104.5L56 110l4.5-5.5" stroke="#14141B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+
+        <rect x="19" y="112" width="75" height="26" rx="8" stroke="#14141B" stroke-width="2.2" transform="rotate(1 56 125)"></rect>
+        <text x="56" y="130" text-anchor="middle" font-family="Caveat, cursive" font-size="18" font-weight="600" fill="#14141B">34-апта</text>
+
+        <path d="M99 122c26 4 44-2 62-16" stroke="#7A6CF0" stroke-width="2.4" stroke-linecap="round"></path>
+        <path d="M154 100.5l8.5 5.5-2.5 9" stroke="#7A6CF0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
+
+        <circle cx="215" cy="82" r="37" stroke="#7A6CF0" stroke-width="2.6"></circle>
+        <circle cx="215" cy="82" r="43" stroke="#C6BEFB" stroke-width="2" stroke-dasharray="5 7"></circle>
+        <text x="215" y="80" text-anchor="middle" font-family="Caveat, cursive" font-size="24" font-weight="700" fill="#6A59EC">бүгін</text>
+        <path d="M202 92l7 7 14-15" stroke="#6A59EC" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+
+        <path d="M178 132c22 7 48 4 62-8" stroke="#C6BEFB" stroke-width="8" stroke-linecap="round" opacity=".55"></path>
+        <text x="212" y="138" text-anchor="middle" font-family="Caveat, cursive" font-size="19" font-weight="600" fill="#14141B">бір ғана қадам</text>
+
+        <path d="M268 24c6 8 4 16-4 22" stroke="#14141B" stroke-width="2" stroke-linecap="round"></path>
+        <path d="M258 42l6.5 4 1-7.5" stroke="#14141B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 8px; margin-top: 12px">
+      <span style="font-size: 12px; font-weight: 700; color: #14141B; background: linear-gradient(transparent 58%, #DCD6FB 58%); padding: 0 3px">Жексенбі кеші — қайта сызу уақыты.</span>
+    </div>
+
+  </div>
+
+  <!-- tool bar -->
+  <div style="flex-shrink: 0; margin: 12px 20px 20px; background: #FFFFFF; border-radius: 20px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 2px rgba(20,20,45,.05), 0 10px 26px rgba(20,20,45,.07)">
+
+    <sc-for list="{{tools}}" as="t" hint-placeholder-count="4">
+      <div onClick="{{t.pick}}" style="width: 40px; height: 40px; border-radius: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: {{t.bg}}">
+        <sc-if value="{{t.isText}}" hint-placeholder-val="{{ true }}">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{t.fg}}" stroke-width="2.2" stroke-linecap="round"><path d="M5 6.5V4.5h14v2M12 4.5V20M9 20h6"/></svg>
+        </sc-if>
+        <sc-if value="{{t.isPen}}" hint-placeholder-val="{{ true }}">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{t.fg}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 3.5l4 4L8 20H4v-4z"/><path d="M13.5 6.5l4 4"/></svg>
+        </sc-if>
+        <sc-if value="{{t.isMark}}" hint-placeholder-val="{{ true }}">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{t.fg}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-3.5 3.5V21h4l3-3"/><path d="M12.5 18.5L20 11a2.8 2.8 0 0 0 0-4l-3-3a2.8 2.8 0 0 0-4 0L5.5 11.5z"/></svg>
+        </sc-if>
+        <sc-if value="{{t.isEraser}}" hint-placeholder-val="{{ true }}">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{t.fg}}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20H20"/><path d="M14.5 3.5l6 6-9 9h-5l-3-3z"/></svg>
+        </sc-if>
+      </div>
+    </sc-for>
+
+    <div style="width: 1px; height: 26px; background: #ECECF3; margin: 0 2px"></div>
+
+    <sc-for list="{{colors}}" as="c" hint-placeholder-count="4">
+      <div onClick="{{c.pick}}" style="width: 26px; height: 26px; border-radius: 999px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid {{c.ring}}">
+        <div style="width: 16px; height: 16px; border-radius: 999px; background: {{c.v}}"></div>
+      </div>
+    </sc-for>
+
+    <div style="flex-grow: 1"></div>
+
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B4B4C6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h11a5 5 0 0 1 0 10h-6"/><path d="M8 5L4 9l4 4"/></svg>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tool: 1, color: 1, note: 0 };
+  }
+
+  renderVals() {
+    const toolMeta = [
+      { key: 'isText' }, { key: 'isPen' }, { key: 'isMark' }, { key: 'isEraser' },
+    ];
+    const cur = this.state.tool;
+    const tools = toolMeta.map((t, i) => {
+      const on = cur === i;
+      const o = {
+        isText: false, isPen: false, isMark: false, isEraser: false,
+        bg: on ? '#7A6CF0' : 'transparent',
+        fg: on ? '#FFFFFF' : '#8A8A9E',
+        pick: () => this.setState({ tool: i }),
+      };
+      o[t.key] = true;
+      return o;
+    });
+
+    const vals = ['#14141B', '#7A6CF0', '#A79BF8', '#9A9AAE'];
+    const colors = vals.map((v, i) => ({
+      v,
+      ring: this.state.color === i ? '#7A6CF0' : 'transparent',
+      pick: () => this.setState({ color: i }),
+    }));
+
+    const notes = [
+      { t: 'Тамыздың ортасындағы ой', date: '18 ТАМ', drawn: true },
+      { t: 'Неге ерте тұру қиын?', date: '12 ТАМ', drawn: false },
+      { t: 'Жоба архитектурасы', date: '05 ТАМ', drawn: true },
+    ];
+    const n = this.state.note;
+    const strip = notes.map((s, i) => {
+      const on = n === i;
+      return {
+        t: s.t,
+        date: s.date,
+        drawn: s.drawn,
+        bg: on ? '#14141B' : '#FFFFFF',
+        bd: on ? '#14141B' : '#ECECF3',
+        fg: on ? '#FFFFFF' : '#14141B',
+        dot: on ? '#8B7DF3' : '#C6BEFB',
+        dc: on ? '#8F8FA8' : '#B4B4C6',
+        pick: () => this.setState({ note: i }),
+      };
+    });
+
+    return { tools, colors, strip };
+  }
+}
+</script>
+</body>
+</html>

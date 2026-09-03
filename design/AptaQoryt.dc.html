@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@600;700&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Manrope', system-ui, -apple-system, sans-serif; background: #F1F1F7; color: #14141B; -webkit-font-smoothing: antialiased; }
+    a { color: #7A6CF0; text-decoration: none; }
+    a:hover { color: #5E4FD8; }
+    .lbl { font-size: 10px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; color: #9A9AAE; }
+    textarea { font-family: 'Manrope', system-ui, sans-serif; }
+    textarea::placeholder { color: #B4B4C6; }
+  </style>
+</helmet>
+
+<div style="width: 390px; height: 844px; background: #F1F1F7; display: flex; flex-direction: column; overflow: hidden">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 8px; flex-shrink: 0">
+    <div style="width: 28px; height: 28px; border-radius: 999px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6E6E86" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </div>
+    <div style="font-family: 'Unbounded', 'Manrope', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .15em">АПТА ҚОРЫТЫНДЫСЫ</div>
+    <div style="width: 28px"></div>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 11px; padding: 6px 20px 0; overflow: hidden">
+
+    <!-- hero -->
+    <div style="background: #14141B; border-radius: 24px; padding: 18px 20px; position: relative; overflow: hidden">
+      <div style="position: absolute; top: -50px; right: -40px; width: 190px; height: 190px; border-radius: 999px; background: radial-gradient(circle, rgba(138,124,246,.30), rgba(138,124,246,0) 70%)"></div>
+      <div style="position: relative; display: flex; align-items: flex-end; justify-content: space-between">
+        <div>
+          <div style="font-size: 10px; font-weight: 800; letter-spacing: .13em; color: #8B7DF3">34-АПТА · 24–30 ТАМЫЗ</div>
+          <div style="display: flex; align-items: baseline; gap: 9px; margin-top: 8px">
+            <span style="font-family: 'Unbounded', 'Manrope', sans-serif; font-size: 38px; font-weight: 700; letter-spacing: -.05em; line-height: 1; color: #FFFFFF">62%</span>
+            <span style="font-size: 12px; font-weight: 800; color: #A79BF8">+7%</span>
+          </div>
+          <div style="font-size: 11px; font-weight: 600; color: #8F8FA8; margin-top: 6px">Өткен аптада 55% болатын</div>
+        </div>
+        <div style="display: flex; align-items: flex-end; gap: 5px; height: 54px">
+          <sc-for list="{{trend}}" as="t" hint-placeholder-count="5">
+            <div style="width: 13px; border-radius: 5px; background: {{t.c}}; height: {{t.h}}"></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <!-- split -->
+    <div style="display: flex; gap: 9px">
+      <div style="flex-grow: 1; background: #FFFFFF; border-radius: 18px; padding: 13px 15px; box-shadow: 0 1px 2px rgba(20,20,45,.04), 0 8px 22px rgba(20,20,45,.04)">
+        <div style="display: flex; align-items: center; gap: 7px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7A6CF0" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>
+          <span class="lbl">Орындалды</span>
+        </div>
+        <div style="font-family: 'Unbounded', 'Manrope', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -.04em; margin-top: 6px">8</div>
+      </div>
+      <div style="flex-grow: 1; background: #FFFFFF; border-radius: 18px; padding: 13px 15px; box-shadow: 0 1px 2px rgba(20,20,45,.04), 0 8px 22px rgba(20,20,45,.04)">
+        <div style="display: flex; align-items: center; gap: 7px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9A9AAE" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+          <span class="lbl">Қалып қойды</span>
+        </div>
+        <div style="font-family: 'Unbounded', 'Manrope', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -.04em; margin-top: 6px; color: #6E6E86">5</div>
+      </div>
+    </div>
+
+    <!-- carry over -->
+    <div style="background: #FFFFFF; border-radius: 20px; padding: 15px 16px 8px; box-shadow: 0 1px 2px rgba(20,20,45,.04), 0 8px 22px rgba(20,20,45,.045)">
+      <div class="lbl" style="margin-bottom: 4px">Қалып қойғанын не істейміз?</div>
+      <sc-for list="{{slipped}}" as="s" hint-placeholder-count="3">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid #F4F4F9">
+          <div style="flex-grow: 1; min-width: 0">
+            <div style="font-size: 12.5px; font-weight: 600; line-height: 1.35">{{s.title}}</div>
+            <span style="font-size: 9.5px; font-weight: 800; color: #6A59EC; background: #EFEDFE; border-radius: 999px; padding: 2px 7px; display: inline-block; margin-top: 5px">{{s.goal}}</span>
+          </div>
+          <div style="display: flex; gap: 5px; flex-shrink: 0">
+            <div onClick="{{s.move}}" style="padding: 7px 11px; border-radius: 10px; cursor: pointer; font-size: 10.5px; font-weight: 800; background: {{s.moveBg}}; color: {{s.moveFg}}; border: 1.5px solid {{s.moveBd}}">Көшіру</div>
+            <div onClick="{{s.drop}}" style="padding: 7px 11px; border-radius: 10px; cursor: pointer; font-size: 10.5px; font-weight: 800; background: {{s.dropBg}}; color: {{s.dropFg}}; border: 1.5px solid {{s.dropBd}}">Жабу</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- next week -->
+    <div style="background: #FFFFFF; border-radius: 20px; padding: 15px 16px 8px; box-shadow: 0 1px 2px rgba(20,20,45,.04), 0 8px 22px rgba(20,20,45,.045)">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px">
+        <div class="lbl">35-аптаға тамыз мақсатынан</div>
+        <span style="font-size: 11px; font-weight: 800; color: #7A6CF0">{{nextCount}} таңдалды</span>
+      </div>
+      <sc-for list="{{next}}" as="n" hint-placeholder-count="3">
+        <div onClick="{{n.toggle}}" style="display: flex; align-items: center; gap: 11px; padding: 11px 0; border-bottom: 1px solid #F4F4F9; cursor: pointer">
+          <div style="width: 21px; height: 21px; border-radius: 7px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: {{n.boxBg}}; border: 2px solid {{n.boxBd}}">
+            <sc-if value="{{n.on}}" hint-placeholder-val="{{ true }}">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>
+            </sc-if>
+          </div>
+          <div style="flex-grow: 1; min-width: 0">
+            <div style="font-size: 12.5px; font-weight: 600; color: {{n.fg}}">{{n.title}}</div>
+          </div>
+          <span style="font-size: 10px; font-weight: 800; color: #A6A6B8; flex-shrink: 0">{{n.load}}</span>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- note -->
+    <textarea placeholder="Осы аптаның басты сабағы не болды?" style="width: 100%; height: 76px; resize: none; border: 1.5px solid #ECECF3; border-radius: 18px; background: #FFFFFF; padding: 13px 15px; font-size: 12.5px; font-weight: 500; line-height: 1.5; color: #14141B; outline: none"></textarea>
+
+    <div style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px; border-radius: 18px; background: #7A6CF0; cursor: pointer; box-shadow: 0 8px 20px rgba(122,108,240,.30)">
+      <span style="font-size: 13.5px; font-weight: 800; color: #FFFFFF">Аптаны жабу және 35-аптаны бастау</span>
+    </div>
+
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { moves: [1, 1, 0], next: [true, true, false] };
+  }
+
+  renderVals() {
+    const slippedRaw = [
+      { title: '2 тыңдалым сабағы', goal: 'Ағылшын C1' },
+      { title: 'Auth API-дың тесттері', goal: 'Жеке жоба' },
+      { title: '40 бет оқу', goal: '12 кітап' },
+    ];
+
+    const slipped = slippedRaw.map((s, i) => {
+      const on = this.state.moves[i] === 1;
+      const set = (v) => () => {
+        const m = this.state.moves.slice();
+        m[i] = v;
+        this.setState({ moves: m });
+      };
+      return {
+        title: s.title,
+        goal: s.goal,
+        moveBg: on ? '#7A6CF0' : '#FBFBFD',
+        moveFg: on ? '#FFFFFF' : '#8A8A9E',
+        moveBd: on ? '#7A6CF0' : '#ECECF3',
+        dropBg: on ? '#FBFBFD' : '#14141B',
+        dropFg: on ? '#8A8A9E' : '#FFFFFF',
+        dropBd: on ? '#ECECF3' : '#14141B',
+        move: set(1),
+        drop: set(0),
+      };
+    });
+
+    const nextRaw = [
+      { title: '5 тыңдалым сабағы', load: '5 күн' },
+      { title: '4 жаттығу', load: '4 күн' },
+      { title: 'Профиль экраны', load: '2 күн' },
+    ];
+
+    const next = nextRaw.map((n, i) => {
+      const on = this.state.next[i];
+      return {
+        title: n.title,
+        load: n.load,
+        on,
+        boxBg: on ? '#7A6CF0' : '#FFFFFF',
+        boxBd: on ? '#7A6CF0' : '#DEDEE9',
+        fg: on ? '#14141B' : '#8A8A9E',
+        toggle: () => {
+          const arr = this.state.next.slice();
+          arr[i] = !arr[i];
+          this.setState({ next: arr });
+        },
+      };
+    });
+
+    const trend = [42, 58, 50, 55, 62].map((v, i) => ({
+      h: v + '%',
+      c: i === 4 ? '#8B7DF3' : '#2A2A38',
+    }));
+
+    return { slipped, next, trend, nextCount: this.state.next.filter(Boolean).length };
+  }
+}
+</script>
+</body>
+</html>
