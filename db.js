@@ -1,108 +1,194 @@
 import sqlite3 from 'sqlite3';
+import pg from 'pg';
 import crypto from 'crypto';
 import path from 'path';
 
-const DB_PATH = path.resolve('pdd_database.db');
-const db = new sqlite3.Database(DB_PATH);
+const isPg = !!process.env.DATABASE_URL;
+let pgPool = null;
+let sqliteDb = null;
 
-// Helper for promise-based db.run
+if (isPg) {
+  pgPool = new pg.Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.DATABASE_URL.includes('localhost') ? false : { rejectUnauthorized: false }
+  });
+  console.log('Connected to PostgreSQL cloud database.');
+} else {
+  const DB_PATH = path.resolve('pdd_database.db');
+  sqliteDb = new sqlite3.Database(DB_PATH);
+  console.log('Connected to local SQLite database at', DB_PATH);
+}
+
+function formatSql(sql) {
+  if (!isPg) return sql;
+  let idx = 1;
+  return sql.replace(/\?/g, () => `$${idx++}`);
+}
+
 function run(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.run(sql, params, function (err) {
-      if (err) reject(err);
-      else resolve({ lastID: this.lastID, changes: this.changes });
+  if (isPg) {
+    let formatted = formatSql(sql);
+    const isInsert = formatted.trim().toUpperCase().startsWith('INSERT');
+    if (isInsert && !formatted.toUpperCase().includes('RETURNING')) {
+      formatted += ' RETURNING id';
+    }
+    return pgPool.query(formatted, params).then(res => ({
+      lastID: res.rows[0]?.id || null,
+      changes: res.rowCount
+    }));
+  } else {
+    return new Promise((resolve, reject) => {
+      sqliteDb.run(sql, params, function (err) {
+        if (err) reject(err);
+        else resolve({ lastID: this.lastID, changes: this.changes });
+      });
     });
-  });
+  }
 }
 
-// Helper for promise-based db.get
 function get(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => {
-      if (err) reject(err);
-      else resolve(row);
+  if (isPg) {
+    const formatted = formatSql(sql);
+    return pgPool.query(formatted, params).then(res => res.rows[0] || null);
+  } else {
+    return new Promise((resolve, reject) => {
+      sqliteDb.get(sql, params, (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
     });
-  });
+  }
 }
 
-// Helper for promise-based db.all
 function all(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => {
-      if (err) reject(err);
-      else resolve(rows);
+  if (isPg) {
+    const formatted = formatSql(sql);
+    return pgPool.query(formatted, params).then(res => res.rows);
+  } else {
+    return new Promise((resolve, reject) => {
+      sqliteDb.all(sql, params, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
     });
-  });
+  }
 }
 
 export async function initDb() {
-  await run(`PRAGMA journal_mode = WAL;`);
-  await run(`PRAGMA synchronous = NORMAL;`);
-  await run(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT UNIQUE NOT NULL,
-      full_name TEXT NOT NULL,
-      password_hash TEXT NOT NULL,
-      role TEXT NOT NULL DEFAULT 'user',
-      has_access INTEGER NOT NULL DEFAULT 0,
-      phone TEXT,
-      device_id TEXT,
-      current_token TEXT,
-      last_login DATETIME,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
+  if (isPg) {
+    await run(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username TEXT UNIQUE NOT NULL,
+        full_name TEXT NOT NULL,
+        password_hash TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'user',
+        has_access INTEGER NOT NULL DEFAULT 0,
+        phone TEXT,
+        device_id TEXT,
+        current_token TEXT,
+        last_login TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        access_expires_at TIMESTAMP
+      )
+    `);
+    await run(`ALTER TABLE users ADD COLUMN IF NOT EXISTS access_expires_at TIMESTAMP`);
+    await run(`ALTER TABLE users ADD COLUMN IF NOT EXISTS phone TEXT`);
+    await run(`ALTER TABLE users ADD COLUMN IF NOT EXISTS device_id TEXT`);
+    await run(`ALTER TABLE users ADD COLUMN IF NOT EXISTS current_token TEXT`);
+    await run(`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login TIMESTAMP`);
 
-  // Auto-migrate users table if upgrading an existing db
-  const userColumns = await all(`PRAGMA table_info(users)`);
-  const colNames = userColumns.map(c => c.name);
+    await run(`
+      CREATE TABLE IF NOT EXISTS test_attempts (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        score INTEGER NOT NULL,
+        total_questions INTEGER NOT NULL DEFAULT 40,
+        passed INTEGER NOT NULL,
+        time_spent_seconds INTEGER NOT NULL,
+        language TEXT NOT NULL DEFAULT 'kk',
+        answers_json TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
 
-  if (!colNames.includes('role')) {
-    await run(`ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'`);
-  }
-  if (!colNames.includes('has_access')) {
-    await run(`ALTER TABLE users ADD COLUMN has_access INTEGER NOT NULL DEFAULT 0`);
-  }
-  if (!colNames.includes('phone')) {
-    await run(`ALTER TABLE users ADD COLUMN phone TEXT`);
-  }
-  if (!colNames.includes('device_id')) {
-    await run(`ALTER TABLE users ADD COLUMN device_id TEXT`);
-  }
-  if (!colNames.includes('current_token')) {
-    await run(`ALTER TABLE users ADD COLUMN current_token TEXT`);
-  }
-  if (!colNames.includes('last_login')) {
-    await run(`ALTER TABLE users ADD COLUMN last_login DATETIME`);
-  }
-  if (!colNames.includes('access_expires_at')) {
-    await run(`ALTER TABLE users ADD COLUMN access_expires_at DATETIME`);
-  }
+    await run(`
+      CREATE TABLE IF NOT EXISTS platform_settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+      )
+    `);
+    await run(`CREATE INDEX IF NOT EXISTS idx_test_attempts_user ON test_attempts(user_id)`);
+  } else {
+    await run(`PRAGMA journal_mode = WAL;`);
+    await run(`PRAGMA synchronous = NORMAL;`);
+    await run(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        full_name TEXT NOT NULL,
+        password_hash TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'user',
+        has_access INTEGER NOT NULL DEFAULT 0,
+        phone TEXT,
+        device_id TEXT,
+        current_token TEXT,
+        last_login DATETIME,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
 
-  await run(`
-    CREATE TABLE IF NOT EXISTS test_attempts (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      score INTEGER NOT NULL,
-      total_questions INTEGER NOT NULL DEFAULT 40,
-      passed INTEGER NOT NULL,
-      time_spent_seconds INTEGER NOT NULL,
-      language TEXT NOT NULL DEFAULT 'kk',
-      answers_json TEXT NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(id)
-    )
-  `);
+    // Auto-migrate users table if upgrading an existing db
+    const userColumns = await all(`PRAGMA table_info(users)`);
+    const colNames = userColumns.map(c => c.name);
 
-  await run(`
-    CREATE TABLE IF NOT EXISTS platform_settings (
-      key TEXT PRIMARY KEY,
-      value TEXT NOT NULL
-    )
-  `);
+    if (!colNames.includes('role')) {
+      await run(`ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'`);
+    }
+    if (!colNames.includes('has_access')) {
+      await run(`ALTER TABLE users ADD COLUMN has_access INTEGER NOT NULL DEFAULT 0`);
+    }
+    if (!colNames.includes('phone')) {
+      await run(`ALTER TABLE users ADD COLUMN phone TEXT`);
+    }
+    if (!colNames.includes('device_id')) {
+      await run(`ALTER TABLE users ADD COLUMN device_id TEXT`);
+    }
+    if (!colNames.includes('current_token')) {
+      await run(`ALTER TABLE users ADD COLUMN current_token TEXT`);
+    }
+    if (!colNames.includes('last_login')) {
+      await run(`ALTER TABLE users ADD COLUMN last_login DATETIME`);
+    }
+    if (!colNames.includes('access_expires_at')) {
+      await run(`ALTER TABLE users ADD COLUMN access_expires_at DATETIME`);
+    }
 
-  await run(`CREATE INDEX IF NOT EXISTS idx_test_attempts_user ON test_attempts(user_id)`);
+    await run(`
+      CREATE TABLE IF NOT EXISTS test_attempts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        score INTEGER NOT NULL,
+        total_questions INTEGER NOT NULL DEFAULT 40,
+        passed INTEGER NOT NULL,
+        time_spent_seconds INTEGER NOT NULL,
+        language TEXT NOT NULL DEFAULT 'kk',
+        answers_json TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id)
+      )
+    `);
+
+    await run(`
+      CREATE TABLE IF NOT EXISTS platform_settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+      )
+    `);
+
+    await run(`CREATE INDEX IF NOT EXISTS idx_test_attempts_user ON test_attempts(user_id)`);
+  }
 
   // Seed default admin account if not exists
   const existingAdmin = await get(`SELECT id FROM users WHERE role = 'admin' OR username = 'admin'`);
@@ -121,7 +207,7 @@ export async function initDb() {
   // Seed default WhatsApp setting if not exists
   const existingWa = await get(`SELECT value FROM platform_settings WHERE key = 'admin_whatsapp'`);
   if (!existingWa) {
-    await run(`INSERT INTO platform_settings (key, value) VALUES ('admin_whatsapp', '77770000000')`);
+    await run(`INSERT INTO platform_settings (key, value) VALUES ('admin_whatsapp', '77006974143')`);
   }
 
   console.log('Database initialized successfully with admin, permissions & settings.');
