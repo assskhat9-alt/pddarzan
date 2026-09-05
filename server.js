@@ -176,8 +176,8 @@ app.post('/api/auth/register', async (req, res) => {
       return res.status(400).json({ error: 'Бұл логин жүйеде тіркелген. Басқа логин таңдаңыз.' });
     }
 
-    // Default self-registered accounts are locked (hasAccess = 0)
-    const newUser = await db.createUser(username, full_name, password, 'user', 0, phone);
+    // Self-registered accounts have active access (hasAccess = 1)
+    const newUser = await db.createUser(username, full_name, password, 'user', 1, phone);
     const token = generateAuthToken(newUser);
 
     // Save session and device binding
@@ -193,7 +193,7 @@ app.post('/api/auth/register', async (req, res) => {
         username: newUser.username,
         fullName: newUser.full_name,
         role: 'user',
-        hasAccess: false,
+        hasAccess: true,
         phone: newUser.phone
       },
       adminWhatsapp
