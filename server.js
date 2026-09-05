@@ -89,12 +89,33 @@ async function requireAuth(req, res, next) {
       });
     }
 
+    // Check access expiration
+    let isExpired = false;
+    let hasAccess = false;
+    if (freshUser.role === 'admin') {
+      hasAccess = true;
+    } else if (freshUser.has_access === 1) {
+      if (freshUser.access_expires_at) {
+        const expiresTime = new Date(freshUser.access_expires_at).getTime();
+        if (!isNaN(expiresTime) && expiresTime < Date.now()) {
+          isExpired = true;
+          hasAccess = false;
+        } else {
+          hasAccess = true;
+        }
+      } else {
+        hasAccess = true;
+      }
+    }
+
     req.user = {
       userId: freshUser.id,
       username: freshUser.username,
       fullName: freshUser.full_name,
       role: freshUser.role,
-      hasAccess: freshUser.has_access === 1 || freshUser.role === 'admin',
+      hasAccess,
+      accessExpiresAt: freshUser.access_expires_at,
+      isExpired,
       phone: freshUser.phone,
       deviceId: freshUser.device_id
     };
@@ -110,9 +131,15 @@ function requireAccess(req, res, next) {
   if (req.user && (req.user.role === 'admin' || req.user.hasAccess)) {
     return next();
   }
+  const isExpired = req.user && req.user.isExpired;
+  const msg = isExpired
+    ? 'Сіздің қолжетімділік (доступ) мерзіміңіз аяқталды. Мерзімді ұзарту үшін әкімшіге (WhatsApp) хабарласыңыз.'
+    : 'Бұл бөлім құлыпталған. Платформаға толық қолжетімділік алу үшін әкімшіге (WhatsApp) хабарласыңыз.';
+
   return res.status(403).json({
-    error: 'Бұл бөлім құлыпталған. Платформаға толық қолжетімділік алу үшін әкімшіге (WhatsApp) хабарласыңыз.',
+    error: msg,
     code: 'ACCESS_LOCKED',
+    isExpired: !!isExpired,
     locked: true
   });
 }
@@ -141,9 +168,9 @@ app.get('/api/public/config', async (req, res) => {
 // Register (Self-registration: created with has_access = 0, awaiting admin activation)
 app.post('/api/auth/register', async (req, res) => {
   try {
-    let { username, full_name, password, deviceId, phone } = req.body;
+    let { username, full_name, fullName, password, deviceId, phone } = req.body;
     username = (username || '').trim().toLowerCase();
-    full_name = (full_name || '').trim();
+    full_name = (full_name || fullName || '').trim();
     password = (password || '');
     deviceId = (deviceId || '').trim();
 
@@ -176,8 +203,8 @@ app.post('/api/auth/register', async (req, res) => {
       return res.status(400).json({ error: 'Бұл логин жүйеде тіркелген. Басқа логин таңдаңыз.' });
     }
 
-    // Self-registered accounts have active access (hasAccess = 1)
-    const newUser = await db.createUser(username, full_name, password, 'user', 1, phone);
+    // Default self-registered accounts are locked on paid basis (hasAccess = 0)
+    const newUser = await db.createUser(username, full_name, password, 'user', 0, phone);
     const token = generateAuthToken(newUser);
 
     // Save session and device binding
@@ -193,7 +220,7 @@ app.post('/api/auth/register', async (req, res) => {
         username: newUser.username,
         fullName: newUser.full_name,
         role: 'user',
-        hasAccess: true,
+        hasAccess: false,
         phone: newUser.phone
       },
       adminWhatsapp
@@ -241,7 +268,9 @@ app.post('/api/auth/login', async (req, res) => {
         username: user.username,
         fullName: user.full_name,
         role: user.role,
-        hasAccess: user.has_access === 1 || user.role === 'admin',
+        hasAccess: user.role === 'admin' || (user.has_access === 1 && (!user.access_expires_at || new Date(user.access_expires_at).getTime() >= Date.now())),
+        accessExpiresAt: user.access_expires_at,
+        isExpired: user.access_expires_at ? (new Date(user.access_expires_at).getTime() < Date.now()) : false,
         phone: user.phone
       },
       adminWhatsapp
@@ -280,7 +309,36 @@ app.post('/api/auth/logout', requireAuth, async (req, res) => {
 // Get all users and system stats
 app.get('/api/admin/users', requireAuth, requireAdmin, async (req, res) => {
   try {
-    const users = await db.getAllUsers();
+    const rawUsers = await db.getAllUsers();
+    const now = Date.now();
+
+    const users = rawUsers.map(u => {
+      let isExpired = false;
+      let effectiveAccess = false;
+      if (u.role === 'admin') {
+        effectiveAccess = true;
+      } else if (u.has_access === 1) {
+        if (u.access_expires_at) {
+          const exp = new Date(u.access_expires_at).getTime();
+          if (!isNaN(exp) && exp < now) {
+            isExpired = true;
+            effectiveAccess = false;
+          } else {
+            effectiveAccess = true;
+          }
+        } else {
+          effectiveAccess = true; // Unlimited
+        }
+      }
+
+      return {
+        ...u,
+        has_access: effectiveAccess ? 1 : 0,
+        raw_has_access: u.has_access,
+        is_expired: isExpired
+      };
+    });
+
     const stats = {
       totalUsers: users.length,
       activeUsers: users.filter(u => u.has_access === 1 || u.role === 'admin').length,
@@ -294,15 +352,14 @@ app.get('/api/admin/users', requireAuth, requireAdmin, async (req, res) => {
   }
 });
 
-// Admin creates new user (by default active with full access)
+// Admin creates new user (with duration period: 1_month, 3_months, 6_months, unlimited, or none)
 app.post('/api/admin/user/create', requireAuth, requireAdmin, async (req, res) => {
   try {
-    let { username, full_name, password, phone, has_access } = req.body;
+    let { username, full_name, password, phone, has_access, access_period } = req.body;
     username = (username || '').trim().toLowerCase();
     full_name = (full_name || '').trim();
     password = (password || '');
     phone = (phone || '').trim();
-    const access = has_access !== false ? 1 : 0;
 
     if (!username || username.length < 3) {
       return res.status(400).json({ error: 'Логин кемінде 3 таңбадан тұруы керек' });
@@ -322,21 +379,56 @@ app.post('/api/admin/user/create', requireAuth, requireAdmin, async (req, res) =
       return res.status(400).json({ error: 'Бұл логин жүйеде тіркелген' });
     }
 
-    const newUser = await db.createUser(username, full_name, password, 'user', access, phone);
+    let access = 0;
+    let expiresAt = null;
+    const period = access_period || (has_access !== false ? '1_month' : 'revoke');
+
+    if (period === '1_month') {
+      access = 1;
+      expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    } else if (period === '3_months') {
+      access = 1;
+      expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+    } else if (period === '6_months') {
+      access = 1;
+      expiresAt = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString();
+    } else if (period === 'unlimited' || period === 'lifetime') {
+      access = 1;
+      expiresAt = null;
+    } else {
+      access = 0;
+      expiresAt = null;
+    }
+
+    const newUser = await db.createUser(username, full_name, password, 'user', access, phone, expiresAt);
     res.json({ success: true, user: newUser });
   } catch (err) {
     res.status(500).json({ error: 'Пайдаланушыны қосу қатесі: ' + err.message });
   }
 });
 
-// Admin toggles user access (lock / unlock)
-app.post('/api/admin/user/toggle-access', requireAuth, requireAdmin, async (req, res) => {
+// Admin sets user access period (1_month, 3_months, 6_months, unlimited, revoke)
+app.post('/api/admin/user/set-access', requireAuth, requireAdmin, async (req, res) => {
   try {
-    const { userId, hasAccess } = req.body;
+    const { userId, period } = req.body;
     if (!userId) return res.status(400).json({ error: 'Пайдаланушы ID көрсетілмеді' });
 
-    await db.toggleUserAccess(userId, hasAccess);
-    res.json({ success: true, userId, hasAccess: !!hasAccess });
+    const result = await db.setUserAccessPeriod(userId, period);
+    res.json({ success: true, userId, hasAccess: result.hasAccess, accessExpiresAt: result.accessExpiresAt });
+  } catch (err) {
+    res.status(500).json({ error: 'Доступты өзгерту қатесі: ' + err.message });
+  }
+});
+
+// Admin toggles user access (legacy / backwards-compatible)
+app.post('/api/admin/user/toggle-access', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { userId, hasAccess, period } = req.body;
+    if (!userId) return res.status(400).json({ error: 'Пайдаланушы ID көрсетілмеді' });
+
+    const selectedPeriod = period || (hasAccess ? '1_month' : 'revoke');
+    const result = await db.setUserAccessPeriod(userId, selectedPeriod);
+    res.json({ success: true, userId, hasAccess: result.hasAccess, accessExpiresAt: result.accessExpiresAt });
   } catch (err) {
     res.status(500).json({ error: 'Доступты өзгерту қатесі: ' + err.message });
   }
@@ -452,7 +544,126 @@ app.get('/api/test/start', requireAuth, requireAccess, (req, res) => {
   }
 });
 
-// Submit test answers
+// Start a 5-question DEMO test session (Accessible to anyone, including guests & AI, to preview the platform)
+app.get('/api/test/demo', (req, res) => {
+  try {
+    const lang = req.query.lang || 'kk';
+    if (questions.length === 0) {
+      return res.status(500).json({ error: 'Сұрақтар базасы жүктелмеген' });
+    }
+
+    let userId = 'guest';
+    try {
+      const token = req.cookies && req.cookies.token;
+      if (token) {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (decoded && decoded.userId) userId = decoded.userId;
+      }
+    } catch (e) {}
+
+    // Pick 5 random questions for platform preview
+    const shuffled = [...questions].sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, 5);
+    const questionIds = selected.map(q => q.id);
+
+    const testSessionId = 'demo_' + crypto.randomUUID();
+    activeTestSessions.set(testSessionId, {
+      userId,
+      questionIds,
+      startedAt: Date.now(),
+      language: lang,
+      isDemo: true,
+      timed: true
+    });
+
+    const testQuestions = selected.map((q, idx) => {
+      const langData = q[lang] || q.kk || q.ru;
+      return {
+        index: idx + 1,
+        id: q.id,
+        number: q.number,
+        question: langData.question,
+        options: langData.options,
+        kk: q.kk,
+        ru: q.ru,
+        en: q.en,
+        hasImage: hasQuestionImage(q.id),
+        imageUrl: hasQuestionImage(q.id) ? `/images/q_${q.id}.png` : null
+      };
+    });
+
+    res.json({
+      testSessionId,
+      totalQuestions: 5,
+      timeLimitMinutes: 5,
+      timed: true,
+      isDemo: true,
+      language: lang,
+      questions: testQuestions
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Submit demo test answers (Accessible without prior login)
+app.post('/api/test/demo-submit', async (req, res) => {
+  try {
+    const { testSessionId, timeSpentSeconds, answers, language = 'kk' } = req.body;
+    const session = activeTestSessions.get(testSessionId);
+    let questionIds = session ? session.questionIds : (answers || []).map(a => a.questionId);
+
+    const answersMap = new Map();
+    (answers || []).forEach(a => answersMap.set(a.questionId, a.selectedIndex));
+
+    let score = 0;
+    const detailedAnswers = [];
+
+    for (let i = 0; i < questionIds.length; i++) {
+      const qId = questionIds[i];
+      const q = questionMap.get(qId);
+      if (!q) continue;
+
+      const userSelected = answersMap.has(qId) ? answersMap.get(qId) : -1;
+      const isCorrect = (userSelected === q.correct_index);
+      if (isCorrect) score++;
+
+      const langData = q[language] || q.kk || q.ru;
+      detailedAnswers.push({
+        questionId: q.id,
+        id: q.id,
+        number: q.number,
+        question: langData.question,
+        options: langData.options,
+        kk: q.kk,
+        ru: q.ru,
+        en: q.en,
+        correctIndex: q.correct_index,
+        userSelected,
+        isCorrect,
+        hasImage: hasQuestionImage(q.id),
+        imageUrl: hasQuestionImage(q.id) ? `/images/q_${q.id}.png` : null
+      });
+    }
+
+    if (testSessionId) activeTestSessions.delete(testSessionId);
+
+    res.json({
+      success: true,
+      score,
+      totalQuestions: 5,
+      percentage: Math.round((score / 5) * 100),
+      passed: score >= 4,
+      timeSpentSeconds: timeSpentSeconds || 60,
+      isDemo: true,
+      answers: detailedAnswers
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Submit test answers (Requires Full Paid Access)
 app.post('/api/test/submit', requireAuth, requireAccess, async (req, res) => {
   try {
     const { testSessionId, timeSpentSeconds, answers, language = 'kk', timed } = req.body;

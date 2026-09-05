@@ -76,6 +76,9 @@ export async function initDb() {
   if (!colNames.includes('last_login')) {
     await run(`ALTER TABLE users ADD COLUMN last_login DATETIME`);
   }
+  if (!colNames.includes('access_expires_at')) {
+    await run(`ALTER TABLE users ADD COLUMN access_expires_at DATETIME`);
+  }
 
   await run(`
     CREATE TABLE IF NOT EXISTS test_attempts (
@@ -139,12 +142,12 @@ export function verifyPassword(password, storedHash) {
 }
 
 // User methods
-export async function createUser(username, fullName, password, role = 'user', hasAccess = 0, phone = null) {
+export async function createUser(username, fullName, password, role = 'user', hasAccess = 0, phone = null, accessExpiresAt = null) {
   const normalizedUsername = username.trim().toLowerCase();
   const passwordHash = hashPassword(password);
   const result = await run(
-    `INSERT INTO users (username, full_name, password_hash, role, has_access, phone) VALUES (?, ?, ?, ?, ?, ?)`,
-    [normalizedUsername, fullName.trim(), passwordHash, role, hasAccess ? 1 : 0, phone ? phone.trim() : null]
+    `INSERT INTO users (username, full_name, password_hash, role, has_access, access_expires_at, phone) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [normalizedUsername, fullName.trim(), passwordHash, role, hasAccess ? 1 : 0, accessExpiresAt, phone ? phone.trim() : null]
   );
   return {
     id: result.lastID,
@@ -152,6 +155,7 @@ export async function createUser(username, fullName, password, role = 'user', ha
     full_name: fullName.trim(),
     role,
     has_access: hasAccess ? 1 : 0,
+    access_expires_at: accessExpiresAt,
     phone: phone ? phone.trim() : null
   };
 }
@@ -163,7 +167,7 @@ export async function findUserByUsername(username) {
 
 export async function findUserById(id) {
   return await get(
-    `SELECT id, username, full_name, role, has_access, phone, device_id, current_token, last_login, created_at FROM users WHERE id = ?`,
+    `SELECT id, username, full_name, role, has_access, access_expires_at, phone, device_id, current_token, last_login, created_at FROM users WHERE id = ?`,
     [id]
   );
 }
@@ -182,11 +186,44 @@ export async function resetUserDevice(userId) {
   );
 }
 
-export async function toggleUserAccess(userId, hasAccess) {
+export async function toggleUserAccess(userId, hasAccess, accessExpiresAt = null) {
   await run(
-    `UPDATE users SET has_access = ? WHERE id = ?`,
-    [hasAccess ? 1 : 0, userId]
+    `UPDATE users SET has_access = ?, access_expires_at = ? WHERE id = ?`,
+    [hasAccess ? 1 : 0, hasAccess ? accessExpiresAt : null, userId]
   );
+}
+
+export async function setUserAccessPeriod(userId, period) {
+  // period: '1_month', '3_months', '6_months', 'unlimited', 'revoke'
+  let hasAccess = 1;
+  let expiresAt = null;
+
+  if (period === 'revoke' || period === 0 || period === false) {
+    hasAccess = 0;
+    expiresAt = null;
+  } else if (period === '1_month') {
+    hasAccess = 1;
+    expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+  } else if (period === '3_months') {
+    hasAccess = 1;
+    expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+  } else if (period === '6_months') {
+    hasAccess = 1;
+    expiresAt = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString();
+  } else if (period === 'unlimited' || period === 'lifetime' || period === null) {
+    hasAccess = 1;
+    expiresAt = null;
+  } else {
+    hasAccess = 1;
+    expiresAt = period;
+  }
+
+  await run(
+    `UPDATE users SET has_access = ?, access_expires_at = ? WHERE id = ?`,
+    [hasAccess, expiresAt, userId]
+  );
+
+  return { hasAccess: !!hasAccess, accessExpiresAt: expiresAt };
 }
 
 export async function deleteUser(userId) {
@@ -196,7 +233,7 @@ export async function deleteUser(userId) {
 
 export async function getAllUsers() {
   return await all(
-    `SELECT id, username, full_name, role, has_access, phone, device_id, last_login, created_at FROM users ORDER BY id DESC`
+    `SELECT id, username, full_name, role, has_access, access_expires_at, phone, device_id, last_login, created_at FROM users ORDER BY id DESC`
   );
 }
 
@@ -286,6 +323,7 @@ export default {
   updateUserSession,
   resetUserDevice,
   toggleUserAccess,
+  setUserAccessPeriod,
   deleteUser,
   getAllUsers,
   getSetting,

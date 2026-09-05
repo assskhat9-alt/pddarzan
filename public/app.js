@@ -343,11 +343,12 @@ const app = {
     this.updateUserUI();
 
     if (this.currentTest) {
-      document.getElementById('testProgressIndicator').textContent = `${this.t('questionWord')}: ${this.currentTest.currentIndex + 1} / 40`;
+      const totalQ = this.currentTest.isDemo ? 5 : 40;
+      document.getElementById('testProgressIndicator').textContent = `${this.t('questionWord')}: ${this.currentTest.currentIndex + 1} / ${totalQ}`;
       document.getElementById('qNumberDisplay').textContent = `${this.t('questionWord')} № ${this.currentTest.currentIndex + 1}`;
       const badgeTestMode = document.getElementById('badgeTestModeText');
       if (badgeTestMode) {
-        badgeTestMode.textContent = this.currentTest.isTimed ? this.t('testModeBadgeTimed') : this.t('testModeBadgeUntimed');
+        badgeTestMode.textContent = this.currentTest.isDemo ? 'ДЕМО-ТЕСТ (5 СҰРАҚ)' : (this.currentTest.isTimed ? this.t('testModeBadgeTimed') : this.t('testModeBadgeUntimed'));
       }
     }
   },
@@ -520,8 +521,14 @@ const app = {
 
   // Navigation
   navigate(viewName) {
-    // Gating for unapproved users
-    if ((viewName === 'study' || viewName === 'test') && this.currentUser && this.currentUser.role !== 'admin' && !this.currentUser.hasAccess) {
+    // If not logged in and not on a public view (auth, demo test, result), redirect to auth
+    if (!this.currentUser && viewName !== 'auth' && viewName !== 'test' && viewName !== 'result') {
+      viewName = 'auth';
+    }
+
+    // Gating for unapproved users (unless it is an active demo test)
+    const isDemoActive = (this.currentTest && this.currentTest.isDemo);
+    if ((viewName === 'study' || (viewName === 'test' && !isDemoActive)) && this.currentUser && this.currentUser.role !== 'admin' && !this.currentUser.hasAccess) {
       this.openPaywallModal();
       return;
     }
@@ -750,6 +757,7 @@ const app = {
     const navAvatar = document.getElementById('navAvatar');
     const dashGreeting = document.getElementById('dashUserGreeting');
     const navLinkAdmin = document.getElementById('navLinkAdmin');
+    const subBadge = document.getElementById('dashSubscriptionBadge');
 
     const isAdmin = this.currentUser.role === 'admin';
     const roleBadge = isAdmin ? ' 👑 (Әкімші)' : '';
@@ -757,6 +765,41 @@ const app = {
     if (navFullName) navFullName.textContent = (this.currentUser.fullName || this.currentUser.username) + roleBadge;
     if (navAvatar) navAvatar.textContent = (this.currentUser.fullName || this.currentUser.username)[0].toUpperCase();
     if (dashGreeting) dashGreeting.textContent = `${this.t('welcome')}, ${this.currentUser.fullName || this.currentUser.username}!`;
+
+    if (subBadge) {
+      if (isAdmin) {
+        subBadge.innerHTML = `<span style="color:#fbbf24;">👑 Бас әкімші аккаунты (Шектеусіз толық құқық)</span>`;
+        subBadge.style.background = 'rgba(245, 158, 11, 0.15)';
+        subBadge.style.border = '1px solid rgba(245, 158, 11, 0.3)';
+        subBadge.classList.remove('hidden');
+      } else if (this.currentUser.hasAccess) {
+        if (this.currentUser.accessExpiresAt) {
+          const expDate = new Date(this.currentUser.accessExpiresAt);
+          const diffMs = expDate.getTime() - Date.now();
+          const diffDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+          const dateFmt = expDate.toLocaleDateString('kk-KZ', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          subBadge.innerHTML = `<span style="color:#34d399;">🟢 Доступ белсенді: <strong>${dateFmt}</strong> дейін (қалғаны: <strong>${diffDays} күн</strong>)</span>`;
+          subBadge.style.background = 'rgba(16, 185, 129, 0.15)';
+          subBadge.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+        } else {
+          subBadge.innerHTML = `<span style="color:#34d399;">♾️ Доступ белсенді (Шектеусіз мерзім)</span>`;
+          subBadge.style.background = 'rgba(16, 185, 129, 0.15)';
+          subBadge.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+        }
+        subBadge.classList.remove('hidden');
+      } else if (this.currentUser.isExpired) {
+        const expDate = this.currentUser.accessExpiresAt ? new Date(this.currentUser.accessExpiresAt).toLocaleDateString('kk-KZ', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
+        subBadge.innerHTML = `<span style="color:#f87171;">⚠️ Доступ мерзімі аяқталған (${expDate})</span>`;
+        subBadge.style.background = 'rgba(239, 68, 68, 0.15)';
+        subBadge.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+        subBadge.classList.remove('hidden');
+      } else {
+        subBadge.innerHTML = `<span style="color:#94a3b8;">🔒 Қолжетімділік құлыпталған</span>`;
+        subBadge.style.background = 'rgba(148, 163, 184, 0.15)';
+        subBadge.style.border = '1px solid rgba(148, 163, 184, 0.3)';
+        subBadge.classList.remove('hidden');
+      }
+    }
 
     if (navLinkAdmin) {
       navLinkAdmin.classList.toggle('hidden', !isAdmin);
@@ -792,7 +835,18 @@ const app = {
     // Toggle Locked Paywall Banner
     const isLocked = this.currentUser && this.currentUser.role !== 'admin' && !this.currentUser.hasAccess;
     const lockedBanner = document.getElementById('lockedAccountBanner');
-    if (lockedBanner) lockedBanner.classList.toggle('hidden', !isLocked);
+    if (lockedBanner) {
+      lockedBanner.classList.toggle('hidden', !isLocked);
+      const lockedDesc = lockedBanner.querySelector('.locked-desc');
+      const lockedTitle = lockedBanner.querySelector('.locked-title');
+      if (this.currentUser && this.currentUser.isExpired) {
+        if (lockedTitle) lockedTitle.textContent = 'Сіздің қолжетімділік (доступ) мерзіміңіз аяқталды';
+        if (lockedDesc) lockedDesc.textContent = 'Бұған дейін берілген 1 айлық / 3 айлық / 6 айлық доступ мерзімі бітті. Базаны қайта ашу немесе ұзарту үшін WhatsApp арқылы әкімшіге хабарласыңыз.';
+      } else if (lockedTitle && lockedDesc) {
+        lockedTitle.textContent = 'Платформа функцияларын толық пайдалану үшін доступ сатып алыңыз';
+        lockedDesc.textContent = '1103 сұрақтың толық ресми базасы, 40 сұрақтан тұратын емтихан және жаттау тренажеры тек әкімші рұқсатымен ашылады.';
+      }
+    }
 
     this.checkAndPromptActiveTest();
     await this.loadHistory();
@@ -910,7 +964,11 @@ const app = {
     if (test && test.questions && test.questions.length > 0) {
       const answeredCount = Object.keys(test.userAnswers || {}).length;
       let timeStr = '';
-      if (test.isTimed) {
+      if (test.isDemo) {
+        const mins = Math.floor(test.timeRemaining / 60);
+        const secs = test.timeRemaining % 60;
+        timeStr = `Қалған уақыт: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')} (🎯 Демо)`;
+      } else if (test.isTimed) {
         const mins = Math.floor(test.timeRemaining / 60);
         const secs = test.timeRemaining % 60;
         timeStr = `Қалған уақыт: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')} (⏱️ 40 мин)`;
@@ -920,9 +978,10 @@ const app = {
         timeStr = `Жұмсалған уақыт: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')} (♾️ Шектеусіз)`;
       }
 
+      const totalQ = test.isDemo ? 5 : 40;
       const metaText = document.getElementById('activeTestMetaText');
       if (metaText) {
-        metaText.textContent = `${timeStr} | Жауап берілгені: ${answeredCount} / 40 сұрақ`;
+        metaText.textContent = `${timeStr} | Жауап берілгені: ${answeredCount} / ${totalQ} сұрақ`;
       }
       banner.classList.remove('hidden');
     } else {
@@ -952,9 +1011,10 @@ const app = {
         timeInfo = `Жұмсалған уақыт: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')} (Шектеусіз)`;
       }
 
+      const totalQ = this.currentTest.isDemo ? 5 : 40;
       const statsInfo = document.getElementById('pauseStatsInfo');
       if (statsInfo) {
-        statsInfo.textContent = `${timeInfo} | Жауап берілгені: ${answeredCount} / 40`;
+        statsInfo.textContent = `${timeInfo} | Жауап берілгені: ${answeredCount} / ${totalQ}`;
       }
       const pauseModal = document.getElementById('pauseModal');
       if (pauseModal) pauseModal.classList.remove('hidden');
@@ -1048,6 +1108,49 @@ const app = {
 
   // ================= TEST MODE =================
 
+  async startDemoTest() {
+    // Check if there is already an unfinished test
+    if (this.currentTest || this.loadActiveTestState()) {
+      if (!confirm('Сізде аяқталмаған тест бар. Оны өшіріп, демо-тестті бастағыңыз келе ме?')) {
+        this.resumeTest();
+        return;
+      }
+      this.clearActiveTestState();
+      this.currentTest = null;
+    }
+
+    try {
+      const { ok, data } = await this.apiFetch(`/api/test/demo?lang=${this.questionLang}`);
+      if (!ok) {
+        if (data.error) alert(data.error);
+        return;
+      }
+
+      this.currentTest = {
+        sessionId: data.testSessionId,
+        questions: data.questions,
+        currentIndex: 0,
+        userAnswers: {},
+        bookmarks: new Set(),
+        isTimed: true,
+        isDemo: true,
+        timeRemaining: 5 * 60,
+        elapsedSeconds: 0,
+        startTime: Date.now()
+      };
+      this.isPaused = false;
+
+      this.saveActiveTestState();
+      this.navigate('test');
+      this.initPalette();
+      this.renderQuestion(0);
+      this.startTimer();
+      this.updateLanguageButtons();
+    } catch (err) {
+      alert(err.message);
+    }
+  },
+
   async startNewTest() {
     // Paywall check
     if (this.currentUser && this.currentUser.role !== 'admin' && !this.currentUser.hasAccess) {
@@ -1103,7 +1206,11 @@ const app = {
     const timerIcon = document.getElementById('timerIcon');
     const badgeTestMode = document.getElementById('badgeTestModeText');
 
-    if (this.currentTest.isTimed) {
+    if (this.currentTest.isDemo) {
+      if (timerIcon) timerIcon.textContent = '🎯';
+      if (badgeTestMode) badgeTestMode.textContent = 'ДЕМО-ТЕСТ (5 СҰРАҚ)';
+      if (timerBadge) timerBadge.classList.remove('timer-danger');
+    } else if (this.currentTest.isTimed) {
       if (timerIcon) timerIcon.textContent = '⏳';
       if (badgeTestMode) badgeTestMode.textContent = this.t('testModeBadgeTimed');
     } else {
@@ -1160,7 +1267,8 @@ const app = {
   initPalette() {
     const grid = document.getElementById('paletteGrid');
     grid.innerHTML = '';
-    for (let i = 0; i < 40; i++) {
+    const totalQ = (this.currentTest && this.currentTest.isDemo) ? 5 : 40;
+    for (let i = 0; i < totalQ; i++) {
       const btn = document.createElement('button');
       btn.className = 'pal-btn';
       btn.id = `palBtn_${i}`;
@@ -1172,7 +1280,8 @@ const app = {
 
   updatePalette() {
     if (!this.currentTest) return;
-    for (let i = 0; i < 40; i++) {
+    const totalQ = this.currentTest.isDemo ? 5 : 40;
+    for (let i = 0; i < totalQ; i++) {
       const btn = document.getElementById(`palBtn_${i}`);
       if (!btn) continue;
 
@@ -1192,10 +1301,11 @@ const app = {
     if (!this.currentTest || !this.currentTest.questions[index]) return;
     this.currentTest.currentIndex = index;
     const q = this.currentTest.questions[index];
+    const totalQ = (this.currentTest && this.currentTest.isDemo) ? 5 : 40;
 
     const langData = q[this.questionLang] || q.kk || q.ru || q;
 
-    document.getElementById('testProgressIndicator').textContent = `${this.t('questionWord')}: ${index + 1} / 40`;
+    document.getElementById('testProgressIndicator').textContent = `${this.t('questionWord')}: ${index + 1} / ${totalQ}`;
     document.getElementById('qNumberDisplay').textContent = `${this.t('questionWord')} № ${index + 1}`;
 
     const isBookmarked = this.currentTest.bookmarks.has(index);
@@ -1242,7 +1352,7 @@ const app = {
     }
 
     document.getElementById('btnPrevQuestion').disabled = (index === 0);
-    document.getElementById('btnNextQuestion').disabled = (index === 39);
+    document.getElementById('btnNextQuestion').disabled = (index === totalQ - 1);
 
     this.updatePalette();
     this.updateLanguageButtons();
@@ -1275,16 +1385,18 @@ const app = {
   },
 
   nextQuestion() {
-    if (!this.currentTest || this.currentTest.currentIndex >= 39) return;
+    const totalQ = (this.currentTest && this.currentTest.isDemo) ? 5 : 40;
+    if (!this.currentTest || this.currentTest.currentIndex >= totalQ - 1) return;
     this.renderQuestion(this.currentTest.currentIndex + 1);
     this.saveActiveTestState();
   },
 
   confirmFinishTest() {
+    const totalQ = (this.currentTest && this.currentTest.isDemo) ? 5 : 40;
     const answeredCount = Object.keys(this.currentTest.userAnswers).length;
     let message = this.t('confirmFinish');
-    if (answeredCount < 40) {
-      message = `Сіз 40 сұрақтың тек ${answeredCount}-не жауап бердіңіз. Қалған ${40 - answeredCount} сұрақ қате деп есептеледі.\n\nТестті аяқтауды растайсыз ба?`;
+    if (answeredCount < totalQ) {
+      message = `Сіз ${totalQ} сұрақтың тек ${answeredCount}-не жауап бердіңіз. Қалған ${totalQ - answeredCount} сұрақ қате деп есептеледі.\n\nТестті аяқтауды растайсыз ба?`;
     }
     if (confirm(message)) {
       this.submitTest();
@@ -1295,8 +1407,11 @@ const app = {
     if (!this.currentTest) return;
     if (this.timerInterval) clearInterval(this.timerInterval);
 
+    const isDemo = !!(this.currentTest && this.currentTest.isDemo);
+    const maxTime = isDemo ? (5 * 60) : (40 * 60);
+
     const timeSpentSeconds = this.currentTest.isTimed
-      ? Math.max(1, (40 * 60) - this.currentTest.timeRemaining)
+      ? Math.max(1, maxTime - this.currentTest.timeRemaining)
       : Math.max(1, this.currentTest.elapsedSeconds || Math.round((Date.now() - this.currentTest.startTime) / 1000));
 
     const answersPayload = this.currentTest.questions.map((q, idx) => ({
@@ -1304,8 +1419,10 @@ const app = {
       selectedIndex: this.currentTest.userAnswers[idx] !== undefined ? this.currentTest.userAnswers[idx] : -1
     }));
 
+    const endpoint = isDemo ? '/api/test/demo-submit' : '/api/test/submit';
+
     try {
-      const { ok, data } = await this.apiFetch('/api/test/submit', {
+      const { ok, data } = await this.apiFetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1350,24 +1467,78 @@ const app = {
     const badgeEl = document.getElementById('resultStatusBadge');
     const iconEl = document.getElementById('resultStatusIcon');
     const msgEl = document.getElementById('resultMessage');
+    const totalEl = document.getElementById('resultTotal');
+
+    const totalQ = data.totalQuestions || 40;
+    if (totalEl) {
+      totalEl.textContent = data.isDemo ? `/ ${totalQ} сұрақ (Демо)` : `/ ${totalQ} сұрақ`;
+    }
 
     scoreEl.textContent = data.score;
     scoreEl.className = `result-score ${isPassed ? 'passed' : 'failed'}`;
 
-    badgeEl.textContent = isPassed ? this.t('passedTitle') : this.t('failedTitle');
-    badgeEl.className = `result-badge ${isPassed ? 'passed' : 'failed'}`;
-
-    iconEl.textContent = isPassed ? '🎉' : '❌';
-    msgEl.textContent = isPassed ? this.t('passedMsg') : this.t('failedMsg');
+    if (data.isDemo) {
+      badgeEl.textContent = isPassed ? 'ДЕМО-ТЕСТ АЯҚТАЛДЫ (СӘТТІ)' : 'ДЕМО-ТЕСТ АЯҚТАЛДЫ';
+      badgeEl.className = `result-badge ${isPassed ? 'passed' : 'failed'}`;
+      iconEl.textContent = isPassed ? '🎉' : '💡';
+      msgEl.textContent = isPassed
+        ? `Құттықтаймыз! Сіз 5 сұрақтық демо-тесттен сәтті өттіңіз (${data.score}/${totalQ}). Барлық 1103 сұраққа қол жеткізіп, нағыз емтиханға толық дайындалу үшін WhatsApp арқылы толық нұсқаны сатып алыңыз!`
+        : `Сіз демо-тесттен 5 сұрақтың ${data.score}-не дұрыс жауап бердіңіз. Платформадағы барлық 1103 сұрақты қазақ/орыс тілдерінде оқып, емтиханды 100% тапсыру үшін толық қолжетімділікке тапсырыс беріңіз!`;
+    } else {
+      badgeEl.textContent = isPassed ? this.t('passedTitle') : this.t('failedTitle');
+      badgeEl.className = `result-badge ${isPassed ? 'passed' : 'failed'}`;
+      iconEl.textContent = isPassed ? '🎉' : '❌';
+      msgEl.textContent = isPassed ? this.t('passedMsg') : this.t('failedMsg');
+    }
 
     document.getElementById('resultPercentage').textContent = `${data.percentage}%`;
     document.getElementById('resultCorrectCount').textContent = data.score;
-    document.getElementById('resultWrongCount').textContent = data.totalQuestions - data.score;
+    document.getElementById('resultWrongCount').textContent = totalQ - data.score;
 
     const mins = Math.floor(data.timeSpentSeconds / 60);
     const secs = data.timeSpentSeconds % 60;
-    const modeNote = (data.timed === false) ? ' (Уақытсыз режим)' : ' (40 мин)';
+    const modeNote = data.isDemo ? ' (Демо 5 мин)' : ((data.timed === false) ? ' (Уақытсыз режим)' : ' (40 мин)');
     document.getElementById('resultTimeSpent').textContent = `${mins} мин ${secs} сек${modeNote}`;
+
+    // Actions button config
+    const actionsContainer = document.getElementById('resultActions');
+    const userHasAccess = (this.currentUser && (this.currentUser.role === 'admin' || this.currentUser.hasAccess));
+    if (actionsContainer) {
+      if (data.isDemo || !userHasAccess) {
+        actionsContainer.innerHTML = `
+          <button class="btn btn-emerald btn-lg" style="background: linear-gradient(135deg, #25D366, #128C7E); border:none; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.4);" onclick="app.openWhatsAppPurchase()">
+            <span style="font-size:1.3rem">💬</span>
+            <span>Толық қолжетімділік алу (WhatsApp)</span>
+          </button>
+          <button class="btn btn-primary btn-lg" onclick="app.startDemoTest()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 3"></polygon></svg>
+            <span>Демо-тестті қайта тапсыру</span>
+          </button>
+          <button class="btn btn-secondary btn-lg" onclick="app.navigate('dashboard')">
+            <span>Жеке кабинетке оралу</span>
+          </button>
+        `;
+      } else {
+        actionsContainer.innerHTML = `
+          <button class="btn btn-emerald btn-lg" onclick="app.startNewTest()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 3"></polygon></svg>
+            <span>Қайтадан жаңа тест тапсыру</span>
+          </button>
+          <button class="btn btn-secondary btn-lg" onclick="app.navigate('dashboard')">
+            <span>Жеке кабинетке оралу</span>
+          </button>
+        `;
+      }
+    }
+
+    const reviewTitleEl = document.getElementById('lblReviewTitle');
+    if (reviewTitleEl) {
+      reviewTitleEl.textContent = data.isDemo ? `Демо-тест: Барлық ${totalQ} сұрақ пен жауаптар` : `Барлық ${totalQ} сұрақ пен қателерді талдау`;
+    }
+    const filterAllBtn = document.getElementById('btnFilterAll');
+    if (filterAllBtn) {
+      filterAllBtn.textContent = `Барлығы (${totalQ})`;
+    }
 
     this.renderReviewList();
     this.updateLanguageButtons();
@@ -1867,10 +2038,35 @@ const app = {
       const hasDevice = !!u.device_id;
       const dateStr = new Date(u.created_at).toLocaleDateString('kk-KZ', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
-      let statusBadge = hasAccess 
-        ? `<span class="badge-access-yes">🟢 Рұқсат бар</span>` 
-        : `<span class="badge-access-no">🔒 Құлыпталған</span>`;
-      if (isAdmin) statusBadge += ` <small style="color:#fbbf24;font-weight:700;">(Әкімші)</small>`;
+      let statusBadge = '';
+      if (isAdmin) {
+        statusBadge = `<span class="badge-access-yes">🟢 Әкімші</span>`;
+      } else if (hasAccess) {
+        if (u.access_expires_at) {
+          const expDate = new Date(u.access_expires_at);
+          const diffMs = expDate.getTime() - Date.now();
+          const diffDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+          const dateFmt = expDate.toLocaleDateString('kk-KZ', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          statusBadge = `
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <span class="badge-access-yes" style="font-size:0.75rem;">🟢 Белсенді (${diffDays} күн қалды)</span>
+              <span class="text-muted" style="font-size:0.72rem;">${dateFmt} дейін</span>
+            </div>
+          `;
+        } else {
+          statusBadge = `<span class="badge-access-yes">🟢 Шектеусіз</span>`;
+        }
+      } else if (u.is_expired) {
+        const expDate = u.access_expires_at ? new Date(u.access_expires_at).toLocaleDateString('kk-KZ', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
+        statusBadge = `
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <span class="badge-access-no" style="background:rgba(239,68,68,0.2);color:#fca5a5;font-size:0.75rem;">⚠️ Мерзімі біткен</span>
+            <span class="text-muted" style="font-size:0.72rem;">${expDate}</span>
+          </div>
+        `;
+      } else {
+        statusBadge = `<span class="badge-access-no">🔒 Құлыпталған</span>`;
+      }
 
       let deviceBadge = hasDevice 
         ? `<span class="badge-device">📱 Байланысқан</span>` 
@@ -1888,8 +2084,8 @@ const app = {
           <td>
             <div style="display:flex;gap:4px;flex-wrap:wrap;">
               ${!isAdmin ? `
-                <button class="btn ${hasAccess ? 'btn-secondary' : 'btn-emerald'} btn-sm" onclick="app.toggleUserAccess(${u.id}, ${hasAccess ? 0 : 1})" title="${hasAccess ? 'Доступты жабу' : 'Доступ беру'}">
-                  <span>${hasAccess ? '🔒 Жабу' : '🔓 Ашу'}</span>
+                <button class="btn btn-emerald btn-sm" onclick="app.openAccessPeriodModal(${u.id}, '${encodeURIComponent(u.username)}', '${encodeURIComponent(u.full_name)}', ${hasAccess}, '${u.access_expires_at || ''}')" title="Доступ мерзімін белгілеу (1 ай / 3 ай / 6 ай / шектеусіз)">
+                  <span>⏱️ Доступ / Мерзім</span>
                 </button>
               ` : ''}
               ${hasDevice ? `
@@ -1929,14 +2125,14 @@ const app = {
     const username = document.getElementById('adminNewUsername').value.trim().toLowerCase();
     const password = document.getElementById('adminNewPassword').value;
     const phone = document.getElementById('adminNewPhone').value.trim();
-    const has_access = document.getElementById('adminNewHasAccess').checked;
+    const access_period = document.getElementById('adminNewAccessPeriod') ? document.getElementById('adminNewAccessPeriod').value : '1_month';
     const alertBox = document.getElementById('adminCreateAlert');
 
     try {
       const { ok, data } = await this.apiFetch('/api/admin/user/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ full_name, username, password, phone, has_access })
+        body: JSON.stringify({ full_name, username, password, phone, access_period })
       });
 
       if (!ok) {
@@ -1947,11 +2143,13 @@ const app = {
       }
 
       alertBox.className = 'alert-box success';
-      alertBox.textContent = `Пайдаланушы «${username}» сәтті қосылды! ${has_access ? 'Толық доступ берілді.' : ''}`;
+      alertBox.textContent = `Пайдаланушы «${username}» сәтті қосылды!`;
       alertBox.classList.remove('hidden');
 
       document.getElementById('adminCreateUserForm').reset();
-      document.getElementById('adminNewHasAccess').checked = true;
+      if (document.getElementById('adminNewAccessPeriod')) {
+        document.getElementById('adminNewAccessPeriod').value = '1_month';
+      }
       this.loadAdminUsers();
 
       setTimeout(() => alertBox.classList.add('hidden'), 4000);
@@ -1959,6 +2157,68 @@ const app = {
       alertBox.className = 'alert-box error';
       alertBox.textContent = 'Қате: ' + err.message;
       alertBox.classList.remove('hidden');
+    }
+  },
+
+  // Access Period Modal Methods
+  openAccessPeriodModal(userId, encUsername, encFullName, hasAccess, expiresAtStr) {
+    this.activeAccessUserId = userId;
+    const username = decodeURIComponent(encUsername);
+    const fullName = decodeURIComponent(encFullName);
+
+    const titleEl = document.getElementById('accessModalUserTitle');
+    const subEl = document.getElementById('accessModalUserSub');
+    const statusEl = document.getElementById('accessModalCurrentStatus');
+
+    if (titleEl) titleEl.textContent = `«${fullName}» (${username})`;
+    if (subEl) subEl.textContent = 'Қолжетімділік мерзімін (доступ) таңдаңыз:';
+
+    if (statusEl) {
+      if (hasAccess) {
+        if (expiresAtStr) {
+          const expDate = new Date(expiresAtStr);
+          const diffMs = expDate.getTime() - Date.now();
+          const diffDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+          const dateFmt = expDate.toLocaleDateString('kk-KZ', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          statusEl.innerHTML = `Қазіргі күйі: <strong style="color:#34d399;">🟢 Белсенді</strong> (${dateFmt} дейін, қалғаны: <strong>${diffDays} күн</strong>)`;
+        } else {
+          statusEl.innerHTML = `Қазіргі күйі: <strong style="color:#34d399;">🟢 Шектеусіз (Мерзімсіз)</strong>`;
+        }
+      } else {
+        statusEl.innerHTML = `Қазіргі күйі: <strong style="color:#f87171;">🔒 Құлыпталған (Доступ жоқ)</strong>`;
+      }
+    }
+
+    const modal = document.getElementById('accessPeriodModal');
+    if (modal) modal.classList.remove('hidden');
+  },
+
+  closeAccessPeriodModal() {
+    this.activeAccessUserId = null;
+    const modal = document.getElementById('accessPeriodModal');
+    if (modal) modal.classList.add('hidden');
+  },
+
+  async submitUserAccessPeriod(period) {
+    if (!this.activeAccessUserId) return;
+    const userId = this.activeAccessUserId;
+
+    try {
+      const { ok, data } = await this.apiFetch('/api/admin/user/set-access', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, period })
+      });
+
+      if (!ok) {
+        alert(data.error || 'Қате орын алды');
+        return;
+      }
+
+      this.closeAccessPeriodModal();
+      this.loadAdminUsers();
+    } catch (err) {
+      alert('Қате: ' + err.message);
     }
   },
 

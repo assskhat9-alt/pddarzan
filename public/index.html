@@ -7,7 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="format-detection" content="telephone=no">
-  <title>ПДД Онлайн Тест Платформасы (1103 Сұрақ)</title>
+  <title>ПДД Онлайн Тест Платформасы (1103 Сұрақ) - ҚР Жол Жүрісі Қағидалары</title>
+  <meta name="description" content="Қазақстан Республикасының Жол жүрісі қағидалары (ПДД РК) бойынша 1103 ресми сұрақтан тұратын жүргізуші куәлігін алу емтиханына онлайн дайындық платформасы. 40 сұрақтық ресми емтихан, жаттау тренажеры, қазақ және орыс тілдерінде.">
+  <meta name="keywords" content="ПДД РК, Жол ережелері емтихан, ПДД тест 1103 сұрақ, автоЦОН емтихан, тест пдд казахстан">
+  <meta property="og:title" content="ПДД Онлайн Тест Платформасы (1103 Ресми Сұрақ)">
+  <meta property="og:description" content="ҚР ПДД ресми сұрақтарымен емтиханға толық дайындық. Демо-тест қолжетімді.">
+  <meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
@@ -94,6 +99,20 @@
             <p class="auth-desc" id="authDescText">ҚР Жол жүрісі қағидалары бойынша дайындық тесті (40 сұрақ)</p>
           </div>
 
+          <!-- Demo Test Quick Preview for AI, Reviewers & Visitors -->
+          <div class="auth-demo-preview" style="background: linear-gradient(135deg, rgba(37,99,235,0.12), rgba(16,185,129,0.12)); border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; padding: 14px; margin-bottom: 16px; text-align: center;">
+            <div style="font-size: 0.82rem; font-weight: 700; color: #60a5fa; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">
+              💡 Платформамен танысу (Тегін Демо)
+            </div>
+            <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 12px; line-height: 1.4;">
+              Платформаның ресми сұрақтары мен интерфейсін тексеру үшін тіркелусіз <strong>5 сұрақтық демо-тестті</strong> тапсырып көріңіз:
+            </p>
+            <button type="button" class="btn btn-secondary btn-block" style="background: rgba(59,130,246,0.25); border-color: #3b82f6; color: #93c5fd; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="app.startDemoTest()">
+              <span>🎯 Демо-тестті көру (5 сұрақ)</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 3"></polygon></svg>
+            </button>
+          </div>
+
           <!-- Auth Tabs -->
           <div class="auth-tabs">
             <button class="auth-tab active" id="tabLoginBtn" onclick="app.switchAuthTab('login')">Кіру</button>
@@ -177,11 +196,21 @@
             </div>
             <h3 class="locked-title">Платформа функцияларын толық пайдалану үшін доступ сатып алыңыз</h3>
             <p class="locked-desc">1103 сұрақтың толық ресми базасы, 40 сұрақтан тұратын емтихан және жаттау тренажеры тек әкімші рұқсатымен ашылады.</p>
+            <div class="demo-test-callout">
+              <span class="demo-tag">💡 ТАНЫСУ РЕЖИМІ:</span>
+              <span>Платформаның қалай жұмыс істейтінін көру үшін 5 сұрақтан тұратын <strong>ТЕГІН ДЕМО-ТЕСТТІ</strong> тапсырып көре аласыз!</span>
+            </div>
           </div>
-          <button class="btn btn-whatsapp btn-md" onclick="app.openWhatsAppPurchase()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.173.086.275.073.376-.043.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.099.824zm-3.423-14.416c-6.627 0-12 5.373-12 12 0 2.159.57 4.187 1.564 5.945l-1.656 6.055 6.223-1.633c1.706.924 3.655 1.455 5.727 1.455 6.627 0 12-5.373 12-12 0-6.627-5.373-12-12-12z"/></svg>
-            <span>WhatsApp арқылы доступ сатып алу</span>
-          </button>
+          <div class="locked-banner-actions">
+            <button class="btn btn-emerald btn-md" onclick="app.startDemoTest()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span>🎯 Демо-тест (5 сұрақ)</span>
+            </button>
+            <button class="btn btn-whatsapp btn-md" onclick="app.openWhatsAppPurchase()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.173.086.275.073.376-.043.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.099.824zm-3.423-14.416c-6.627 0-12 5.373-12 12 0 2.159.57 4.187 1.564 5.945l-1.656 6.055 6.223-1.633c1.706.924 3.655 1.455 5.727 1.455 6.627 0 12-5.373 12-12 0-6.627-5.373-12-12-12z"/></svg>
+              <span>WhatsApp арқылы доступ алу</span>
+            </button>
+          </div>
         </div>
 
         <!-- In-progress / Paused Test Alert Banner -->
@@ -213,6 +242,7 @@
           <div class="hero-text">
             <div class="welcome-chip">Қош келдіңіз!</div>
             <h1 class="hero-title" id="dashUserGreeting">Сәлеметсіз бе, Марат!</h1>
+            <div id="dashSubscriptionBadge" style="display:inline-flex; align-items:center; gap:6px; margin: 4px 0 10px 0; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;"></div>
             <p class="hero-desc">ҚР АвтоЦОН емтихан форматындағы кездейсоқ 40 сұрақтан тұратын мини-тестке дайынсыз ба?</p>
           </div>
           <div class="hero-action">
@@ -504,7 +534,7 @@
           
           <div class="result-score-wrap">
             <div class="result-score" id="resultScore">36</div>
-            <div class="result-total">/ 40 сұрақ</div>
+            <div class="result-total" id="resultTotal">/ 40 сұрақ</div>
           </div>
 
           <p class="result-msg" id="resultMessage">Құттықтаймыз! Сіз ҚР Жол ережесі бойынша емтиханнан сәтті өттіңіз.</p>
@@ -528,10 +558,10 @@
             </div>
           </div>
 
-          <div class="result-actions">
-            <button class="btn btn-emerald btn-lg" onclick="app.startNewTest()">
+          <div class="result-actions" id="resultActions">
+            <button class="btn btn-emerald btn-lg" id="btnResultRetake" onclick="app.startNewTest()">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 3"></polygon></svg>
-              <span>Қайтадан жаңа тест тапсыру</span>
+              <span id="btnResultRetakeText">Қайтадан жаңа тест тапсыру</span>
             </button>
             <button class="btn btn-secondary btn-lg" onclick="app.navigate('dashboard')">
               <span>Жеке кабинетке оралу</span>
@@ -777,11 +807,15 @@
                 <label for="adminNewPhone">Телефон / WhatsApp (қалауыңыз бойынша)</label>
                 <input type="text" id="adminNewPhone" placeholder="+7 707 123 4567">
               </div>
-              <div class="form-group checkbox-group">
-                <label class="custom-checkbox-label">
-                  <input type="checkbox" id="adminNewHasAccess" checked>
-                  <span><strong>Толық қолжетімділік (Доступ) бірден қосылсын</strong></span>
-                </label>
+              <div class="form-group">
+                <label for="adminNewAccessPeriod"><strong>Қолжетімділік мерзімі (Доступ):</strong></label>
+                <select id="adminNewAccessPeriod" class="form-select" style="width: 100%; padding: 10px 12px; border-radius: 8px; background: rgba(15, 23, 42, 0.8); border: 1px solid #334155; color: #f8fafc; font-size: 0.92rem;">
+                  <option value="1_month" selected>🟢 1 айға ашу (30 күн) — Стандарт</option>
+                  <option value="3_months">🔵 3 айға ашу (90 күн)</option>
+                  <option value="6_months">🟣 6 айға ашу (180 күн)</option>
+                  <option value="unlimited">♾️ Шектеусіз (Мерзімсіз доступ)</option>
+                  <option value="revoke">🔒 Доступсыз (Құлыптаулы күйде сақтау)</option>
+                </select>
               </div>
               <button type="submit" class="btn btn-emerald btn-block" id="btnAdminCreate">
                 <span>Пайдаланушыны сақтау және доступ беру</span>
@@ -916,11 +950,48 @@
     </div>
   </div>
 
-  <!-- IMAGE ZOOM MODAL -->
-  <div id="imageModal" class="modal-overlay hidden" onclick="app.closeImageModal()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <button class="modal-close-btn" onclick="app.closeImageModal()">&times;</button>
-      <img id="modalImg" src="" alt="Үлкейтілген сурет">
+  <!-- ACCESS PERIOD SELECTOR MODAL -->
+  <div id="accessPeriodModal" class="modal-overlay hidden" onclick="if(event.target===this)app.closeAccessPeriodModal()">
+    <div class="modal-content" style="max-width: 480px; text-align: left; padding: 24px;" onclick="event.stopPropagation()">
+      <button class="modal-close-btn" onclick="app.closeAccessPeriodModal()">&times;</button>
+      <div style="font-size: 0.8rem; font-weight: 700; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">⏱️ ҚОЛЖЕТІМДІЛІКТІ БАСҚАРУ</div>
+      <h3 style="margin: 0 0 6px 0; font-size: 1.25rem;" id="accessModalUserTitle">Пайдаланушыға доступ беру</h3>
+      <p style="margin: 0 0 16px 0; font-size: 0.88rem; color: #94a3b8;" id="accessModalUserSub">Төмендегі мерзімдердің бірін таңдаңыз:</p>
+
+      <div id="accessModalCurrentStatus" style="padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; border-radius: 8px; font-size: 0.88rem; margin-bottom: 16px;"></div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="btn btn-emerald btn-block" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; font-size: 0.95rem;" onclick="app.submitUserAccessPeriod('1_month')">
+          <span>🟢 <strong>1 айға ашу</strong></span>
+          <span style="font-size: 0.82rem; background: rgba(0,0,0,0.25); padding: 3px 8px; border-radius: 12px;">+30 күн</span>
+        </button>
+
+        <button class="btn btn-primary btn-block" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; font-size: 0.95rem;" onclick="app.submitUserAccessPeriod('3_months')">
+          <span>🔵 <strong>3 айға ашу</strong></span>
+          <span style="font-size: 0.82rem; background: rgba(0,0,0,0.25); padding: 3px 8px; border-radius: 12px;">+90 күн</span>
+        </button>
+
+        <button class="btn btn-primary btn-block" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; font-size: 0.95rem; background: #6366f1; border-color: #6366f1;" onclick="app.submitUserAccessPeriod('6_months')">
+          <span>🟣 <strong>6 айға ашу</strong></span>
+          <span style="font-size: 0.82rem; background: rgba(0,0,0,0.25); padding: 3px 8px; border-radius: 12px;">+180 күн</span>
+        </button>
+
+        <button class="btn btn-secondary btn-block" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; font-size: 0.95rem;" onclick="app.submitUserAccessPeriod('unlimited')">
+          <span>♾️ <strong>Шектеусіз (Мерзімсіз)</strong></span>
+          <span style="font-size: 0.82rem; background: rgba(0,0,0,0.25); padding: 3px 8px; border-radius: 12px;">Мәңгілік</span>
+        </button>
+
+        <hr style="border: 0; border-top: 1px solid #334155; margin: 6px 0;">
+
+        <button class="btn btn-outline-danger btn-block" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; font-size: 0.9rem;" onclick="app.submitUserAccessPeriod('revoke')">
+          <span>🔒 <strong>Доступты жабу (Құлыптау)</strong></span>
+          <span style="font-size: 0.82rem;">0 күн</span>
+        </button>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <button class="btn btn-secondary btn-block" onclick="app.closeAccessPeriodModal()">Болдырмау</button>
+      </div>
     </div>
   </div>
 
