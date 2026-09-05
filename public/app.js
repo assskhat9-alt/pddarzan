@@ -549,13 +549,29 @@ const app = {
     if (navUser) navUser.classList.toggle('hidden', !isAuthed);
     if (navMainLinks) navMainLinks.classList.toggle('hidden', !isAuthed);
 
-    // Update active nav button
+    // Manage in-exam class for mobile layout
+    document.body.classList.toggle('in-exam', viewName === 'test');
+
+    // Update active nav button (Desktop & Mobile)
     const navDash = document.getElementById('navLinkDash');
     const navStudy = document.getElementById('navLinkStudy');
     const navAdmin = document.getElementById('navLinkAdmin');
     if (navDash) navDash.classList.toggle('active', viewName === 'dashboard');
     if (navStudy) navStudy.classList.toggle('active', viewName === 'study');
     if (navAdmin) navAdmin.classList.toggle('active', viewName === 'admin');
+
+    // Mobile Bottom Navigation
+    const mobNav = document.getElementById('mobileBottomNav');
+    if (mobNav) {
+      const showMobNav = isAuthed && viewName !== 'test';
+      mobNav.classList.toggle('hidden', !showMobNav);
+    }
+    const mobDash = document.getElementById('mobTabDash');
+    const mobStudy = document.getElementById('mobTabStudy');
+    const mobAdmin = document.getElementById('mobTabAdmin');
+    if (mobDash) mobDash.classList.toggle('active', viewName === 'dashboard');
+    if (mobStudy) mobStudy.classList.toggle('active', viewName === 'study');
+    if (mobAdmin) mobAdmin.classList.toggle('active', viewName === 'admin');
 
     if (viewName === 'dashboard') {
       this.loadDashboard();
@@ -744,6 +760,10 @@ const app = {
 
     if (navLinkAdmin) {
       navLinkAdmin.classList.toggle('hidden', !isAdmin);
+    }
+    const mobTabAdmin = document.getElementById('mobTabAdmin');
+    if (mobTabAdmin) {
+      mobTabAdmin.classList.toggle('hidden', !isAdmin);
     }
   },
 
@@ -1159,6 +1179,12 @@ const app = {
       btn.classList.toggle('active', i === this.currentTest.currentIndex);
       btn.classList.toggle('answered', this.currentTest.userAnswers[i] !== undefined);
       btn.classList.toggle('flagged', this.currentTest.bookmarks.has(i));
+    }
+
+    // Auto-scroll active button into view on mobile ribbon
+    const activeBtn = document.getElementById(`palBtn_${this.currentTest.currentIndex}`);
+    if (activeBtn && activeBtn.scrollIntoView) {
+      activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
     }
   },
 

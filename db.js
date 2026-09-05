@@ -36,6 +36,8 @@ function all(sql, params = []) {
 }
 
 export async function initDb() {
+  await run(`PRAGMA journal_mode = WAL;`);
+  await run(`PRAGMA synchronous = NORMAL;`);
   await run(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
