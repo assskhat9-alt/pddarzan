@@ -29,7 +29,8 @@ function run(sql, params = []) {
   if (isPg) {
     let formatted = formatSql(sql);
     const isInsert = formatted.trim().toUpperCase().startsWith('INSERT');
-    if (isInsert && !formatted.toUpperCase().includes('RETURNING')) {
+    const hasId = formatted.toLowerCase().includes('into users') || formatted.toLowerCase().includes('into test_attempts');
+    if (isInsert && hasId && !formatted.toUpperCase().includes('RETURNING')) {
       formatted += ' RETURNING id';
     }
     return pgPool.query(formatted, params).then(res => ({
