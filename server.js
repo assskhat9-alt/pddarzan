@@ -152,6 +152,11 @@ function requireAdmin(req, res, next) {
   return res.status(403).json({ error: 'Бұл әрекетке тек әкімшінің (Admin) құқығы бар' });
 }
 
+// Health check endpoint for keep-alive monitoring
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 // ================= PUBLIC CONFIG ENDPOINT =================
 
 app.get('/api/public/config', async (req, res) => {
