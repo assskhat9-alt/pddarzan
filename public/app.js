@@ -329,7 +329,7 @@ const app = {
   openWhatsAppPurchase() {
     const wa = this.adminWhatsapp || '77770000000';
     const uname = this.currentUser ? this.currentUser.username : '';
-    const text = encodeURIComponent(`Сәлеметсіз бе! ПДД тест платформасына толық доступ (қолжетімділік) сатып алғым келеді. Логинім: ${uname}`);
+    const text = encodeURIComponent(`Сәлеметсіз бе! 🚗 PDD Arzan платформасына доступ алғым келеді.\n\nМенің логинім: ${uname}\n\nМаған қызықты тариф:\n• 1 ай — 1 500 ₸\n• 3 ай — 3 000 ₸\n• 6 ай — 4 500 ₸`);
     window.open(`https://wa.me/${wa}?text=${text}`, '_blank');
   },
 
