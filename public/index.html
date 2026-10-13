@@ -25,11 +25,101 @@
   <meta name="twitter:title" content="PDD Arzan — ПДД Емтиханына Дайындық | 1103 Сұрақ">
   <meta name="twitter:description" content="ҚР жүргізуші куәлігін алу емтиханына ең арзан дайындық. 1 500 ₸/ай. Тегін демо-тест!">
 
+  <!-- Structured data for search engines and AI assistants -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "@id": "https://pddarzan.onrender.com/#app",
+      "name": "PDD ARZAN",
+      "url": "https://pddarzan.onrender.com/",
+      "description": "ҚР жүргізуші куәлігі емтиханына (ПДД, АвтоЦОН) дайындық платформасы: 1103 ресми сұрақ, 40 сұрақ / 40 минуттық нағыз емтихан форматы, жаттау тренажеры, қазақ, орыс және ағылшын тілдерінде.",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any (web browser)",
+      "inLanguage": [
+        "kk",
+        "ru",
+        "en"
+      ],
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "1 ай",
+          "price": "1500",
+          "priceCurrency": "KZT"
+        },
+        {
+          "@type": "Offer",
+          "name": "3 ай",
+          "price": "3000",
+          "priceCurrency": "KZT"
+        },
+        {
+          "@type": "Offer",
+          "name": "6 ай",
+          "price": "4500",
+          "priceCurrency": "KZT"
+        }
+      ],
+      "featureList": [
+        "1103 ресми ПДД сұрағы",
+        "40 сұрақ / 40 минут емтихан режимі",
+        "Өту шегі 32/40",
+        "Жаттау тренажеры",
+        "Тест тарихы мен қателер талдауы",
+        "Тегін 5 сұрақтық демо-тест"
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "PDD ARZAN-да қанша сұрақ бар?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Платформада ҚР жүргізуші куәлігі емтиханының 1103 ресми сұрағы бар, суреттерімен және үш тілде (қазақ, орыс, ағылшын)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Емтихан форматы қандай?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Нағыз АвтоЦОН форматы: 1103 сұрақтың ішінен кездейсоқ 40 сұрақ, 40 минут, өту шегі 32 дұрыс жауап (80%)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Қанша тұрады?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "1 ай — 1 500 ₸, 3 ай — 3 000 ₸, 6 ай — 4 500 ₸. Тегін 5 сұрақтық демо-тест тіркелусіз қолжетімді."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Сколько стоит подготовка к ПДД на PDD ARZAN?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "1 месяц — 1 500 ₸, 3 месяца — 3 000 ₸, 6 месяцев — 4 500 ₸. Есть бесплатный демо-тест из 5 вопросов без регистрации."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM summary">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="layout.css">
 </head>
 <body>
 
@@ -102,8 +192,40 @@
   <!-- MAIN APP CONTAINER -->
   <main class="main-content">
 
+    <!-- APP TOP BAR (desktop, signed-in) -->
+    <div class="app-topbar">
+      <label class="topbar-search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="search" id="topbarSearchInput" placeholder="Сұрақты мәтіні немесе нөмірі бойынша іздеу..." onkeydown="if(event.key==='Enter')app.searchFromTopbar(this.value)">
+      </label>
+      <button class="btn btn-primary" onclick="app.startNewTest()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        <span>Тест бастау</span>
+      </button>
+    </div>
+
     <!-- VIEW 1: AUTHENTICATION (LOGIN & REGISTER) -->
     <section id="authView" class="view-section">
+      <div class="landing-grid">
+      <aside class="landing-promo">
+        <span class="landing-pill">🚦 ҚР жүргізуші куәлігі емтиханы</span>
+        <h2 class="landing-title">ПДД емтиханын <span>бірінші реттен</span> тапсыр!</h2>
+        <p class="landing-sub">1103 ресми сұрақ, нағыз АвтоЦОН форматы (40 сұрақ / 40 минут) және үш тілде дайындық.</p>
+        <div class="landing-visual">
+          <img class="landing-photo-main" src="/images/brand/hero-girl.jpg" alt="Жүргізуші куәлігін алған оқушы" width="216" height="690">
+          <div class="landing-photo-card">
+            <img src="/images/brand/car-moto.jpg" alt="Оқу көлігі мен мотоцикл" width="576" height="360" loading="lazy">
+            <div class="landing-photo-caption">A, B, C, D санаттары</div>
+          </div>
+          <div class="landing-price"><small>Бағасы</small><strong>1 500 ₸</strong><small>/ ай</small></div>
+        </div>
+        <ul class="landing-features">
+          <li>✔ 1103 ресми сұрақ</li>
+          <li>✔ 40 сұрақ · 40 минут</li>
+          <li>✔ ҚАЗ · РУС · ENG</li>
+          <li>✔ Тегін демо-тест</li>
+        </ul>
+      </aside>
       <div class="auth-wrapper">
         <div class="auth-card">
           <div class="auth-header">
@@ -195,6 +317,7 @@
           </div>
         </div>
       </div>
+      </div>
     </section>
 
     <!-- VIEW 2: DASHBOARD (HOME) -->
@@ -217,7 +340,7 @@
                 <div style="font-size: 1.3rem; font-weight: 800; color: #22c55e;">1 500 ₸</div>
               </div>
               <div style="background: rgba(255,196,0,0.15); border: 2px solid rgba(255,196,0,0.6); border-radius: 10px; padding: 10px 14px; text-align: center; min-width: 90px; position: relative;">
-                <div style="position: absolute; top: -8px; left: 50%; transform: translateX(-50%); background: #ffc400; color: white; font-size: 0.6rem; font-weight: 700; padding: 1px 8px; border-radius: 10px;">ХИТ 🔥</div>
+                <div style="position: absolute; top: -8px; left: 50%; transform: translateX(-50%); background: #ffc400; color: #111; font-size: 0.6rem; font-weight: 700; padding: 1px 8px; border-radius: 10px;">ХИТ 🔥</div>
                 <div style="font-size: 0.7rem; color: #ffd54f; font-weight: 600;">3 АЙ</div>
                 <div style="font-size: 1.3rem; font-weight: 800; color: #ffc400;">3 000 ₸</div>
                 <div style="font-size: 0.65rem; color: #ffd54f;">1000 ₸/ай</div>
@@ -286,18 +409,7 @@
           </div>
         </div>
 
-        <!-- Study Entry Banner -->
-        <div class="study-hero-banner">
-          <div class="study-hero-left">
-            <span class="study-pill">📖 ДАЙЫНДЫҚ ЖӘНЕ ЖАТТАУ БӨЛІМІ</span>
-            <h2 class="study-hero-h2">Сұрақтарды оқу және дұрыс жауаптарын жаттау</h2>
-            <p class="study-hero-p">Емтиханға кірмес бұрын барлық сұрақтарды дұрыс жауаптарымен оқып шығыңыз, сұрақ нөмірі бойынша іздеңіз немесе жаттау тренажерында жаттығыңыз.</p>
-          </div>
-          <button class="btn btn-primary btn-lg" onclick="app.navigate('study')">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-            <span>Сұрақтарды жаттауға кіру</span>
-          </button>
-        </div>
+        <h2 class="dash-section-title">Шолу</h2>
 
         <!-- Stats Grid -->
         <div class="stats-grid">
@@ -342,6 +454,49 @@
           </div>
         </div>
 
+        <!-- Preparation sections (photo cards) -->
+        <div class="dash-section-head">
+          <h2 class="dash-section-title">Дайындық бөлімдері</h2>
+        </div>
+        <div class="course-grid">
+          <article class="course-card" onclick="app.startNewTest()">
+            <div class="course-thumb"><img src="/images/brand/driver-man.jpg" alt="Емтихан" loading="lazy"></div>
+            <div class="course-body">
+              <span class="course-tag">Емтихан</span>
+              <h3 class="course-title">АвтоЦОН форматындағы тест</h3>
+              <div class="course-progress"><div class="course-progress-bar" id="courseExamProgress"></div></div>
+              <div class="course-meta"><span id="courseExamMeta">Ең жоғары балл: 0 / 40</span><span>40 мин</span></div>
+            </div>
+          </article>
+          <article class="course-card" onclick="app.openStudySection('list')">
+            <div class="course-thumb"><img src="/images/brand/wheel.jpg" alt="Сұрақтар базасы" loading="lazy"></div>
+            <div class="course-body">
+              <span class="course-tag">Жаттау</span>
+              <h3 class="course-title">Сұрақтар мен дұрыс жауаптар</h3>
+              <div class="course-progress"><div class="course-progress-bar" style="width:100%"></div></div>
+              <div class="course-meta"><span>1103 сұрақ</span><span>3 тілде</span></div>
+            </div>
+          </article>
+          <article class="course-card" onclick="app.openStudySection('trainer')">
+            <div class="course-thumb"><img src="/images/brand/driver-woman.jpg" alt="Жаттау тренажеры" loading="lazy"></div>
+            <div class="course-body">
+              <span class="course-tag">Тренажер</span>
+              <h3 class="course-title">Бір-бірден жаттығу</h3>
+              <div class="course-progress"><div class="course-progress-bar" style="width:60%"></div></div>
+              <div class="course-meta"><span>Жауапты бірден тексеру</span></div>
+            </div>
+          </article>
+          <article class="course-card" onclick="document.getElementById('historySection').scrollIntoView({behavior:'smooth'})">
+            <div class="course-thumb"><img src="/images/brand/student.jpg" alt="Нәтижелер" loading="lazy"></div>
+            <div class="course-body">
+              <span class="course-tag">Нәтижелер</span>
+              <h3 class="course-title">Тест тарихы мен талдау</h3>
+              <div class="course-progress"><div class="course-progress-bar" id="coursePassProgress"></div></div>
+              <div class="course-meta"><span id="coursePassMeta">Сәтті: 0 %</span></div>
+            </div>
+          </article>
+        </div>
+
         <!-- Exam Rules Banner -->
         <div class="info-banner">
           <div class="info-item">
@@ -363,7 +518,7 @@
         </div>
 
         <!-- Test History Section -->
-        <div class="section-block">
+        <div class="section-block" id="historySection">
           <div class="section-header">
             <div>
               <h2 class="section-title">Сіздің тест нәтижелеріңіз</h2>

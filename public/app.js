@@ -874,6 +874,16 @@ const app = {
       document.getElementById('statBestScore').innerHTML = `${stats.bestScore} <span class="stat-unit">/ 40</span>`;
       document.getElementById('statAvgScore').innerHTML = `${stats.avgScore} <span class="stat-unit">/ 40</span>`;
 
+      // Section cards progress
+      const examBar = document.getElementById('courseExamProgress');
+      if (examBar) examBar.style.width = `${Math.round((stats.bestScore / 40) * 100)}%`;
+      const examMeta = document.getElementById('courseExamMeta');
+      if (examMeta) examMeta.textContent = `Ең жоғары балл: ${stats.bestScore} / 40`;
+      const passBar = document.getElementById('coursePassProgress');
+      if (passBar) passBar.style.width = `${stats.passRate}%`;
+      const passMeta = document.getElementById('coursePassMeta');
+      if (passMeta) passMeta.textContent = `Сәтті: ${stats.passRate} % · ${stats.totalTests} тест`;
+
       // Render history table
       const tbody = document.getElementById('historyTableBody');
       if (!history || history.length === 0) {
@@ -1679,6 +1689,24 @@ const app = {
     } else {
       this.loadTrainerQuestion(this.trainerCurrentId || 1);
     }
+  },
+
+  openStudySection(mode) {
+    this.studyMode = mode;
+    this.navigate('study');
+    if (!document.getElementById('studyView').classList.contains('hidden')) this.setStudyMode(mode);
+  },
+
+  searchFromTopbar(val) {
+    const query = (val || '').trim();
+    if (!query) return;
+    this.studyMode = 'list';
+    this.navigate('study');
+    if (document.getElementById('studyView').classList.contains('hidden')) return;
+    this.setStudyMode('list');
+    const input = document.getElementById('studySearchInput');
+    if (input) input.value = query;
+    this.handleStudySearch(query);
   },
 
   setStudyMode(mode) {
