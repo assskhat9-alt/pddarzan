@@ -1,0 +1,333 @@
+/* =====================================================================
+   PDD ARZAN — "Auto school" theme: yellow / black / white
+   Loaded after style.css and overrides it.
+   ===================================================================== */
+
+:root {
+  --yellow: #ffc400;
+  --yellow-hover: #ffd23f;
+  --yellow-deep: #e6ae00;
+  --ink: #111111;
+  --hazard: repeating-linear-gradient(-45deg, var(--yellow) 0 14px, var(--ink) 14px 28px);
+
+  --primary: var(--yellow);
+  --primary-hover: var(--yellow-hover);
+  --primary-light: #fff8e1;
+  --bg-main: #0b0b0b;
+  --bg-card: #161616;
+  --bg-card-alt: #222222;
+  --border: #2a2a2a;
+  --border-light: #3a3a3a;
+  --text-muted: #a3a3a3;
+  --text-sub: #d4d4d4;
+  --shadow-glow: 0 0 22px rgba(255, 196, 0, 0.35);
+}
+
+body {
+  background-color: var(--bg-main);
+}
+
+/* Headings in heavy Montserrat, like the reference posters */
+h1, h2, h3,
+.brand-title,
+.hero-title,
+.auth-title,
+.study-hero-h2,
+.test-setup-title,
+.paywall-title,
+.stat-value,
+.timer-digits {
+  font-family: 'Montserrat', 'Inter', system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+  background: rgba(11, 11, 11, 0.94);
+  border-bottom: none;
+  position: sticky;
+}
+.navbar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 6px;
+  background: var(--hazard);
+}
+
+.brand-icon {
+  background: var(--yellow);
+  color: var(--ink);
+  border-radius: 10px;
+  box-shadow: none;
+}
+.brand-title {
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+/* Elements that now sit on a yellow background need dark text */
+.brand-icon,
+.lang-btn.active,
+.user-avatar,
+.auth-tab.active,
+.badge-test-mode,
+.option-item.selected .opt-index,
+.review-filter-btn.active,
+.study-mode-btn.active,
+.page-btn.active,
+.test-lang-btn.active,
+.test-time-btn.active,
+.in-q-btn.active {
+  color: var(--ink) !important;
+}
+.test-time-btn.active,
+.test-lang-btn.active {
+  background: var(--yellow);
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  font-weight: 700;
+  border-radius: 12px;
+}
+
+.btn-primary,
+.btn-emerald {
+  background: var(--yellow);
+  color: var(--ink);
+}
+.btn-primary:hover,
+.btn-emerald:hover {
+  background: var(--yellow-hover);
+  color: var(--ink);
+  box-shadow: var(--shadow-glow);
+}
+
+.btn-secondary {
+  background: #1f1f1f;
+  border-color: #333;
+}
+.btn-secondary:hover {
+  background: #2a2a2a;
+}
+
+.nav-link-btn.active {
+  color: var(--yellow);
+  background: rgba(255, 196, 0, 0.1);
+  border-color: rgba(255, 196, 0, 0.35);
+}
+.nav-link-exam {
+  background: var(--yellow);
+  color: var(--ink);
+  border-color: var(--yellow);
+}
+.nav-link-exam:hover {
+  background: var(--yellow-hover);
+  color: var(--ink);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--yellow) !important;
+  box-shadow: 0 0 0 3px rgba(255, 196, 0, 0.2) !important;
+  outline: none;
+}
+
+/* ---------- Auth (landing) ---------- */
+.auth-card {
+  position: relative;
+  overflow: hidden;
+  padding-top: 2.75rem;
+}
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background: var(--hazard);
+}
+.auth-badge {
+  background: var(--ink);
+  color: var(--yellow);
+  border: 1px solid var(--yellow);
+  text-transform: uppercase;
+}
+.auth-tab.active {
+  background: var(--yellow);
+}
+
+/* ---------- Dashboard hero: big yellow block ---------- */
+.dashboard-hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--yellow);
+  border: none;
+  color: var(--ink);
+  padding-top: 2.75rem;
+}
+.dashboard-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: repeating-linear-gradient(-45deg, var(--ink) 0 14px, var(--yellow) 14px 28px);
+}
+.dashboard-hero .hero-title {
+  color: var(--ink);
+  font-size: 2.125rem;
+}
+.dashboard-hero .hero-desc {
+  color: #2b2b2b;
+  font-weight: 500;
+}
+.dashboard-hero .welcome-chip {
+  background: var(--ink);
+  color: var(--yellow);
+}
+.dashboard-hero #dashSubscriptionBadge {
+  background: var(--ink) !important;
+  color: #fff !important;
+  border: none !important;
+}
+.dashboard-hero .btn-emerald,
+.dashboard-hero .btn-primary {
+  background: var(--ink);
+  color: var(--yellow);
+}
+.dashboard-hero .btn-emerald:hover,
+.dashboard-hero .btn-primary:hover {
+  background: #000;
+  color: var(--yellow-hover);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- Study banner: white card ---------- */
+.study-hero-banner {
+  background: #ffffff;
+  border: none;
+  color: var(--ink);
+}
+.study-hero-banner .study-hero-h2 {
+  color: var(--ink);
+}
+.study-hero-banner .study-hero-p {
+  color: #3a3a3a;
+}
+.study-hero-banner .study-pill {
+  background: var(--ink);
+  color: var(--yellow);
+  border: none;
+}
+
+/* ---------- Stats ---------- */
+.stat-card:hover {
+  border-color: rgba(255, 196, 0, 0.5);
+}
+.icon-blue,
+.icon-purple {
+  background: rgba(255, 196, 0, 0.14);
+  color: var(--yellow);
+}
+
+/* ---------- Test screen ---------- */
+.option-item.selected {
+  border-color: var(--yellow);
+  background: rgba(255, 196, 0, 0.08);
+}
+.option-item.selected .opt-index {
+  background: var(--yellow);
+}
+
+/* ---------- Modals ---------- */
+.test-setup-card,
+.paywall-modal-card {
+  background: #161616;
+  border: 1px solid #333;
+  overflow: hidden;
+  position: relative;
+}
+.test-setup-card::before,
+.paywall-modal-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: var(--hazard);
+}
+
+/* ---------- Mobile bottom nav ---------- */
+@media (max-width: 768px) {
+  .mobile-tab-exam {
+    color: var(--yellow);
+  }
+  .mobile-exam-icon-circle {
+    background: var(--yellow);
+    color: var(--ink);
+    box-shadow: 0 4px 14px rgba(255, 196, 0, 0.45);
+  }
+  .dashboard-hero .hero-title {
+    font-size: 1.6rem;
+  }
+}
+
+/* The phone bottom nav is only for small screens */
+@media (min-width: 769px) {
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Study banner: stack text and button instead of overflowing */
+  .study-hero-banner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.25rem;
+    padding: 1.5rem 1.25rem;
+  }
+  .study-hero-banner .btn {
+    width: 100%;
+  }
+  .study-hero-h2 {
+    font-size: 1.25rem;
+  }
+  .study-pill {
+    font-size: 0.7rem;
+  }
+
+  /* Keep the logo on one line above the hazard stripe */
+  .brand-title {
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+  .brand-icon {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+/* style.css forces the bottom nav visible with !important; respect the JS "hidden" state (guests) */
+.mobile-bottom-nav.hidden {
+  display: none !important;
+}
+
+/* Long question texts stay in Inter for readability */
+.q-text,
+.study-card-q,
+.review-q-text,
+.trainer-q-text {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0;
+}

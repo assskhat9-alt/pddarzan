@@ -804,9 +804,9 @@ const app = {
         subBadge.style.border = '1px solid rgba(239, 68, 68, 0.3)';
         subBadge.classList.remove('hidden');
       } else {
-        subBadge.innerHTML = `<span style="color:#94a3b8;">🔒 Қолжетімділік құлыпталған</span>`;
-        subBadge.style.background = 'rgba(148, 163, 184, 0.15)';
-        subBadge.style.border = '1px solid rgba(148, 163, 184, 0.3)';
+        subBadge.innerHTML = `<span style="color:#a3a3a3;">🔒 Қолжетімділік құлыпталған</span>`;
+        subBadge.style.background = 'rgba(163,163,163, 0.15)';
+        subBadge.style.border = '1px solid rgba(163,163,163, 0.3)';
         subBadge.classList.remove('hidden');
       }
     }
@@ -1373,7 +1373,7 @@ const app = {
       ansStatus.style.color = '#34d399';
     } else {
       ansStatus.textContent = this.t('unanswered');
-      ansStatus.style.color = '#94a3b8';
+      ansStatus.style.color = '#a3a3a3';
     }
 
     document.getElementById('btnPrevQuestion').disabled = (index === 0);
