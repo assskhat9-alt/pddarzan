@@ -892,6 +892,23 @@ async function start() {
     console.log(`PDD Testing Platform running at http://localhost:${PORT}`);
   });
   startKeepAlive();
+  startExpiredHistoryCleanup();
+}
+
+// Test history of users whose access expired more than this many days ago is deleted
+const EXPIRED_HISTORY_GRACE_DAYS = 1;
+
+function startExpiredHistoryCleanup() {
+  const cleanup = async () => {
+    try {
+      const deleted = await db.deleteExpiredUsersHistory(EXPIRED_HISTORY_GRACE_DAYS);
+      if (deleted > 0) console.log(`Expired-access cleanup: deleted ${deleted} test attempts.`);
+    } catch (err) {
+      console.error('Expired-access cleanup failed:', err.message);
+    }
+  };
+  cleanup();
+  setInterval(cleanup, 6 * 60 * 60 * 1000);
 }
 
 // Render free instances sleep after 15 min without inbound traffic.

@@ -367,6 +367,19 @@ export async function saveTestAttempt(userId, score, totalQuestions, passed, tim
   return result.lastID;
 }
 
+// Deletes test history of non-admin users whose access expired more than graceDays ago
+export async function deleteExpiredUsersHistory(graceDays = 7) {
+  const cutoff = new Date(Date.now() - graceDays * 24 * 60 * 60 * 1000).toISOString();
+  const result = await run(
+    `DELETE FROM test_attempts WHERE user_id IN (
+       SELECT id FROM users
+       WHERE role != 'admin' AND has_access = 1 AND access_expires_at IS NOT NULL AND access_expires_at < ?
+     )`,
+    [cutoff]
+  );
+  return result.changes;
+}
+
 export async function getUserTestHistory(userId) {
   return await all(
     `SELECT id, score, total_questions, passed, time_spent_seconds, language, created_at
@@ -435,6 +448,7 @@ export default {
   getSetting,
   setSetting,
   saveTestAttempt,
+  deleteExpiredUsersHistory,
   getUserTestHistory,
   getTestAttemptById,
   getUserStats
