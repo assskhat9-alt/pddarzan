@@ -278,29 +278,6 @@
             <p class="hero-desc">ҚР АвтоЦОН емтихан форматындағы кездейсоқ 40 сұрақтан тұратын мини-тестке дайынсыз ба?</p>
           </div>
           <div class="hero-action">
-            <div class="test-config-row">
-              <div class="test-lang-picker">
-                <span class="test-lang-label" id="lblTestLangPicker">Тест тапсыру тілі:</span>
-                <div class="test-lang-btns">
-                  <button class="test-lang-btn active" id="btnTlang_kk" data-tlang="kk" onclick="app.setTestLanguage('kk')">🇰🇿 Қазақша</button>
-                  <button class="test-lang-btn" id="btnTlang_ru" data-tlang="ru" onclick="app.setTestLanguage('ru')">🇷🇺 Русский</button>
-                  <button class="test-lang-btn" id="btnTlang_en" data-tlang="en" onclick="app.setTestLanguage('en')">🇬🇧 English</button>
-                </div>
-              </div>
-
-              <div class="test-time-picker">
-                <span class="test-lang-label" id="lblTimeModePicker">Уақыт режимі:</span>
-                <div class="test-time-btns">
-                  <button class="test-time-btn active" id="btnTimeModeTimed" onclick="app.setTimeMode(true)" title="Ресми 40 минуттық кері санақ таймері">
-                    <span>⏱️ Уақытпен (40 мин)</span>
-                  </button>
-                  <button class="test-time-btn" id="btnTimeModeUntimed" onclick="app.setTimeMode(false)" title="Ешқандай уақыт шектеусіз еркін тапсыру">
-                    <span>♾️ Уақытсыз (Шектеусіз)</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
             <button class="btn btn-emerald btn-lg" onclick="app.startNewTest()">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
               <span id="btnStartExamText">Жаңа тестті бастау (40 сұрақ)</span>
@@ -965,6 +942,40 @@
           <span>Түсіндім, жабу</span>
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- TEST SETUP MODAL (language + time mode, shown after pressing "Start test") -->
+  <div id="testSetupModal" class="modal-overlay hidden" onclick="if(event.target===this)app.closeTestSetupModal()">
+    <div class="modal-content test-setup-card" onclick="event.stopPropagation()">
+      <button class="modal-close-btn" onclick="app.closeTestSetupModal()">&times;</button>
+      <h2 class="test-setup-title" id="testSetupTitle">Тест параметрлері</h2>
+
+      <div class="test-setup-group">
+        <span class="test-lang-label" id="lblTestLangPicker">Тест тапсыру тілі:</span>
+        <div class="test-lang-btns">
+          <button class="test-lang-btn active" id="btnTlang_kk" data-tlang="kk" onclick="app.setTestLanguage('kk')">🇰🇿 Қазақша</button>
+          <button class="test-lang-btn" id="btnTlang_ru" data-tlang="ru" onclick="app.setTestLanguage('ru')">🇷🇺 Русский</button>
+          <button class="test-lang-btn" id="btnTlang_en" data-tlang="en" onclick="app.setTestLanguage('en')">🇬🇧 English</button>
+        </div>
+      </div>
+
+      <div class="test-setup-group">
+        <span class="test-lang-label" id="lblTimeModePicker">Уақыт режимі:</span>
+        <div class="test-time-btns">
+          <button class="test-time-btn active" id="btnTimeModeTimed" onclick="app.setTimeMode(true)" title="Ресми 40 минуттық кері санақ таймері">
+            <span>⏱️ Уақытпен (40 мин)</span>
+          </button>
+          <button class="test-time-btn" id="btnTimeModeUntimed" onclick="app.setTimeMode(false)" title="Ешқандай уақыт шектеусіз еркін тапсыру">
+            <span>♾️ Уақытсыз (Шектеусіз)</span>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn btn-emerald btn-lg btn-block" id="btnTestSetupBegin" onclick="app.confirmStartTest()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        <span id="btnTestSetupBeginText">Тестті бастау</span>
+      </button>
     </div>
   </div>
 

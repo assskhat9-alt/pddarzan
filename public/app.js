@@ -66,6 +66,8 @@ const app = {
       startBtn: 'Жаңа тестті бастау (40 сұрақ)',
       testLangPickerLabel: 'Тест тапсыру тілі:',
       timeModePickerLabel: 'Уақыт режимі:',
+      testSetupTitle: 'Тест параметрлері',
+      testSetupBegin: 'Тестті бастау',
       btnTimed: '⏱️ Уақытпен (40 мин)',
       btnUntimed: '♾️ Уақытсыз (Шектеусіз)',
       qLangLabel: 'Сұрақ тілі:',
@@ -127,6 +129,8 @@ const app = {
       startBtn: 'Начать новый тест (40 вопросов)',
       testLangPickerLabel: 'Язык вопросов теста:',
       timeModePickerLabel: 'Режим времени:',
+      testSetupTitle: 'Параметры теста',
+      testSetupBegin: 'Начать тест',
       btnTimed: '⏱️ По времени (40 мин)',
       btnUntimed: '♾️ Без времени (Свободный)',
       qLangLabel: 'Язык вопроса:',
@@ -188,6 +192,8 @@ const app = {
       startBtn: 'Start New Test (40 questions)',
       testLangPickerLabel: 'Test questions language:',
       timeModePickerLabel: 'Time mode:',
+      testSetupTitle: 'Test settings',
+      testSetupBegin: 'Start test',
       btnTimed: '⏱️ Timed (40 min)',
       btnUntimed: '♾️ Untimed (No limit)',
       qLangLabel: 'Question language:',
@@ -485,6 +491,10 @@ const app = {
     if (btnTimeModeTimed) btnTimeModeTimed.innerHTML = `<span>${t('btnTimed')}</span>`;
     const btnTimeModeUntimed = document.getElementById('btnTimeModeUntimed');
     if (btnTimeModeUntimed) btnTimeModeUntimed.innerHTML = `<span>${t('btnUntimed')}</span>`;
+    const testSetupTitle = document.getElementById('testSetupTitle');
+    if (testSetupTitle) testSetupTitle.textContent = t('testSetupTitle');
+    const btnTestSetupBeginText = document.getElementById('btnTestSetupBeginText');
+    if (btnTestSetupBeginText) btnTestSetupBeginText.textContent = t('testSetupBegin');
 
     // Exam Screen
     const badgeTestModeText = document.getElementById('badgeTestModeText');
@@ -1168,6 +1178,21 @@ const app = {
       this.currentTest = null;
     }
 
+    this.openTestSetupModal();
+  },
+
+  openTestSetupModal() {
+    this.updateLanguageButtons();
+    this.updateTimeModeButtons();
+    document.getElementById('testSetupModal').classList.remove('hidden');
+  },
+
+  closeTestSetupModal() {
+    document.getElementById('testSetupModal').classList.add('hidden');
+  },
+
+  async confirmStartTest() {
+    this.closeTestSetupModal();
     try {
       const { ok, data } = await this.apiFetch(`/api/test/start?lang=${this.questionLang}&timed=${this.isTimed}`);
       if (!ok) {

@@ -1215,7 +1215,7 @@ body {
   inset: 0;
   background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(8px);
-  z-index: 100;
+  z-index: 1100;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2350,6 +2350,44 @@ body {
   border-radius: var(--radius-xl);
 }
 
+.test-setup-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 2rem;
+  background: #1e293b;
+  border: 1px solid #475569;
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.test-setup-title {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #fff;
+}
+
+.test-setup-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.test-setup-group .test-lang-btns,
+.test-setup-group .test-time-btns {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+}
+
+.test-setup-group .test-lang-btn,
+.test-setup-group .test-time-btn {
+  justify-content: center;
+  padding: 10px 8px;
+  font-size: 0.875rem;
+}
+
 .paywall-icon {
   font-size: 3.5rem;
   margin-bottom: 1rem;
@@ -3002,10 +3040,15 @@ body {
     overflow-y: auto;
   }
 
-  .paywall-modal-card, .device-conflict-card, .pause-modal-card {
+  .paywall-modal-card, .device-conflict-card, .pause-modal-card, .test-setup-card {
     width: 100% !important;
     max-width: 100% !important;
     margin: 0;
+  }
+
+  .test-setup-card .modal-close-btn {
+    top: 12px;
+    right: 12px;
   }
 }
 
