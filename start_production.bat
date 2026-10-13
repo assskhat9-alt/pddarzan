@@ -6,7 +6,7 @@ echo ========================================================
 echo.
 echo Starting Node.js server on port 3000...
 echo Open your browser at: http://localhost:3000
-echo Admin Credentials: admin / admin123
+echo Admin password: ADMIN_PASSWORD in .env
 echo.
-npm start
+node --env-file-if-exists=.env server.js
 pause

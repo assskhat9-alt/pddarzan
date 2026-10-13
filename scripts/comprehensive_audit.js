@@ -100,7 +100,7 @@ async function runAudit() {
   assert(cfgRes.status === 200 && !!cfgRes.data.adminWhatsapp, `GET /api/public/config returns admin WhatsApp (${cfgRes.data.adminWhatsapp})`);
 
   console.log('\n--- 4. ADMIN & SECURITY AUDIT ---');
-  const adminLogin = await post('http://localhost:3000/api/auth/login', { username: 'admin', password: 'admin123', deviceId: 'audit_dev_admin' });
+  const adminLogin = await post('http://localhost:3000/api/auth/login', { username: process.env.ADMIN_USERNAME || 'admin', password: process.env.ADMIN_PASSWORD, deviceId: 'audit_dev_admin' });
   assert(adminLogin.status === 200 && adminLogin.data.user.role === 'admin', 'Admin login successful with role: admin');
   const adminToken = adminLogin.data.token;
 

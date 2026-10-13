@@ -1,6 +1,10 @@
 import pg from 'pg';
 
-const NEON_URL = 'postgresql://neondb_owner:npg_jTApBoRcZ32z@ep-floral-art-aym4jtfi-pooler.c-5.us-east-2.aws.neon.tech/neondb?sslmode=require';
+const NEON_URL = process.env.DATABASE_URL;
+if (!NEON_URL) {
+  console.error('DATABASE_URL env var is required (e.g. node --env-file=.env scripts/clean_test_accounts.js)');
+  process.exit(1);
+}
 
 async function cleanTestAccounts() {
   const pool = new pg.Pool({ connectionString: NEON_URL, ssl: { rejectUnauthorized: false } });

@@ -6,11 +6,16 @@ services:
     buildCommand: npm install && npm rebuild sqlite3 --build-from-source
     startCommand: node server.js
     envVars:
+      # Secrets are set in the Render dashboard (Environment tab), never in this file
       - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_jTApBoRcZ32z@ep-floral-art-aym4jtfi-pooler.c-5.us-east-2.aws.neon.tech/neondb?sslmode=require
+        sync: false
+      - key: AUTH_SECRET
+        generateValue: true
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
       - key: NODE_ENV
         value: production
       - key: NODE_VERSION
         value: 20
-
-

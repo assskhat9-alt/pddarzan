@@ -192,17 +192,36 @@ export async function initDb() {
   }
 
   // Seed default admin account if not exists
-  const existingAdmin = await get(`SELECT id FROM users WHERE role = 'admin' OR username = 'admin'`);
+  // ADMIN_USERNAME / ADMIN_PASSWORD env vars, if set, are (re)applied to the admin account on every startup
+  const envAdminUsername = (process.env.ADMIN_USERNAME || '').trim().toLowerCase();
+  const envAdminPassword = process.env.ADMIN_PASSWORD;
+  const existingAdmin = await get(`SELECT id, username FROM users WHERE role = 'admin' OR username = 'admin' ORDER BY id LIMIT 1`);
   if (!existingAdmin) {
-    const adminHash = hashPassword('admin123');
+    const initialUsername = envAdminUsername || 'admin';
+    const initialPassword = envAdminPassword || crypto.randomBytes(9).toString('base64url');
     await run(
       `INSERT INTO users (username, full_name, password_hash, role, has_access) VALUES (?, ?, ?, ?, ?)`,
-      ['admin', 'Бас Әкімші', adminHash, 'admin', 1]
+      [initialUsername, 'Бас Әкімші', hashPassword(initialPassword), 'admin', 1]
     );
-    console.log('Default admin account created: admin / admin123');
+    console.log(envAdminPassword
+      ? `Admin account "${initialUsername}" created with password from ADMIN_PASSWORD.`
+      : `Admin account "${initialUsername}" created with generated password: ${initialPassword} (set ADMIN_PASSWORD to choose your own)`);
   } else {
     // Ensure admin has role 'admin' and has_access = 1
-    await run(`UPDATE users SET role = 'admin', has_access = 1 WHERE username = 'admin'`);
+    await run(`UPDATE users SET role = 'admin', has_access = 1 WHERE id = ?`, [existingAdmin.id]);
+    if (envAdminUsername && envAdminUsername !== existingAdmin.username) {
+      const taken = await get(`SELECT id FROM users WHERE username = ?`, [envAdminUsername]);
+      if (taken) {
+        console.error(`ADMIN_USERNAME "${envAdminUsername}" is already used by another account; admin username left unchanged.`);
+      } else {
+        await run(`UPDATE users SET username = ?, current_token = NULL WHERE id = ?`, [envAdminUsername, existingAdmin.id]);
+        console.log(`Admin username changed to "${envAdminUsername}" from ADMIN_USERNAME.`);
+      }
+    }
+    if (envAdminPassword) {
+      await run(`UPDATE users SET password_hash = ?, current_token = NULL WHERE id = ?`, [hashPassword(envAdminPassword), existingAdmin.id]);
+      console.log('Admin password applied from ADMIN_PASSWORD.');
+    }
   }
 
   // Seed default WhatsApp setting if not exists

@@ -2,7 +2,12 @@ import https from 'https';
 import pg from 'pg';
 
 const BASE_URL = 'https://pddarzan.onrender.com';
-const NEON_URL = 'postgresql://neondb_owner:npg_jTApBoRcZ32z@ep-floral-art-aym4jtfi-pooler.c-5.us-east-2.aws.neon.tech/neondb?sslmode=require';
+const NEON_URL = process.env.DATABASE_URL;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+if (!NEON_URL || !ADMIN_PASSWORD) {
+  console.error('DATABASE_URL and ADMIN_PASSWORD env vars are required (e.g. node --env-file=.env scripts/verify_live_render.js)');
+  process.exit(1);
+}
 
 function request(method, path, data, token) {
   return new Promise((resolve, reject) => {
@@ -71,8 +76,8 @@ async function runLiveAudit() {
     // 3. Admin Login
     console.log('\n--- 3. Testing Admin Login ---');
     const adminLogin = await request('POST', '/api/auth/login', {
-      username: 'admin',
-      password: 'admin123',
+      username: process.env.ADMIN_USERNAME || 'admin',
+      password: ADMIN_PASSWORD,
       deviceId: 'audit_live_verifier'
     });
     assert(adminLogin.status === 200 && adminLogin.data?.user?.role === 'admin', 'Admin login successful on live server');

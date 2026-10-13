@@ -23,15 +23,24 @@ try {
 const questionMap = new Map();
 questions.forEach(q => questionMap.set(q.id, q));
 
-// HMAC Authentication Token Secret
-const AUTH_SECRET = 'pdd_exam_auth_secret_key_2026_qazaqstan';
+// HMAC Authentication Token Secret (must be set via AUTH_SECRET env var in production)
+let AUTH_SECRET = process.env.AUTH_SECRET;
+if (!AUTH_SECRET || AUTH_SECRET.length < 32) {
+  AUTH_SECRET = crypto.randomBytes(48).toString('hex');
+  console.warn('WARNING: AUTH_SECRET env var is missing or shorter than 32 chars. Using a random secret — all sessions will be invalidated on restart.');
+}
+
+// Token lifetime: 30 days
+const TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 function generateAuthToken(user) {
+  const now = Date.now();
   const payload = {
     userId: user.id,
     username: user.username,
     role: user.role || 'user',
-    createdAt: Date.now(),
+    createdAt: now,
+    exp: now + TOKEN_TTL_MS,
     nonce: crypto.randomBytes(8).toString('hex')
   };
   const data = Buffer.from(JSON.stringify(payload)).toString('base64url');
@@ -45,9 +54,13 @@ function verifyAuthToken(token) {
   if (parts.length !== 2) return null;
   const [data, signature] = parts;
   const expectedSig = crypto.createHmac('sha256', AUTH_SECRET).update(data).digest('base64url');
-  if (signature !== expectedSig) return null;
+  const sigBuf = Buffer.from(signature);
+  const expectedBuf = Buffer.from(expectedSig);
+  if (sigBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(sigBuf, expectedBuf)) return null;
   try {
-    return JSON.parse(Buffer.from(data, 'base64url').toString('utf8'));
+    const payload = JSON.parse(Buffer.from(data, 'base64url').toString('utf8'));
+    if (!payload.exp || payload.exp < Date.now()) return null;
+    return payload;
   } catch (e) {
     return null;
   }
@@ -557,14 +570,9 @@ app.get('/api/test/demo', (req, res) => {
       return res.status(500).json({ error: 'Сұрақтар базасы жүктелмеген' });
     }
 
-    let userId = 'guest';
-    try {
-      const token = req.cookies && req.cookies.token;
-      if (token) {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        if (decoded && decoded.userId) userId = decoded.userId;
-      }
-    } catch (e) {}
+    const authHeader = req.headers['authorization'];
+    const decoded = authHeader ? verifyAuthToken(authHeader.replace(/^Bearer\s+/i, '').trim()) : null;
+    const userId = (decoded && decoded.userId) || 'guest';
 
     // Pick 5 random questions for platform preview
     const shuffled = [...questions].sort(() => 0.5 - Math.random());
@@ -883,6 +891,25 @@ async function start() {
   app.listen(PORT, () => {
     console.log(`PDD Testing Platform running at http://localhost:${PORT}`);
   });
+  startKeepAlive();
+}
+
+// Render free instances sleep after 15 min without inbound traffic.
+// Pinging our own public URL (through Render's proxy) every 10 min keeps the instance awake.
+function startKeepAlive() {
+  const publicUrl = process.env.KEEP_ALIVE_URL || process.env.RENDER_EXTERNAL_URL;
+  if (!publicUrl) return;
+  const healthUrl = publicUrl.replace(/\/+$/, '') + '/health';
+  const INTERVAL_MS = 10 * 60 * 1000;
+  setInterval(async () => {
+    try {
+      const res = await fetch(healthUrl, { signal: AbortSignal.timeout(30000) });
+      if (!res.ok) console.warn(`Keep-alive ping returned ${res.status}`);
+    } catch (err) {
+      console.warn('Keep-alive ping failed:', err.message);
+    }
+  }, INTERVAL_MS);
+  console.log(`Keep-alive enabled: pinging ${healthUrl} every 10 minutes.`);
 }
 
 start();
