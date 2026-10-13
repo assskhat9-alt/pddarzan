@@ -1,38 +1,44 @@
 /* =====================================================================
-   PDD ARZAN — "Auto school" theme: yellow / black / white
+   PDD ARZAN — light lavender + violet theme
    Loaded after style.css and overrides it.
    ===================================================================== */
 
 :root {
-  --yellow: #ffc400;
-  --yellow-hover: #ffd23f;
-  --yellow-deep: #e6ae00;
-  --ink: #111111;
-  --hazard: repeating-linear-gradient(-45deg, var(--yellow) 0 14px, var(--ink) 14px 28px);
+  --accent: #6c47ff;
+  --accent-hover: #5b36f2;
+  --accent-soft: #efeaff;
+  --accent-soft-2: #e2d9ff;
+  --ink: #1b1736;
+  --on-accent: #ffffff;
 
-  --primary: var(--yellow);
-  --primary-hover: var(--yellow-hover);
-  --primary-light: #fff8e1;
-  --bg-main: #0b0b0b;
-  --bg-card: #161616;
-  --bg-card-alt: #222222;
-  --border: #2a2a2a;
-  --border-light: #3a3a3a;
-  --text-muted: #a3a3a3;
-  --text-sub: #d4d4d4;
-  --shadow-glow: 0 0 22px rgba(255, 196, 0, 0.35);
+  --primary: var(--accent);
+  --primary-hover: var(--accent-hover);
+  --primary-light: var(--accent-soft);
+  --bg-main: #f5f4fb;
+  --bg-card: #ffffff;
+  --bg-card-alt: #f1eefb;
+  --border: #e7e3f5;
+  --border-light: #d9d3ef;
+  --text-main: #1b1736;
+  --text-sub: #4a4566;
+  --text-muted: #7a7594;
+  --radius-lg: 20px;
+  --shadow-sm: 0 1px 2px rgba(27, 23, 54, 0.05);
+  --shadow-md: 0 6px 18px rgba(27, 23, 54, 0.06);
+  --shadow-lg: 0 16px 40px rgba(27, 23, 54, 0.1);
+  --shadow-glow: 0 8px 22px rgba(108, 71, 255, 0.3);
 }
 
 body {
   background-color: var(--bg-main);
+  color: var(--text-main);
 }
 
-/* Headings in heavy Montserrat, like the reference posters */
+/* Headings in heavy Montserrat */
 h1, h2, h3,
 .brand-title,
 .hero-title,
 .auth-title,
-.study-hero-h2,
 .test-setup-title,
 .paywall-title,
 .stat-value,
@@ -40,36 +46,46 @@ h1, h2, h3,
   font-family: 'Montserrat', 'Inter', system-ui, sans-serif;
   font-weight: 800;
   letter-spacing: -0.01em;
+  color: var(--text-main);
+}
+
+/* Cards: white with soft shadow */
+.auth-card,
+.stat-card,
+.section-block,
+.info-banner,
+.study-header-card,
+.admin-card,
+.q-card,
+.palette-card,
+.test-header-bar,
+.result-banner,
+.review-card {
+  background: #fff;
+  border-color: var(--border);
+  box-shadow: var(--shadow-md);
 }
 
 /* ---------- Navbar ---------- */
 .navbar {
-  background: rgba(11, 11, 11, 0.94);
-  border-bottom: none;
-  position: sticky;
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid var(--border);
 }
 .navbar::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -6px;
-  height: 6px;
-  background: var(--hazard);
+  content: none;
 }
-
 .brand-icon {
-  background: var(--yellow);
-  color: var(--ink);
-  border-radius: 10px;
-  box-shadow: none;
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: 12px;
+  box-shadow: var(--shadow-glow);
 }
 .brand-title {
   font-weight: 900;
   text-transform: uppercase;
 }
 
-/* Elements that now sit on a yellow background need dark text */
+/* Elements on an accent (violet) background get white text */
 .brand-icon,
 .lang-btn.active,
 .user-avatar,
@@ -82,11 +98,16 @@ h1, h2, h3,
 .test-lang-btn.active,
 .test-time-btn.active,
 .in-q-btn.active {
-  color: var(--ink) !important;
+  color: var(--on-accent) !important;
 }
 .test-time-btn.active,
 .test-lang-btn.active {
-  background: var(--yellow);
+  background: var(--accent);
+}
+.test-lang-btns,
+.test-time-btns {
+  background: var(--bg-card-alt);
+  border-color: var(--border);
 }
 
 /* ---------- Buttons ---------- */
@@ -94,190 +115,230 @@ h1, h2, h3,
   font-weight: 700;
   border-radius: 12px;
 }
-
 .btn-primary,
 .btn-emerald {
-  background: var(--yellow);
-  color: var(--ink);
+  background: var(--accent);
+  color: var(--on-accent);
 }
 .btn-primary:hover,
 .btn-emerald:hover {
-  background: var(--yellow-hover);
-  color: var(--ink);
+  background: var(--accent-hover);
+  color: var(--on-accent);
   box-shadow: var(--shadow-glow);
 }
-
 .btn-secondary {
-  background: #1f1f1f;
-  border-color: #333;
+  background: #fff;
+  color: var(--text-main);
+  border: 1px solid var(--border-light);
 }
 .btn-secondary:hover {
-  background: #2a2a2a;
+  background: var(--accent-soft);
+  border-color: var(--accent-soft-2);
+}
+.btn-outline {
+  color: var(--text-sub);
+  border-color: var(--border-light);
+}
+.btn-outline:hover {
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
+.nav-link-btn {
+  color: var(--text-sub);
+}
+.nav-link-btn:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
 .nav-link-btn.active {
-  color: var(--yellow);
-  background: rgba(255, 196, 0, 0.1);
-  border-color: rgba(255, 196, 0, 0.35);
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-color: var(--accent-soft-2);
 }
 .nav-link-exam {
-  background: var(--yellow);
-  color: var(--ink);
-  border-color: var(--yellow);
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--accent);
 }
 .nav-link-exam:hover {
-  background: var(--yellow-hover);
-  color: var(--ink);
+  background: var(--accent-hover);
+  color: var(--on-accent);
 }
 
+input,
+select,
+textarea {
+  background: #fff;
+  color: var(--text-main);
+  border-color: var(--border-light);
+}
+input::placeholder,
+textarea::placeholder {
+  color: #a19dbb;
+}
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: var(--yellow) !important;
-  box-shadow: 0 0 0 3px rgba(255, 196, 0, 0.2) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(108, 71, 255, 0.15) !important;
   outline: none;
 }
 
 /* ---------- Auth (landing) ---------- */
 .auth-card {
-  position: relative;
-  overflow: hidden;
-  padding-top: 2.75rem;
-}
-.auth-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 10px;
-  background: var(--hazard);
+  border-radius: 24px;
 }
 .auth-badge {
-  background: var(--ink);
-  color: var(--yellow);
-  border: 1px solid var(--yellow);
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent-soft-2);
   text-transform: uppercase;
 }
+.auth-tabs {
+  background: var(--bg-card-alt);
+  border-color: var(--border);
+}
+.auth-tab {
+  color: var(--text-sub);
+}
 .auth-tab.active {
-  background: var(--yellow);
+  background: var(--accent);
 }
 
-/* ---------- Dashboard hero: big yellow block ---------- */
+/* ---------- Dashboard hero: violet block ---------- */
 .dashboard-hero {
   position: relative;
   overflow: hidden;
-  background: var(--yellow);
+  background: linear-gradient(135deg, #7b5cff 0%, #5b36f2 100%);
   border: none;
-  color: var(--ink);
-  padding-top: 2.75rem;
+  color: #fff;
+  box-shadow: 0 18px 40px rgba(91, 54, 242, 0.25);
 }
-.dashboard-hero::before {
+.dashboard-hero::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 12px;
-  background: repeating-linear-gradient(-45deg, var(--ink) 0 14px, var(--yellow) 14px 28px);
+  right: -60px;
+  top: -80px;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
 }
 .dashboard-hero .hero-title {
-  color: var(--ink);
+  color: #fff;
   font-size: 2.125rem;
 }
 .dashboard-hero .hero-desc {
-  color: #2b2b2b;
+  color: rgba(255, 255, 255, 0.85);
   font-weight: 500;
 }
 .dashboard-hero .welcome-chip {
-  background: var(--ink);
-  color: var(--yellow);
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
 }
 .dashboard-hero #dashSubscriptionBadge {
-  background: var(--ink) !important;
-  color: #fff !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: var(--accent) !important;
   border: none !important;
+}
+.dashboard-hero #dashSubscriptionBadge span {
+  color: var(--accent) !important;
 }
 .dashboard-hero .btn-emerald,
 .dashboard-hero .btn-primary {
-  background: var(--ink);
-  color: var(--yellow);
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  color: var(--accent);
 }
 .dashboard-hero .btn-emerald:hover,
 .dashboard-hero .btn-primary:hover {
-  background: #000;
-  color: var(--yellow-hover);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-}
-
-/* ---------- Study banner: white card ---------- */
-.study-hero-banner {
-  background: #ffffff;
-  border: none;
-  color: var(--ink);
-}
-.study-hero-banner .study-hero-h2 {
-  color: var(--ink);
-}
-.study-hero-banner .study-hero-p {
-  color: #3a3a3a;
-}
-.study-hero-banner .study-pill {
-  background: var(--ink);
-  color: var(--yellow);
-  border: none;
+  background: var(--accent-soft);
+  color: var(--accent-hover);
+  box-shadow: 0 8px 24px rgba(27, 23, 54, 0.2);
 }
 
 /* ---------- Stats ---------- */
 .stat-card:hover {
-  border-color: rgba(255, 196, 0, 0.5);
+  border-color: var(--accent-soft-2);
 }
 .icon-blue,
 .icon-purple {
-  background: rgba(255, 196, 0, 0.14);
-  color: var(--yellow);
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 /* ---------- Test screen ---------- */
+.option-item {
+  background: #fff;
+  border-color: var(--border);
+}
+.option-item:hover {
+  border-color: var(--accent-soft-2);
+  background: #faf9ff;
+}
 .option-item.selected {
-  border-color: var(--yellow);
-  background: rgba(255, 196, 0, 0.08);
+  border-color: var(--accent);
+  background: var(--accent-soft);
 }
 .option-item.selected .opt-index {
-  background: var(--yellow);
+  background: var(--accent);
 }
 
 /* ---------- Modals ---------- */
-.test-setup-card,
-.paywall-modal-card {
-  background: #161616;
-  border: 1px solid #333;
-  overflow: hidden;
-  position: relative;
+.modal-overlay {
+  background: rgba(27, 23, 54, 0.45);
 }
-.test-setup-card::before,
-.paywall-modal-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 8px;
-  background: var(--hazard);
+.test-setup-card,
+.paywall-modal-card,
+.device-conflict-card,
+.pause-modal-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+}
+.modal-close-btn {
+  background: #fff;
+  color: var(--text-main);
+  border-color: var(--border);
 }
 
-/* ---------- Mobile bottom nav ---------- */
+/* ---------- Mobile ---------- */
 @media (max-width: 768px) {
+  .mobile-bottom-nav {
+    background: rgba(255, 255, 255, 0.96) !important;
+    border-top: 1px solid var(--border) !important;
+  }
+  .mobile-tab-btn {
+    color: var(--text-muted);
+  }
+  .mobile-tab-btn.active {
+    color: var(--accent);
+  }
   .mobile-tab-exam {
-    color: var(--yellow);
+    color: var(--accent);
   }
   .mobile-exam-icon-circle {
-    background: var(--yellow);
-    color: var(--ink);
-    box-shadow: 0 4px 14px rgba(255, 196, 0, 0.45);
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(108, 71, 255, 0.4);
   }
   .dashboard-hero .hero-title {
     font-size: 1.6rem;
+  }
+  .brand-title {
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+  .brand-icon {
+    width: 34px;
+    height: 34px;
+  }
+  .test-setup-card .modal-close-btn {
+    top: 12px;
+    right: 12px;
   }
 }
 
@@ -287,36 +348,6 @@ textarea:focus {
     display: none !important;
   }
 }
-
-@media (max-width: 768px) {
-  /* Study banner: stack text and button instead of overflowing */
-  .study-hero-banner {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1.25rem;
-    padding: 1.5rem 1.25rem;
-  }
-  .study-hero-banner .btn {
-    width: 100%;
-  }
-  .study-hero-h2 {
-    font-size: 1.25rem;
-  }
-  .study-pill {
-    font-size: 0.7rem;
-  }
-
-  /* Keep the logo on one line above the hazard stripe */
-  .brand-title {
-    font-size: 0.95rem;
-    white-space: nowrap;
-  }
-  .brand-icon {
-    width: 34px;
-    height: 34px;
-  }
-}
-
 /* style.css forces the bottom nav visible with !important; respect the JS "hidden" state (guests) */
 .mobile-bottom-nav.hidden {
   display: none !important;
@@ -330,4 +361,47 @@ textarea:focus {
   font-family: 'Inter', system-ui, sans-serif;
   font-weight: 700;
   letter-spacing: 0;
+}
+
+/* White text that was meant for the old dark background */
+.locked-title,
+.admin-title,
+.admin-stat-val,
+.admin-card-title,
+.custom-checkbox-label,
+.test-setup-title,
+.paywall-title {
+  color: var(--text-main);
+}
+.lang-btn:hover,
+.btn-outline:hover,
+.pal-btn:hover,
+.pal-btn.active,
+.study-mode-btn:hover,
+.page-btn:hover:not(:disabled),
+.test-time-btn:hover,
+.in-q-btn:hover {
+  color: var(--accent);
+}
+.nav-link-admin,
+.nav-link-admin:hover {
+  color: var(--accent);
+}
+
+/* Admin "new user" form fields (were unstyled browser inputs) */
+.admin-card input[type="text"],
+.admin-card input[type="password"],
+.admin-card input[type="tel"],
+.admin-card input:not([type]) {
+  display: block;
+  width: 100%;
+  margin: 0.375rem 0 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+.nav-link-admin.active {
+  background: var(--accent-soft);
+  border-color: var(--accent-soft-2);
 }

@@ -778,7 +778,7 @@ const app = {
 
     if (subBadge) {
       if (isAdmin) {
-        subBadge.innerHTML = `<span style="color:#fbbf24;">👑 Бас әкімші аккаунты (Шектеусіз толық құқық)</span>`;
+        subBadge.innerHTML = `<span style="color:#b45309;">👑 Бас әкімші аккаунты (Шектеусіз толық құқық)</span>`;
         subBadge.style.background = 'rgba(245, 158, 11, 0.15)';
         subBadge.style.border = '1px solid rgba(245, 158, 11, 0.3)';
         subBadge.classList.remove('hidden');
@@ -788,25 +788,25 @@ const app = {
           const diffMs = expDate.getTime() - Date.now();
           const diffDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
           const dateFmt = expDate.toLocaleDateString('kk-KZ', { day: '2-digit', month: '2-digit', year: 'numeric' });
-          subBadge.innerHTML = `<span style="color:#34d399;">🟢 Доступ белсенді: <strong>${dateFmt}</strong> дейін (қалғаны: <strong>${diffDays} күн</strong>)</span>`;
+          subBadge.innerHTML = `<span style="color:#059669;">🟢 Доступ белсенді: <strong>${dateFmt}</strong> дейін (қалғаны: <strong>${diffDays} күн</strong>)</span>`;
           subBadge.style.background = 'rgba(16, 185, 129, 0.15)';
           subBadge.style.border = '1px solid rgba(16, 185, 129, 0.3)';
         } else {
-          subBadge.innerHTML = `<span style="color:#34d399;">♾️ Доступ белсенді (Шектеусіз мерзім)</span>`;
+          subBadge.innerHTML = `<span style="color:#059669;">♾️ Доступ белсенді (Шектеусіз мерзім)</span>`;
           subBadge.style.background = 'rgba(16, 185, 129, 0.15)';
           subBadge.style.border = '1px solid rgba(16, 185, 129, 0.3)';
         }
         subBadge.classList.remove('hidden');
       } else if (this.currentUser.isExpired) {
         const expDate = this.currentUser.accessExpiresAt ? new Date(this.currentUser.accessExpiresAt).toLocaleDateString('kk-KZ', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
-        subBadge.innerHTML = `<span style="color:#f87171;">⚠️ Доступ мерзімі аяқталған (${expDate})</span>`;
+        subBadge.innerHTML = `<span style="color:#dc2626;">⚠️ Доступ мерзімі аяқталған (${expDate})</span>`;
         subBadge.style.background = 'rgba(239, 68, 68, 0.15)';
         subBadge.style.border = '1px solid rgba(239, 68, 68, 0.3)';
         subBadge.classList.remove('hidden');
       } else {
-        subBadge.innerHTML = `<span style="color:#a3a3a3;">🔒 Қолжетімділік құлыпталған</span>`;
-        subBadge.style.background = 'rgba(163,163,163, 0.15)';
-        subBadge.style.border = '1px solid rgba(163,163,163, 0.3)';
+        subBadge.innerHTML = `<span style="color:#7a7594;">🔒 Қолжетімділік құлыпталған</span>`;
+        subBadge.style.background = 'rgba(122,117,148, 0.15)';
+        subBadge.style.border = '1px solid rgba(122,117,148, 0.3)';
         subBadge.classList.remove('hidden');
       }
     }
@@ -1380,10 +1380,10 @@ const app = {
     const ansStatus = document.getElementById('qAnswerStatus');
     if (selectedOpt !== undefined) {
       ansStatus.textContent = `${this.t('answered')} (${selectedOpt + 1})`;
-      ansStatus.style.color = '#34d399';
+      ansStatus.style.color = '#059669';
     } else {
       ansStatus.textContent = this.t('unanswered');
-      ansStatus.style.color = '#a3a3a3';
+      ansStatus.style.color = '#7a7594';
     }
 
     document.getElementById('btnPrevQuestion').disabled = (index === 0);
@@ -2113,7 +2113,7 @@ const app = {
         const expDate = u.access_expires_at ? new Date(u.access_expires_at).toLocaleDateString('kk-KZ', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
         statusBadge = `
           <div style="display:flex;flex-direction:column;gap:2px;">
-            <span class="badge-access-no" style="background:rgba(239,68,68,0.2);color:#fca5a5;font-size:0.75rem;">⚠️ Мерзімі біткен</span>
+            <span class="badge-access-no" style="background:rgba(239,68,68,0.2);color:#b91c1c;font-size:0.75rem;">⚠️ Мерзімі біткен</span>
             <span class="text-muted" style="font-size:0.72rem;">${expDate}</span>
           </div>
         `;
@@ -2233,12 +2233,12 @@ const app = {
           const diffMs = expDate.getTime() - Date.now();
           const diffDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
           const dateFmt = expDate.toLocaleDateString('kk-KZ', { day: '2-digit', month: '2-digit', year: 'numeric' });
-          statusEl.innerHTML = `Қазіргі күйі: <strong style="color:#34d399;">🟢 Белсенді</strong> (${dateFmt} дейін, қалғаны: <strong>${diffDays} күн</strong>)`;
+          statusEl.innerHTML = `Қазіргі күйі: <strong style="color:#059669;">🟢 Белсенді</strong> (${dateFmt} дейін, қалғаны: <strong>${diffDays} күн</strong>)`;
         } else {
-          statusEl.innerHTML = `Қазіргі күйі: <strong style="color:#34d399;">🟢 Шектеусіз (Мерзімсіз)</strong>`;
+          statusEl.innerHTML = `Қазіргі күйі: <strong style="color:#059669;">🟢 Шектеусіз (Мерзімсіз)</strong>`;
         }
       } else {
-        statusEl.innerHTML = `Қазіргі күйі: <strong style="color:#f87171;">🔒 Құлыпталған (Доступ жоқ)</strong>`;
+        statusEl.innerHTML = `Қазіргі күйі: <strong style="color:#dc2626;">🔒 Құлыпталған (Доступ жоқ)</strong>`;
       }
     }
 
