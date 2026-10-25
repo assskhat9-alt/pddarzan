@@ -299,30 +299,39 @@ export async function toggleUserAccess(userId, hasAccess, accessExpiresAt = null
   );
 }
 
-export async function setUserAccessPeriod(userId, period) {
-  // period: '1_month', '3_months', '6_months', 'unlimited', 'revoke'
-  let hasAccess = 1;
-  let expiresAt = null;
+// Access packages (see the price list): 7 / 30 / 90 days.
+// Legacy month-based values are still accepted for old admin clients.
+export const ACCESS_PERIOD_DAYS = {
+  '7_days': 7,
+  '30_days': 30,
+  '90_days': 90,
+  '1_month': 30,
+  '3_months': 90,
+  '6_months': 180
+};
 
+// Translates an admin-selected period into { hasAccess, expiresAt }
+export function resolveAccessPeriod(period) {
   if (period === 'revoke' || period === 0 || period === false) {
-    hasAccess = 0;
-    expiresAt = null;
-  } else if (period === '1_month') {
-    hasAccess = 1;
-    expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-  } else if (period === '3_months') {
-    hasAccess = 1;
-    expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
-  } else if (period === '6_months') {
-    hasAccess = 1;
-    expiresAt = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString();
-  } else if (period === 'unlimited' || period === 'lifetime' || period === null) {
-    hasAccess = 1;
-    expiresAt = null;
-  } else {
-    hasAccess = 1;
-    expiresAt = period;
+    return { hasAccess: 0, expiresAt: null };
   }
+  if (period === 'unlimited' || period === 'lifetime' || period === null) {
+    return { hasAccess: 1, expiresAt: null };
+  }
+  const days = ACCESS_PERIOD_DAYS[period];
+  if (days) {
+    return { hasAccess: 1, expiresAt: new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString() };
+  }
+  // An explicit expiry date (ISO string)
+  const date = new Date(period);
+  if (typeof period === 'string' && !isNaN(date.getTime())) {
+    return { hasAccess: 1, expiresAt: date.toISOString() };
+  }
+  throw new Error('Белгісіз доступ мерзімі: ' + period);
+}
+
+export async function setUserAccessPeriod(userId, period) {
+  const { hasAccess, expiresAt } = resolveAccessPeriod(period);
 
   await run(
     `UPDATE users SET has_access = ?, access_expires_at = ? WHERE id = ?`,
@@ -443,6 +452,7 @@ export default {
   resetUserDevice,
   toggleUserAccess,
   setUserAccessPeriod,
+  resolveAccessPeriod,
   deleteUser,
   getAllUsers,
   getSetting,

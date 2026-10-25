@@ -370,7 +370,7 @@ app.get('/api/admin/users', requireAuth, requireAdmin, async (req, res) => {
   }
 });
 
-// Admin creates new user (with duration period: 1_month, 3_months, 6_months, unlimited, or none)
+// Admin creates new user (with access period: 7_days, 30_days, 90_days, unlimited, or revoke)
 app.post('/api/admin/user/create', requireAuth, requireAdmin, async (req, res) => {
   try {
     let { username, full_name, password, phone, has_access, access_period } = req.body;
@@ -397,25 +397,12 @@ app.post('/api/admin/user/create', requireAuth, requireAdmin, async (req, res) =
       return res.status(400).json({ error: 'Бұл логин жүйеде тіркелген' });
     }
 
-    let access = 0;
-    let expiresAt = null;
-    const period = access_period || (has_access !== false ? '1_month' : 'revoke');
-
-    if (period === '1_month') {
-      access = 1;
-      expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-    } else if (period === '3_months') {
-      access = 1;
-      expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
-    } else if (period === '6_months') {
-      access = 1;
-      expiresAt = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString();
-    } else if (period === 'unlimited' || period === 'lifetime') {
-      access = 1;
-      expiresAt = null;
-    } else {
-      access = 0;
-      expiresAt = null;
+    const period = access_period || (has_access !== false ? '30_days' : 'revoke');
+    let access, expiresAt;
+    try {
+      ({ hasAccess: access, expiresAt } = db.resolveAccessPeriod(period));
+    } catch (e) {
+      return res.status(400).json({ error: e.message });
     }
 
     const newUser = await db.createUser(username, full_name, password, 'user', access, phone, expiresAt);
@@ -425,7 +412,7 @@ app.post('/api/admin/user/create', requireAuth, requireAdmin, async (req, res) =
   }
 });
 
-// Admin sets user access period (1_month, 3_months, 6_months, unlimited, revoke)
+// Admin sets user access period (7_days, 30_days, 90_days, unlimited, revoke)
 app.post('/api/admin/user/set-access', requireAuth, requireAdmin, async (req, res) => {
   try {
     const { userId, period } = req.body;
@@ -444,7 +431,7 @@ app.post('/api/admin/user/toggle-access', requireAuth, requireAdmin, async (req,
     const { userId, hasAccess, period } = req.body;
     if (!userId) return res.status(400).json({ error: 'Пайдаланушы ID көрсетілмеді' });
 
-    const selectedPeriod = period || (hasAccess ? '1_month' : 'revoke');
+    const selectedPeriod = period || (hasAccess ? '30_days' : 'revoke');
     const result = await db.setUserAccessPeriod(userId, selectedPeriod);
     res.json({ success: true, userId, hasAccess: result.hasAccess, accessExpiresAt: result.accessExpiresAt });
   } catch (err) {
@@ -562,7 +549,12 @@ app.get('/api/test/start', requireAuth, requireAccess, (req, res) => {
   }
 });
 
-// Start a 5-question DEMO test session (Accessible to anyone, including guests & AI, to preview the platform)
+// Fixed set of 20 demo questions (same for everyone): general rules, signs, markings,
+// right of way, overtaking, stopping, railway crossing, fines, first aid
+const DEMO_QUESTION_IDS = [33, 60, 86, 112, 162, 238, 264, 289, 339, 443, 494, 523, 582, 644, 705, 791, 817, 843, 897, 1042];
+const DEMO_PASS_RATIO = 0.8; // same 80% pass mark as the real exam
+
+// Start the 20-question DEMO test session (Accessible to anyone, including guests & AI, to preview the platform)
 app.get('/api/test/demo', (req, res) => {
   try {
     const lang = req.query.lang || 'kk';
@@ -574,9 +566,7 @@ app.get('/api/test/demo', (req, res) => {
     const decoded = authHeader ? verifyAuthToken(authHeader.replace(/^Bearer\s+/i, '').trim()) : null;
     const userId = (decoded && decoded.userId) || 'guest';
 
-    // Pick 5 random questions for platform preview
-    const shuffled = [...questions].sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 5);
+    const selected = DEMO_QUESTION_IDS.map(id => questionMap.get(id)).filter(Boolean);
     const questionIds = selected.map(q => q.id);
 
     const testSessionId = 'demo_' + crypto.randomUUID();
@@ -607,8 +597,8 @@ app.get('/api/test/demo', (req, res) => {
 
     res.json({
       testSessionId,
-      totalQuestions: 5,
-      timeLimitMinutes: 5,
+      totalQuestions: selected.length,
+      timeLimitMinutes: selected.length,
       timed: true,
       isDemo: true,
       language: lang,
@@ -624,7 +614,8 @@ app.post('/api/test/demo-submit', async (req, res) => {
   try {
     const { testSessionId, timeSpentSeconds, answers, language = 'kk' } = req.body;
     const session = activeTestSessions.get(testSessionId);
-    let questionIds = session ? session.questionIds : (answers || []).map(a => a.questionId);
+    // Only the fixed demo questions can be graded here (never arbitrary ids from the client)
+    const questionIds = session ? session.questionIds : DEMO_QUESTION_IDS;
 
     const answersMap = new Map();
     (answers || []).forEach(a => answersMap.set(a.questionId, a.selectedIndex));
@@ -664,9 +655,9 @@ app.post('/api/test/demo-submit', async (req, res) => {
     res.json({
       success: true,
       score,
-      totalQuestions: 5,
-      percentage: Math.round((score / 5) * 100),
-      passed: score >= 4,
+      totalQuestions: detailedAnswers.length,
+      percentage: Math.round((score / detailedAnswers.length) * 100),
+      passed: score >= Math.ceil(detailedAnswers.length * DEMO_PASS_RATIO),
       timeSpentSeconds: timeSpentSeconds || 60,
       isDemo: true,
       answers: detailedAnswers

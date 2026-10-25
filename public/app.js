@@ -335,7 +335,7 @@ const app = {
   openWhatsAppPurchase() {
     const wa = this.adminWhatsapp || '77770000000';
     const uname = this.currentUser ? this.currentUser.username : '';
-    const text = encodeURIComponent(`Сәлеметсіз бе! 🚗 PDD Arzan платформасына доступ алғым келеді.\n\nМенің логинім: ${uname}\n\nМаған қызықты тариф:\n• 1 ай — 1 500 ₸\n• 3 ай — 3 000 ₸\n• 6 ай — 4 500 ₸`);
+    const text = encodeURIComponent(`Сәлеметсіз бе! 🚗 PDD Arzan платформасына доступ алғым келеді.\n\nМенің логинім: ${uname}\n\nМаған қызықты тариф:\n• 7 күн — 1 490 ₸\n• 30 күн — 2 990 ₸\n• Тапсырғанша (90 күн) — 3 990 ₸\n• Автомектепке (10 оқушы, 90 күн) — 20 000 ₸`);
     window.open(`https://wa.me/${wa}?text=${text}`, '_blank');
   },
 
@@ -349,12 +349,12 @@ const app = {
     this.updateUserUI();
 
     if (this.currentTest) {
-      const totalQ = this.currentTest.isDemo ? 5 : 40;
+      const totalQ = this.currentTest.isDemo ? 20 : 40;
       document.getElementById('testProgressIndicator').textContent = `${this.t('questionWord')}: ${this.currentTest.currentIndex + 1} / ${totalQ}`;
       document.getElementById('qNumberDisplay').textContent = `${this.t('questionWord')} № ${this.currentTest.currentIndex + 1}`;
       const badgeTestMode = document.getElementById('badgeTestModeText');
       if (badgeTestMode) {
-        badgeTestMode.textContent = this.currentTest.isDemo ? 'ДЕМО-ТЕСТ (5 СҰРАҚ)' : (this.currentTest.isTimed ? this.t('testModeBadgeTimed') : this.t('testModeBadgeUntimed'));
+        badgeTestMode.textContent = this.currentTest.isDemo ? 'ДЕМО-ТЕСТ (20 СҰРАҚ)' : (this.currentTest.isTimed ? this.t('testModeBadgeTimed') : this.t('testModeBadgeUntimed'));
       }
     }
   },
@@ -851,7 +851,7 @@ const app = {
       const lockedTitle = lockedBanner.querySelector('.locked-title');
       if (this.currentUser && this.currentUser.isExpired) {
         if (lockedTitle) lockedTitle.textContent = 'Сіздің қолжетімділік (доступ) мерзіміңіз аяқталды';
-        if (lockedDesc) lockedDesc.textContent = 'Бұған дейін берілген 1 айлық / 3 айлық / 6 айлық доступ мерзімі бітті. Базаны қайта ашу немесе ұзарту үшін WhatsApp арқылы әкімшіге хабарласыңыз.';
+        if (lockedDesc) lockedDesc.textContent = 'Бұған дейін берілген доступ мерзімі бітті. Базаны қайта ашу немесе ұзарту үшін WhatsApp арқылы әкімшіге хабарласыңыз.';
       } else if (lockedTitle && lockedDesc) {
         lockedTitle.textContent = 'Платформа функцияларын толық пайдалану үшін доступ сатып алыңыз';
         lockedDesc.textContent = '1103 сұрақтың толық ресми базасы, 40 сұрақтан тұратын емтихан және жаттау тренажеры тек әкімші рұқсатымен ашылады.';
@@ -998,7 +998,7 @@ const app = {
         timeStr = `Жұмсалған уақыт: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')} (♾️ Шектеусіз)`;
       }
 
-      const totalQ = test.isDemo ? 5 : 40;
+      const totalQ = test.isDemo ? 20 : 40;
       const metaText = document.getElementById('activeTestMetaText');
       if (metaText) {
         metaText.textContent = `${timeStr} | Жауап берілгені: ${answeredCount} / ${totalQ} сұрақ`;
@@ -1031,7 +1031,7 @@ const app = {
         timeInfo = `Жұмсалған уақыт: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')} (Шектеусіз)`;
       }
 
-      const totalQ = this.currentTest.isDemo ? 5 : 40;
+      const totalQ = this.currentTest.isDemo ? 20 : 40;
       const statsInfo = document.getElementById('pauseStatsInfo');
       if (statsInfo) {
         statsInfo.textContent = `${timeInfo} | Жауап берілгені: ${answeredCount} / ${totalQ}`;
@@ -1154,7 +1154,7 @@ const app = {
         bookmarks: new Set(),
         isTimed: true,
         isDemo: true,
-        timeRemaining: 5 * 60,
+        timeRemaining: (data.timeLimitMinutes || 20) * 60,
         elapsedSeconds: 0,
         startTime: Date.now()
       };
@@ -1243,7 +1243,7 @@ const app = {
 
     if (this.currentTest.isDemo) {
       if (timerIcon) timerIcon.textContent = '🎯';
-      if (badgeTestMode) badgeTestMode.textContent = 'ДЕМО-ТЕСТ (5 СҰРАҚ)';
+      if (badgeTestMode) badgeTestMode.textContent = 'ДЕМО-ТЕСТ (20 СҰРАҚ)';
       if (timerBadge) timerBadge.classList.remove('timer-danger');
     } else if (this.currentTest.isTimed) {
       if (timerIcon) timerIcon.textContent = '⏳';
@@ -1302,7 +1302,7 @@ const app = {
   initPalette() {
     const grid = document.getElementById('paletteGrid');
     grid.innerHTML = '';
-    const totalQ = (this.currentTest && this.currentTest.isDemo) ? 5 : 40;
+    const totalQ = (this.currentTest && this.currentTest.isDemo) ? 20 : 40;
     for (let i = 0; i < totalQ; i++) {
       const btn = document.createElement('button');
       btn.className = 'pal-btn';
@@ -1315,7 +1315,7 @@ const app = {
 
   updatePalette() {
     if (!this.currentTest) return;
-    const totalQ = this.currentTest.isDemo ? 5 : 40;
+    const totalQ = this.currentTest.isDemo ? 20 : 40;
     for (let i = 0; i < totalQ; i++) {
       const btn = document.getElementById(`palBtn_${i}`);
       if (!btn) continue;
@@ -1336,7 +1336,7 @@ const app = {
     if (!this.currentTest || !this.currentTest.questions[index]) return;
     this.currentTest.currentIndex = index;
     const q = this.currentTest.questions[index];
-    const totalQ = (this.currentTest && this.currentTest.isDemo) ? 5 : 40;
+    const totalQ = (this.currentTest && this.currentTest.isDemo) ? 20 : 40;
 
     const langData = q[this.questionLang] || q.kk || q.ru || q;
 
@@ -1420,14 +1420,14 @@ const app = {
   },
 
   nextQuestion() {
-    const totalQ = (this.currentTest && this.currentTest.isDemo) ? 5 : 40;
+    const totalQ = (this.currentTest && this.currentTest.isDemo) ? 20 : 40;
     if (!this.currentTest || this.currentTest.currentIndex >= totalQ - 1) return;
     this.renderQuestion(this.currentTest.currentIndex + 1);
     this.saveActiveTestState();
   },
 
   confirmFinishTest() {
-    const totalQ = (this.currentTest && this.currentTest.isDemo) ? 5 : 40;
+    const totalQ = (this.currentTest && this.currentTest.isDemo) ? 20 : 40;
     const answeredCount = Object.keys(this.currentTest.userAnswers).length;
     let message = this.t('confirmFinish');
     if (answeredCount < totalQ) {
@@ -1443,7 +1443,7 @@ const app = {
     if (this.timerInterval) clearInterval(this.timerInterval);
 
     const isDemo = !!(this.currentTest && this.currentTest.isDemo);
-    const maxTime = isDemo ? (5 * 60) : (40 * 60);
+    const maxTime = isDemo ? (20 * 60) : (40 * 60);
 
     const timeSpentSeconds = this.currentTest.isTimed
       ? Math.max(1, maxTime - this.currentTest.timeRemaining)
@@ -1517,8 +1517,8 @@ const app = {
       badgeEl.className = `result-badge ${isPassed ? 'passed' : 'failed'}`;
       iconEl.textContent = isPassed ? '🎉' : '💡';
       msgEl.textContent = isPassed
-        ? `Құттықтаймыз! Сіз 5 сұрақтық демо-тесттен сәтті өттіңіз (${data.score}/${totalQ}). Барлық 1103 сұраққа қол жеткізіп, нағыз емтиханға толық дайындалу үшін WhatsApp арқылы толық нұсқаны сатып алыңыз!`
-        : `Сіз демо-тесттен 5 сұрақтың ${data.score}-не дұрыс жауап бердіңіз. Платформадағы барлық 1103 сұрақты қазақ/орыс тілдерінде оқып, емтиханды 100% тапсыру үшін толық қолжетімділікке тапсырыс беріңіз!`;
+        ? `Құттықтаймыз! Сіз 20 сұрақтық демо-тесттен сәтті өттіңіз (${data.score}/${totalQ}). Барлық 1103 сұраққа қол жеткізіп, нағыз емтиханға толық дайындалу үшін WhatsApp арқылы толық нұсқаны сатып алыңыз!`
+        : `Сіз демо-тесттен 20 сұрақтың ${data.score}-не дұрыс жауап бердіңіз. Платформадағы барлық 1103 сұрақты қазақ/орыс тілдерінде оқып, емтиханды 100% тапсыру үшін толық қолжетімділікке тапсырыс беріңіз!`;
     } else {
       badgeEl.textContent = isPassed ? this.t('passedTitle') : this.t('failedTitle');
       badgeEl.className = `result-badge ${isPassed ? 'passed' : 'failed'}`;
@@ -1532,7 +1532,7 @@ const app = {
 
     const mins = Math.floor(data.timeSpentSeconds / 60);
     const secs = data.timeSpentSeconds % 60;
-    const modeNote = data.isDemo ? ' (Демо 5 мин)' : ((data.timed === false) ? ' (Уақытсыз режим)' : ' (40 мин)');
+    const modeNote = data.isDemo ? ' (Демо 20 мин)' : ((data.timed === false) ? ' (Уақытсыз режим)' : ' (40 мин)');
     document.getElementById('resultTimeSpent').textContent = `${mins} мин ${secs} сек${modeNote}`;
 
     // Actions button config
@@ -2137,7 +2137,7 @@ const app = {
           <td>
             <div style="display:flex;gap:4px;flex-wrap:wrap;">
               ${!isAdmin ? `
-                <button class="btn btn-emerald btn-sm" onclick="app.openAccessPeriodModal(${u.id}, '${encodeURIComponent(u.username)}', '${encodeURIComponent(u.full_name)}', ${hasAccess}, '${u.access_expires_at || ''}')" title="Доступ мерзімін белгілеу (1 ай / 3 ай / 6 ай / шектеусіз)">
+                <button class="btn btn-emerald btn-sm" onclick="app.openAccessPeriodModal(${u.id}, '${encodeURIComponent(u.username)}', '${encodeURIComponent(u.full_name)}', ${hasAccess}, '${u.access_expires_at || ''}')" title="Доступ мерзімін белгілеу (7 / 30 / 90 күн / шектеусіз)">
                   <span>⏱️ Доступ / Мерзім</span>
                 </button>
               ` : ''}
@@ -2178,7 +2178,7 @@ const app = {
     const username = document.getElementById('adminNewUsername').value.trim().toLowerCase();
     const password = document.getElementById('adminNewPassword').value;
     const phone = document.getElementById('adminNewPhone').value.trim();
-    const access_period = document.getElementById('adminNewAccessPeriod') ? document.getElementById('adminNewAccessPeriod').value : '1_month';
+    const access_period = document.getElementById('adminNewAccessPeriod') ? document.getElementById('adminNewAccessPeriod').value : '30_days';
     const alertBox = document.getElementById('adminCreateAlert');
 
     try {
@@ -2201,7 +2201,7 @@ const app = {
 
       document.getElementById('adminCreateUserForm').reset();
       if (document.getElementById('adminNewAccessPeriod')) {
-        document.getElementById('adminNewAccessPeriod').value = '1_month';
+        document.getElementById('adminNewAccessPeriod').value = '30_days';
       }
       this.loadAdminUsers();
 

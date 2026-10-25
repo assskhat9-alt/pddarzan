@@ -542,3 +542,67 @@
     display: none;
   }
 }
+
+/* ---------- Price list (locked-account banner) ---------- */
+.price-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.625rem;
+  margin: 0.875rem 0;
+}
+.price-card {
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.875rem 0.75rem 0.75rem;
+  text-align: center;
+}
+.price-card-hit {
+  background: var(--accent-soft);
+  border: 2px solid var(--accent);
+  box-shadow: var(--shadow-glow);
+}
+.price-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.price-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-sub);
+}
+.price-value {
+  font-family: 'Montserrat', 'Inter', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--accent);
+  margin: 2px 0;
+}
+.price-note {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+@media (max-width: 768px) {
+  .price-grid {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 1rem;
+  }
+}
+
+/* Admin access-period modal: solid white card */
+#accessPeriodModal .modal-content {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+}
