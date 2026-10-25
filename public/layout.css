@@ -492,3 +492,53 @@
     display: none;
   }
 }
+
+/* ---------- Logo (road + car mark, "PDD ARZAN" wordmark) ---------- */
+.brand {
+  gap: 0.625rem;
+}
+.brand-logo {
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+}
+.brand-mark {
+  width: 21px;
+  height: 52px;
+}
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.brand-title {
+  font-family: 'Montserrat', 'Inter', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-main);
+}
+.brand-title-light {
+  font-weight: 400;
+}
+.brand-tagline {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-top: 2px;
+  white-space: nowrap;
+}
+@media (max-width: 768px) {
+  .brand-mark {
+    width: 16px;
+    height: 40px;
+  }
+  .brand-title {
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+  }
+  .brand-tagline {
+    display: none;
+  }
+}

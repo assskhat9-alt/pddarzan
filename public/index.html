@@ -114,9 +114,10 @@
   </script>
   <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM summary">
 
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;700;800;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="theme.css">
   <link rel="stylesheet" href="layout.css">
@@ -127,16 +128,22 @@
   <header class="navbar">
     <div class="nav-container">
       <div class="brand" onclick="app.navigate('dashboard')">
-        <div class="brand-icon">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="1" y="3" width="15" height="13"></rect>
-            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-            <circle cx="5.5" cy="18.5" r="2.5"></circle>
-            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+        <div class="brand-logo">
+          <svg class="brand-mark" viewBox="0 0 48 120" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true">
+            <path d="M24 3 L19 14 L24 11.5 L29 14 Z" fill="currentColor" stroke="none"/>
+            <path d="M24 17 V40" stroke-dasharray="4 4.5"/>
+            <path d="M30 18 V27 C30 35 9.5 34 9.5 46 V73 C9.5 85 30 84 30 92 V104"/>
+            <rect x="14.5" y="45" width="19" height="29" rx="6"/>
+            <path d="M16.6 51 C19 48.6 29 48.6 31.4 51 L30.6 56 C27 55 21 55 17.4 56 Z" fill="currentColor" stroke="none"/>
+            <path d="M17.4 63 C21 64 27 64 30.6 63 L31.4 68.5 C29 71 19 71 16.6 68.5 Z" fill="currentColor" stroke="none"/>
+            <path d="M12 54.5 H14.5 M33.5 54.5 H36" stroke-width="2.2"/>
+            <path d="M24 79 V100" stroke-dasharray="4 4.5"/>
+            <circle cx="24" cy="110" r="3.8" fill="currentColor" stroke="none"/>
           </svg>
         </div>
         <div class="brand-text">
-          <span class="brand-title">PDD ARZAN</span>
+          <span class="brand-title"><span class="brand-title-light">PDD</span> ARZAN</span>
+          <span class="brand-tagline">Жол ережесін оңай үйрен</span>
         </div>
       </div>
 
