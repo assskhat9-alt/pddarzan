@@ -2468,7 +2468,7 @@ body {
    ================================================================ */
 
 /* Global Mobile Form Controls & Touch Prevention */
-@media (max-width: 768px) {
+@media (max-width: 768px), (pointer: coarse) and (max-height: 500px) {
   html, body {
     overflow-x: hidden;
     width: 100%;

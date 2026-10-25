@@ -1200,11 +1200,12 @@ const app = {
     if (meta) meta.textContent = count > 0 ? `${count} сұрақ қайталауды күтуде` : 'Қате жоқ — алдымен тест тапсырыңыз';
     const bar = document.getElementById('courseMistakesProgress');
     if (bar) bar.style.width = count > 0 ? `${Math.min(100, Math.round((count / 40) * 100))}%` : '0%';
-    const badge = document.getElementById('navMistakesCount');
-    if (badge) {
-      badge.textContent = count;
+    ['navMistakesCount', 'mobMistakesCount'].forEach(id => {
+      const badge = document.getElementById(id);
+      if (!badge) return;
+      badge.textContent = count > 99 ? '99+' : count;
       badge.classList.toggle('hidden', count === 0);
-    }
+    });
   },
 
   async startMistakesTest() {

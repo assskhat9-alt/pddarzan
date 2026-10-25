@@ -3,6 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <script id="deviceModeScript">
+    // Phone -> mobile layout; tablet, laptop, PC -> desktop layout. No manual switch.
+    (function () {
+      var ua = navigator.userAgent || '';
+      var touch = navigator.maxTouchPoints > 1 || 'ontouchstart' in window;
+      var shortSide = Math.min(screen.width, screen.height);
+      var isIPadOS = /Macintosh/.test(ua) && touch; // iPadOS reports itself as a Mac
+      var isTablet = /iPad|Tablet|PlayBook|Silk/i.test(ua) || isIPadOS ||
+        (/Android/i.test(ua) && !/Mobile/i.test(ua)) ||
+        (touch && !/Mobi|iPhone|iPod|Android|Windows Phone/i.test(ua) && shortSide >= 600 && shortSide <= 1100);
+      var isPhone = !isTablet && (/Mobi|iPhone|iPod|Android.+Mobile|Windows Phone/i.test(ua) || (touch && shortSide < 600));
+      var root = document.documentElement;
+      root.classList.add(isPhone ? 'device-mobile' : 'device-desktop');
+      if (isTablet) {
+        root.classList.add('device-tablet');
+        // Render the desktop layout (with the sidebar) and let the tablet scale it to the screen
+        var meta = document.querySelector('meta[name="viewport"]');
+        if (meta) meta.setAttribute('content', 'width=1180, viewport-fit=cover');
+      }
+    })();
+  </script>
   <meta name="theme-color" content="#f5f4fb">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1222,6 +1243,13 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
       </div>
       <span>Емтихан</span>
+    </button>
+    <button class="mobile-tab-btn" id="mobTabMistakes" onclick="app.startMistakesTest()">
+      <span class="mobile-tab-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+        <span class="mobile-tab-count hidden" id="mobMistakesCount">0</span>
+      </span>
+      <span>Қателер</span>
     </button>
     <button class="mobile-tab-btn hidden" id="mobTabAdmin" onclick="app.navigate('admin')">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
