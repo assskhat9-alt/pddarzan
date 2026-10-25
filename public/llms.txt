@@ -1,10 +1,10 @@
 # PDD ARZAN
 
-> PDD ARZAN (https://pddarzan.onrender.com) is an online platform for preparing for the Kazakhstan driving-licence theory exam (ПДД / Жол жүрісі қағидалары, the exam taken at AutoTSON / АвтоЦОН). It contains all 1103 official exam questions in Kazakh, Russian and English and simulates the real exam: 40 random questions, 40 minutes, pass mark 32/40 (80%).
+> PDD ARZAN (https://pddarzan.onrender.com) is an online platform for preparing for the Kazakhstan driving-licence theory exam (ПДД / Жол жүрісі қағидалары, the exam taken at AutoTSON / АвтоЦОН). It contains the full official exam question bank in Kazakh, Russian and English and simulates the real exam: 40 random questions, 40 minutes, pass mark 32/40 (80%).
 
 ## Key facts
 
-- Question bank: 1103 official questions, with images of road signs and real traffic situations
+- Question bank: the full official question bank, with images of road signs and real traffic situations
 - Languages: Kazakh (қазақша), Russian (русский), English — switchable per question
 - Exam mode: 40 random questions, 40-minute timer (or untimed practice), pass mark 32 of 40
 - Study mode: browse all questions with correct answers, search by text or number, one-by-one trainer

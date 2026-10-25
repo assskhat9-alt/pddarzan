@@ -863,7 +863,7 @@ const app = {
         if (lockedDesc) lockedDesc.textContent = 'Бұған дейін берілген доступ мерзімі бітті. Базаны қайта ашу немесе ұзарту үшін WhatsApp арқылы әкімшіге хабарласыңыз.';
       } else if (lockedTitle && lockedDesc) {
         lockedTitle.textContent = 'Платформа функцияларын толық пайдалану үшін доступ сатып алыңыз';
-        lockedDesc.textContent = '1103 сұрақтың толық ресми базасы, 40 сұрақтан тұратын емтихан және жаттау тренажеры тек әкімші рұқсатымен ашылады.';
+        lockedDesc.textContent = 'Ресми сұрақтардың толық базасы, 40 сұрақтан тұратын емтихан және жаттау тренажеры тек әкімші рұқсатымен ашылады.';
       }
     }
 
@@ -1607,8 +1607,8 @@ const app = {
       badgeEl.className = `result-badge ${isPassed ? 'passed' : 'failed'}`;
       iconEl.textContent = isPassed ? '🎉' : '💡';
       msgEl.textContent = isPassed
-        ? `Құттықтаймыз! Сіз 20 сұрақтық демо-тесттен сәтті өттіңіз (${data.score}/${totalQ}). Барлық 1103 сұраққа қол жеткізіп, нағыз емтиханға толық дайындалу үшін WhatsApp арқылы толық нұсқаны сатып алыңыз!`
-        : `Сіз демо-тесттен 20 сұрақтың ${data.score}-не дұрыс жауап бердіңіз. Платформадағы барлық 1103 сұрақты қазақ/орыс тілдерінде оқып, емтиханды 100% тапсыру үшін толық қолжетімділікке тапсырыс беріңіз!`;
+        ? `Құттықтаймыз! Сіз 20 сұрақтық демо-тесттен сәтті өттіңіз (${data.score}/${totalQ}). Барлық сұрақтарға қол жеткізіп, нағыз емтиханға толық дайындалу үшін WhatsApp арқылы толық нұсқаны сатып алыңыз!`
+        : `Сіз демо-тесттен 20 сұрақтың ${data.score}-не дұрыс жауап бердіңіз. Платформадағы барлық сұрақтарды қазақ/орыс тілдерінде оқып, емтиханды 100% тапсыру үшін толық қолжетімділікке тапсырыс беріңіз!`;
     } else if (data.mode === 'mistakes') {
       const left = totalQ - data.score;
       badgeEl.textContent = 'ҚАТЕЛЕРМЕН ЖҰМЫС АЯҚТАЛДЫ';
@@ -1841,7 +1841,11 @@ const app = {
         return;
       }
 
-      info.textContent = `Табылды: ${data.total} сұрақ (Бет ${data.page} / ${data.totalPages})`;
+      // The size of the whole question bank is not shown; the count appears only for a search or filter
+      const isFiltered = !!this.studySearch || this.studyFilter !== 'all';
+      info.textContent = isFiltered
+        ? `Табылды: ${data.total} сұрақ (Бет ${data.page} / ${data.totalPages})`
+        : `Бет ${data.page} / ${data.totalPages}`;
       this.renderStudyCards(data.questions);
       this.renderStudyPagination(data.totalPages, data.page);
     } catch (err) {
@@ -2023,7 +2027,7 @@ const app = {
     const input = document.getElementById('quickJumpInput');
     const num = parseInt(input.value);
     if (isNaN(num) || num < 1 || num > 1103) {
-      alert('1 мен 1103 аралығындағы сұрақ нөмірін енгізіңіз');
+      alert('Сұрақтың нөмірін дұрыс енгізіңіз');
       return;
     }
     this.studySearch = num.toString();
