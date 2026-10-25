@@ -349,12 +349,12 @@ const app = {
     this.updateUserUI();
 
     if (this.currentTest) {
-      const totalQ = this.currentTest.isDemo ? 20 : 40;
+      const totalQ = this.currentTest.questions.length;
       document.getElementById('testProgressIndicator').textContent = `${this.t('questionWord')}: ${this.currentTest.currentIndex + 1} / ${totalQ}`;
       document.getElementById('qNumberDisplay').textContent = `${this.t('questionWord')} № ${this.currentTest.currentIndex + 1}`;
       const badgeTestMode = document.getElementById('badgeTestModeText');
       if (badgeTestMode) {
-        badgeTestMode.textContent = this.currentTest.isDemo ? 'ДЕМО-ТЕСТ (20 СҰРАҚ)' : (this.currentTest.isTimed ? this.t('testModeBadgeTimed') : this.t('testModeBadgeUntimed'));
+        badgeTestMode.textContent = this.testModeBadge(this.currentTest);
       }
     }
   },
@@ -600,6 +600,15 @@ const app = {
   },
 
   // Auth Methods
+  // Landing CTA: open the login or register form and bring it into view
+  goToAuth(tab) {
+    this.switchAuthTab(tab);
+    const card = document.querySelector('#authView .auth-card');
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const field = document.getElementById(tab === 'register' ? 'regFullName' : 'loginUsername');
+    if (field) setTimeout(() => field.focus({ preventScroll: true }), 400);
+  },
+
   switchAuthTab(tab) {
     const isLogin = tab === 'login';
     document.getElementById('tabLoginBtn').classList.toggle('active', isLogin);
@@ -881,6 +890,7 @@ const app = {
       if (examMeta) examMeta.textContent = `Ең жоғары балл: ${stats.bestScore} / 40`;
       const passBar = document.getElementById('coursePassProgress');
       if (passBar) passBar.style.width = `${stats.passRate}%`;
+      this.updateMistakesUI(data.mistakesCount || 0);
       const passMeta = document.getElementById('coursePassMeta');
       if (passMeta) passMeta.textContent = `Сәтті: ${stats.passRate} % · ${stats.totalTests} тест`;
 
@@ -941,6 +951,8 @@ const app = {
       userAnswers: this.currentTest.userAnswers,
       bookmarks: Array.from(this.currentTest.bookmarks),
       isTimed: this.currentTest.isTimed,
+      isDemo: !!this.currentTest.isDemo,
+      mode: this.currentTest.mode || 'exam',
       timeRemaining: this.currentTest.timeRemaining,
       elapsedSeconds: this.currentTest.elapsedSeconds || 0,
       startTime: this.currentTest.startTime,
@@ -998,7 +1010,7 @@ const app = {
         timeStr = `Жұмсалған уақыт: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')} (♾️ Шектеусіз)`;
       }
 
-      const totalQ = test.isDemo ? 20 : 40;
+      const totalQ = test.questions.length;
       const metaText = document.getElementById('activeTestMetaText');
       if (metaText) {
         metaText.textContent = `${timeStr} | Жауап берілгені: ${answeredCount} / ${totalQ} сұрақ`;
@@ -1031,7 +1043,7 @@ const app = {
         timeInfo = `Жұмсалған уақыт: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')} (Шектеусіз)`;
       }
 
-      const totalQ = this.currentTest.isDemo ? 20 : 40;
+      const totalQ = this.currentTest.questions.length;
       const statsInfo = document.getElementById('pauseStatsInfo');
       if (statsInfo) {
         statsInfo.textContent = `${timeInfo} | Жауап берілгені: ${answeredCount} / ${totalQ}`;
@@ -1056,6 +1068,8 @@ const app = {
         userAnswers: saved.userAnswers || {},
         bookmarks: new Set(saved.bookmarks || []),
         isTimed: saved.isTimed !== false,
+        isDemo: !!saved.isDemo,
+        mode: saved.mode || 'exam',
         timeRemaining: saved.timeRemaining,
         elapsedSeconds: saved.elapsedSeconds || 0,
         startTime: saved.startTime || Date.now()
@@ -1112,6 +1126,8 @@ const app = {
           userAnswers: saved.userAnswers || {},
           bookmarks: new Set(saved.bookmarks || []),
           isTimed: saved.isTimed !== false,
+          isDemo: !!saved.isDemo,
+          mode: saved.mode || 'exam',
           timeRemaining: saved.timeRemaining,
           elapsedSeconds: saved.elapsedSeconds || 0,
           startTime: saved.startTime || Date.now()
@@ -1154,7 +1170,77 @@ const app = {
         bookmarks: new Set(),
         isTimed: true,
         isDemo: true,
+        mode: 'demo',
         timeRemaining: (data.timeLimitMinutes || 20) * 60,
+        elapsedSeconds: 0,
+        startTime: Date.now()
+      };
+      this.isPaused = false;
+
+      this.saveActiveTestState();
+      this.navigate('test');
+      this.initPalette();
+      this.renderQuestion(0);
+      this.startTimer();
+      this.updateLanguageButtons();
+    } catch (err) {
+      alert(err.message);
+    }
+  },
+
+  testModeBadge(test) {
+    if (test.isDemo) return `ДЕМО-ТЕСТ (${test.questions.length} СҰРАҚ)`;
+    if (test.mode === 'mistakes') return `ҚАТЕЛЕРМЕН ЖҰМЫС (${test.questions.length})`;
+    return test.isTimed ? this.t('testModeBadgeTimed') : this.t('testModeBadgeUntimed');
+  },
+
+  updateMistakesUI(count) {
+    this.mistakesCount = count;
+    const meta = document.getElementById('courseMistakesMeta');
+    if (meta) meta.textContent = count > 0 ? `${count} сұрақ қайталауды күтуде` : 'Қате жоқ — алдымен тест тапсырыңыз';
+    const bar = document.getElementById('courseMistakesProgress');
+    if (bar) bar.style.width = count > 0 ? `${Math.min(100, Math.round((count / 40) * 100))}%` : '0%';
+    const badge = document.getElementById('navMistakesCount');
+    if (badge) {
+      badge.textContent = count;
+      badge.classList.toggle('hidden', count === 0);
+    }
+  },
+
+  async startMistakesTest() {
+    if (this.currentUser && this.currentUser.role !== 'admin' && !this.currentUser.hasAccess) {
+      this.openPaywallModal();
+      return;
+    }
+    if (this.currentTest || this.loadActiveTestState()) {
+      if (!confirm('Сізде аяқталмаған тест бар. Оны өшіріп, қателермен жұмысты бастағыңыз келе ме?')) {
+        this.resumeTest();
+        return;
+      }
+      this.clearActiveTestState();
+      this.currentTest = null;
+    }
+
+    try {
+      const { ok, data } = await this.apiFetch(`/api/test/mistakes?lang=${this.questionLang}`);
+      if (!ok) {
+        if (data.error) alert(data.error);
+        return;
+      }
+      if (!data.questions || data.questions.length === 0) {
+        alert('Қате жауап берілген сұрақтар жоқ. Алдымен емтихан тапсырыңыз — қателер осында жиналады.');
+        return;
+      }
+
+      this.currentTest = {
+        sessionId: data.testSessionId,
+        questions: data.questions,
+        currentIndex: 0,
+        userAnswers: {},
+        bookmarks: new Set(),
+        isTimed: false,
+        mode: 'mistakes',
+        timeRemaining: 0,
         elapsedSeconds: 0,
         startTime: Date.now()
       };
@@ -1217,6 +1303,7 @@ const app = {
         userAnswers: {},
         bookmarks: new Set(),
         isTimed: data.timed,
+        mode: 'exam',
         timeRemaining: data.timed ? 40 * 60 : 0,
         elapsedSeconds: 0,
         startTime: Date.now()
@@ -1241,9 +1328,9 @@ const app = {
     const timerIcon = document.getElementById('timerIcon');
     const badgeTestMode = document.getElementById('badgeTestModeText');
 
-    if (this.currentTest.isDemo) {
-      if (timerIcon) timerIcon.textContent = '🎯';
-      if (badgeTestMode) badgeTestMode.textContent = 'ДЕМО-ТЕСТ (20 СҰРАҚ)';
+    if (this.currentTest.isDemo || this.currentTest.mode === 'mistakes') {
+      if (timerIcon) timerIcon.textContent = this.currentTest.isDemo ? '🎯' : '🔁';
+      if (badgeTestMode) badgeTestMode.textContent = this.testModeBadge(this.currentTest);
       if (timerBadge) timerBadge.classList.remove('timer-danger');
     } else if (this.currentTest.isTimed) {
       if (timerIcon) timerIcon.textContent = '⏳';
@@ -1302,7 +1389,9 @@ const app = {
   initPalette() {
     const grid = document.getElementById('paletteGrid');
     grid.innerHTML = '';
-    const totalQ = (this.currentTest && this.currentTest.isDemo) ? 20 : 40;
+    const totalQ = this.currentTest ? this.currentTest.questions.length : 40;
+    const paletteTitle = document.getElementById('paletteTitle');
+    if (paletteTitle) paletteTitle.textContent = `Сұрақтар картасы (${totalQ})`;
     for (let i = 0; i < totalQ; i++) {
       const btn = document.createElement('button');
       btn.className = 'pal-btn';
@@ -1315,7 +1404,7 @@ const app = {
 
   updatePalette() {
     if (!this.currentTest) return;
-    const totalQ = this.currentTest.isDemo ? 20 : 40;
+    const totalQ = this.currentTest.questions.length;
     for (let i = 0; i < totalQ; i++) {
       const btn = document.getElementById(`palBtn_${i}`);
       if (!btn) continue;
@@ -1336,7 +1425,7 @@ const app = {
     if (!this.currentTest || !this.currentTest.questions[index]) return;
     this.currentTest.currentIndex = index;
     const q = this.currentTest.questions[index];
-    const totalQ = (this.currentTest && this.currentTest.isDemo) ? 20 : 40;
+    const totalQ = this.currentTest ? this.currentTest.questions.length : 40;
 
     const langData = q[this.questionLang] || q.kk || q.ru || q;
 
@@ -1420,14 +1509,14 @@ const app = {
   },
 
   nextQuestion() {
-    const totalQ = (this.currentTest && this.currentTest.isDemo) ? 20 : 40;
+    const totalQ = this.currentTest ? this.currentTest.questions.length : 40;
     if (!this.currentTest || this.currentTest.currentIndex >= totalQ - 1) return;
     this.renderQuestion(this.currentTest.currentIndex + 1);
     this.saveActiveTestState();
   },
 
   confirmFinishTest() {
-    const totalQ = (this.currentTest && this.currentTest.isDemo) ? 20 : 40;
+    const totalQ = this.currentTest ? this.currentTest.questions.length : 40;
     const answeredCount = Object.keys(this.currentTest.userAnswers).length;
     let message = this.t('confirmFinish');
     if (answeredCount < totalQ) {
@@ -1519,6 +1608,14 @@ const app = {
       msgEl.textContent = isPassed
         ? `Құттықтаймыз! Сіз 20 сұрақтық демо-тесттен сәтті өттіңіз (${data.score}/${totalQ}). Барлық 1103 сұраққа қол жеткізіп, нағыз емтиханға толық дайындалу үшін WhatsApp арқылы толық нұсқаны сатып алыңыз!`
         : `Сіз демо-тесттен 20 сұрақтың ${data.score}-не дұрыс жауап бердіңіз. Платформадағы барлық 1103 сұрақты қазақ/орыс тілдерінде оқып, емтиханды 100% тапсыру үшін толық қолжетімділікке тапсырыс беріңіз!`;
+    } else if (data.mode === 'mistakes') {
+      const left = totalQ - data.score;
+      badgeEl.textContent = 'ҚАТЕЛЕРМЕН ЖҰМЫС АЯҚТАЛДЫ';
+      badgeEl.className = `result-badge ${isPassed ? 'passed' : 'failed'}`;
+      iconEl.textContent = left === 0 ? '🎉' : '🔁';
+      msgEl.textContent = left === 0
+        ? `Керемет! Бұрын қате жіберген ${totalQ} сұрақтың барлығына дұрыс жауап бердіңіз — олар қателер тізімінен шығарылды.`
+        : `${data.score} сұрақ қателер тізімінен шықты, әлі ${left} сұрақ қалды. Төмендегі талдауды қарап, қайта жаттығыңыз.`;
     } else {
       badgeEl.textContent = isPassed ? this.t('passedTitle') : this.t('failedTitle');
       badgeEl.className = `result-badge ${isPassed ? 'passed' : 'failed'}`;
@@ -1532,7 +1629,7 @@ const app = {
 
     const mins = Math.floor(data.timeSpentSeconds / 60);
     const secs = data.timeSpentSeconds % 60;
-    const modeNote = data.isDemo ? ' (Демо 20 мин)' : ((data.timed === false) ? ' (Уақытсыз режим)' : ' (40 мин)');
+    const modeNote = data.isDemo ? ' (Демо 20 мин)' : (data.mode === 'mistakes' ? ' (Қателермен жұмыс)' : ((data.timed === false) ? ' (Уақытсыз режим)' : ' (40 мин)'));
     document.getElementById('resultTimeSpent').textContent = `${mins} мин ${secs} сек${modeNote}`;
 
     // Actions button config

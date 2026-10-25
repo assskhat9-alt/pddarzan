@@ -606,3 +606,394 @@
   border-radius: 20px;
   box-shadow: var(--shadow-lg);
 }
+
+/* ---------- Mistakes: nav counter and card bar ---------- */
+.nav-count {
+  margin-left: auto;
+  min-width: 22px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: center;
+}
+.nav-link-btn.active .nav-count {
+  background: #fff;
+}
+.course-progress-warn {
+  background: #ef4444;
+}
+
+/* =====================================================================
+   Landing sections (guests): how it works, features, pricing, FAQ, CTA
+   ===================================================================== */
+html {
+  scroll-behavior: smooth;
+}
+.landing-sections {
+  max-width: 1120px;
+  margin: 4rem auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4.5rem;
+}
+.lp-section {
+  scroll-margin-top: 90px;
+}
+.lp-head {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.lp-kicker {
+  display: inline-block;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 5px 12px;
+  border-radius: 999px;
+  margin-bottom: 0.75rem;
+}
+.lp-title {
+  font-size: 2rem;
+  line-height: 1.2;
+  margin: 0;
+}
+
+/* how it works */
+.lp-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.lp-step {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 1.75rem 1.5rem;
+  box-shadow: var(--shadow-md);
+}
+.lp-step-num {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--accent);
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-glow);
+}
+.lp-step h3,
+.lp-feature h3 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+.lp-step p,
+.lp-feature p {
+  color: var(--text-sub);
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+/* features */
+.lp-features {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.lp-feature {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 1.5rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.lp-feature:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent-soft-2);
+}
+.lp-feature-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--accent-soft);
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+/* pricing */
+.lp-prices {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: stretch;
+}
+.lp-price {
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 1.5rem 1.125rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.lp-price-hit {
+  border: 2px solid var(--accent);
+  background: linear-gradient(180deg, var(--accent-soft) 0%, #fff 60%);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-8px);
+}
+.lp-price-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 3px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.lp-price-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-sub);
+}
+.lp-price-value {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 1.6rem;
+  color: var(--text-main);
+}
+.lp-price-hit .lp-price-value {
+  color: var(--accent);
+}
+.lp-price ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+.lp-price li {
+  font-size: 0.82rem;
+  color: var(--text-sub);
+  padding-left: 1.25rem;
+  position: relative;
+}
+.lp-price li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 800;
+}
+
+/* FAQ */
+.lp-faq {
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.lp-faq details {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 0 1.25rem;
+}
+.lp-faq summary {
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  padding: 1.1rem 2rem 1.1rem 0;
+  position: relative;
+}
+.lp-faq summary::-webkit-details-marker {
+  display: none;
+}
+.lp-faq summary::after {
+  content: '+';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+.lp-faq details[open] summary::after {
+  content: '−';
+}
+.lp-faq details p {
+  color: var(--text-sub);
+  font-size: 0.92rem;
+  margin: 0 0 1.1rem;
+}
+
+/* final CTA */
+.lp-cta {
+  background: linear-gradient(135deg, #7b5cff 0%, #5b36f2 100%);
+  border-radius: 28px;
+  padding: 3rem 2rem;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 18px 40px rgba(91, 54, 242, 0.25);
+}
+.lp-cta h2 {
+  color: #fff;
+  font-size: 2rem;
+  margin: 0 0 0.5rem;
+}
+.lp-cta p {
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 1.5rem;
+}
+.lp-cta-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.lp-cta-primary {
+  background: #fff;
+  color: var(--accent);
+}
+.lp-cta-primary:hover {
+  background: var(--accent-soft);
+}
+.lp-cta-secondary {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+.lp-cta-secondary:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* footer */
+.lp-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.5rem 0 1rem;
+  border-top: 1px solid var(--border);
+  margin-top: -2rem;
+}
+.lp-footer-brand {
+  display: flex;
+  flex-direction: column;
+}
+.lp-footer-brand strong {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+.lp-footer-brand span {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.lp-footer-links {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+.lp-footer-links a {
+  color: var(--text-sub);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.lp-footer-links a:hover {
+  color: var(--accent);
+}
+.lp-footer-copy {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* guest header navigation */
+.guest-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-left: auto;
+  margin-right: 1.25rem;
+}
+.guest-nav a {
+  color: var(--text-sub);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.guest-nav a:hover {
+  color: var(--accent);
+}
+body:has(#navMainLinks:not(.hidden)) .guest-nav {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+  .lp-prices {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .lp-price-hit {
+    transform: none;
+  }
+}
+@media (max-width: 768px) {
+  .landing-sections {
+    margin-top: 2.5rem;
+    gap: 3rem;
+  }
+  .lp-title,
+  .lp-cta h2 {
+    font-size: 1.5rem;
+  }
+  .lp-steps,
+  .lp-features {
+    grid-template-columns: 1fr;
+  }
+  .guest-nav {
+    display: none;
+  }
+  .lp-cta {
+    padding: 2.25rem 1.25rem;
+  }
+  .lp-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: -1rem;
+  }
+}
+@media (max-width: 480px) {
+  .lp-prices {
+    grid-template-columns: 1fr;
+  }
+}

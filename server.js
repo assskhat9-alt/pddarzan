@@ -66,13 +66,33 @@ function verifyAuthToken(token) {
   }
 }
 
-// Active test sessions: sessionId -> { userId, questionIds, startedAt, language, timed }
+// Active test sessions: sessionId -> { userId, questionIds, startedAt, language, timed, mode }
 const activeTestSessions = new Map();
 
 // Helper to check if image exists for question
 function hasQuestionImage(qId) {
   return fs.existsSync(path.resolve(`public/images/q_${qId}.png`));
 }
+
+// Question payload for a running test (never includes the correct answer)
+function toTestQuestion(q, idx, lang) {
+  const langData = q[lang] || q.kk || q.ru;
+  const hasImage = hasQuestionImage(q.id);
+  return {
+    index: idx + 1,
+    id: q.id,
+    number: q.number,
+    question: langData.question,
+    options: langData.options,
+    kk: q.kk,
+    ru: q.ru,
+    en: q.en,
+    hasImage,
+    imageUrl: hasImage ? `/images/q_${q.id}.png` : null
+  };
+}
+
+const PASS_RATIO = 0.8; // 32 of 40, as at AutoTSON
 
 // ================= AUTHENTICATION & SECURITY MIDDLEWARES =================
 
@@ -519,21 +539,7 @@ app.get('/api/test/start', requireAuth, requireAccess, (req, res) => {
     });
 
     // Prepare questions without leaking correct_index
-    const testQuestions = selected.map((q, idx) => {
-      const langData = q[lang] || q.kk || q.ru;
-      return {
-        index: idx + 1,
-        id: q.id,
-        number: q.number,
-        question: langData.question,
-        options: langData.options,
-        kk: q.kk,
-        ru: q.ru,
-        en: q.en,
-        hasImage: hasQuestionImage(q.id),
-        imageUrl: hasQuestionImage(q.id) ? `/images/q_${q.id}.png` : null
-      };
-    });
+    const testQuestions = selected.map((q, idx) => toTestQuestion(q, idx, lang));
 
     res.json({
       testSessionId,
@@ -579,21 +585,7 @@ app.get('/api/test/demo', (req, res) => {
       timed: true
     });
 
-    const testQuestions = selected.map((q, idx) => {
-      const langData = q[lang] || q.kk || q.ru;
-      return {
-        index: idx + 1,
-        id: q.id,
-        number: q.number,
-        question: langData.question,
-        options: langData.options,
-        kk: q.kk,
-        ru: q.ru,
-        en: q.en,
-        hasImage: hasQuestionImage(q.id),
-        imageUrl: hasQuestionImage(q.id) ? `/images/q_${q.id}.png` : null
-      };
-    });
+    const testQuestions = selected.map((q, idx) => toTestQuestion(q, idx, lang));
 
     res.json({
       testSessionId,
@@ -667,6 +659,49 @@ app.post('/api/test/demo-submit', async (req, res) => {
   }
 });
 
+// "Work on mistakes": a test from the questions the user last answered wrong (up to 40, untimed)
+app.get('/api/test/mistakes', requireAuth, requireAccess, async (req, res) => {
+  try {
+    const lang = req.query.lang || 'kk';
+    const mistakes = await db.getUserMistakes(req.user.userId);
+    const selected = mistakes
+      .map(m => ({ ...m, rnd: Math.random() }))
+      .sort((a, b) => b.wrongCount - a.wrongCount || a.rnd - b.rnd)
+      .slice(0, 40)
+      .map(m => questionMap.get(m.questionId))
+      .filter(Boolean)
+      .sort(() => 0.5 - Math.random());
+
+    if (selected.length === 0) {
+      return res.json({ totalQuestions: 0, totalMistakes: 0, questions: [] });
+    }
+
+    const testSessionId = crypto.randomUUID();
+    activeTestSessions.set(testSessionId, {
+      userId: req.user.userId,
+      questionIds: selected.map(q => q.id),
+      startedAt: Date.now(),
+      language: lang,
+      timed: false,
+      mode: 'mistakes'
+    });
+
+    res.json({
+      testSessionId,
+      mode: 'mistakes',
+      totalQuestions: selected.length,
+      totalMistakes: mistakes.length,
+      timeLimitMinutes: 0,
+      timed: false,
+      language: lang,
+      questions: selected.map((q, idx) => toTestQuestion(q, idx, lang))
+    });
+  } catch (err) {
+    console.error('Mistakes test error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Submit test answers (Requires Full Paid Access)
 app.post('/api/test/submit', requireAuth, requireAccess, async (req, res) => {
   try {
@@ -713,7 +748,7 @@ app.post('/api/test/submit', requireAuth, requireAccess, async (req, res) => {
     }
 
     const totalQuestions = detailedAnswers.length;
-    const passed = score >= 32; // Standard AutoTsON pass mark (32 out of 40 = 80%)
+    const passed = score >= Math.ceil(totalQuestions * PASS_RATIO); // 32 of 40 = 80%, as at AutoTSON
 
     // Save to database
     const attemptId = await db.saveTestAttempt(
@@ -742,6 +777,7 @@ app.post('/api/test/submit', requireAuth, requireAccess, async (req, res) => {
       passed,
       timeSpentSeconds: timeSpentSeconds || 0,
       timed: isTimed,
+      mode: session && session.mode ? session.mode : 'exam',
       answers: detailedAnswers,
       stats
     });
@@ -756,7 +792,8 @@ app.get('/api/history', requireAuth, async (req, res) => {
   try {
     const history = await db.getUserTestHistory(req.user.userId);
     const stats = await db.getUserStats(req.user.userId);
-    res.json({ history, stats });
+    const mistakes = await db.getUserMistakes(req.user.userId);
+    res.json({ history, stats, mistakesCount: mistakes.length });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

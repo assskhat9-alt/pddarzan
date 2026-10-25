@@ -389,6 +389,36 @@ export async function deleteExpiredUsersHistory(graceDays = 7) {
   return result.changes;
 }
 
+// Questions the user still gets wrong: their latest answer to the question was wrong
+// (or left unanswered). Answering it correctly later removes it from the list.
+export async function getUserMistakes(userId) {
+  const rows = await all(
+    `SELECT answers_json FROM test_attempts WHERE user_id = ? ORDER BY id ASC`,
+    [userId]
+  );
+  const latest = new Map();
+  for (const row of rows) {
+    let answers;
+    try {
+      answers = JSON.parse(row.answers_json);
+    } catch (e) {
+      continue;
+    }
+    for (const a of answers || []) {
+      const id = a.questionId || a.id;
+      if (!id) continue;
+      const prev = latest.get(id);
+      latest.set(id, {
+        isCorrect: !!a.isCorrect,
+        wrongCount: (prev ? prev.wrongCount : 0) + (a.isCorrect ? 0 : 1)
+      });
+    }
+  }
+  return [...latest]
+    .filter(([, v]) => !v.isCorrect)
+    .map(([questionId, v]) => ({ questionId, wrongCount: v.wrongCount }));
+}
+
 export async function getUserTestHistory(userId) {
   return await all(
     `SELECT id, score, total_questions, passed, time_spent_seconds, language, created_at
@@ -459,6 +489,7 @@ export default {
   setSetting,
   saveTestAttempt,
   deleteExpiredUsersHistory,
+  getUserMistakes,
   getUserTestHistory,
   getTestAttemptById,
   getUserStats

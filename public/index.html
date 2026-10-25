@@ -167,10 +167,22 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
           <span>Емтихан (40 сұрақ)</span>
         </button>
+        <button class="nav-link-btn" id="navLinkMistakes" onclick="app.startMistakesTest()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+          <span>Қателермен жұмыс</span>
+          <span class="nav-count hidden" id="navMistakesCount">0</span>
+        </button>
         <button class="nav-link-btn nav-link-admin hidden" id="navLinkAdmin" onclick="app.navigate('admin')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
           <span>👑 Әкімші панелі</span>
         </button>
+      </nav>
+
+      <nav class="guest-nav">
+        <a href="#lpFeatures">Мүмкіндіктер</a>
+        <a href="#lpPricing">Тарифтер</a>
+        <a href="#lpFaq">Сұрақ-жауап</a>
+        <button class="btn btn-primary btn-sm" onclick="app.goToAuth('login')">Кіру</button>
       </nav>
 
       <div class="nav-actions">
@@ -330,6 +342,128 @@
           </div>
         </div>
       </div>
+      </div>
+
+      <!-- ===== Landing sections (guests) ===== -->
+      <div class="landing-sections">
+
+        <section class="lp-section" id="lpHow">
+          <div class="lp-head">
+            <span class="lp-kicker">Қалай жұмыс істейді</span>
+            <h2 class="lp-title">Үш қадаммен емтиханға дайынсыз</h2>
+          </div>
+          <div class="lp-steps">
+            <div class="lp-step">
+              <div class="lp-step-num">1</div>
+              <h3>Тіркеліңіз</h3>
+              <p>Логин мен құпия сөз ойлап табыңыз — 30 секунд. Алдымен тегін 20 сұрақтық демоны тіркелусіз көруге болады.</p>
+            </div>
+            <div class="lp-step">
+              <div class="lp-step-num">2</div>
+              <h3>Тарифті таңдаңыз</h3>
+              <p>WhatsApp арқылы әкімшіге жазыңыз, төлемнен кейін доступ бірден ашылады. Жазылым да, автоматты төлем де жоқ.</p>
+            </div>
+            <div class="lp-step">
+              <div class="lp-step-num">3</div>
+              <h3>Дайындалып, тапсырыңыз</h3>
+              <p>Сұрақтарды жаттаңыз, нағыз форматтағы емтиханды тапсырыңыз, қателеріңізді қайталаңыз.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="lp-section" id="lpFeatures">
+          <div class="lp-head">
+            <span class="lp-kicker">Платформада не бар</span>
+            <h2 class="lp-title">Емтиханға керектің бәрі бір жерде</h2>
+          </div>
+          <div class="lp-features">
+            <div class="lp-feature"><div class="lp-feature-icon">📚</div><h3>1103 ресми сұрақ</h3><p>Барлық сұрақ дұрыс жауабымен, белгілер мен жол жағдайларының суреттерімен.</p></div>
+            <div class="lp-feature"><div class="lp-feature-icon">⏱️</div><h3>Нағыз емтихан форматы</h3><p>Кездейсоқ 40 сұрақ, 40 минут, өту шегі — 32 дұрыс жауап. Уақытсыз режим де бар.</p></div>
+            <div class="lp-feature"><div class="lp-feature-icon">🔁</div><h3>Қателермен жұмыс</h3><p>Қате жауап берген сұрақтар жиналады. Оларды дұрыс жауап бергенше қайталайсыз.</p></div>
+            <div class="lp-feature"><div class="lp-feature-icon">🎯</div><h3>Жаттау тренажеры</h3><p>Сұрақтарды бір-бірден шешіп, жауабыңызды бірден тексеріңіз. Нөмірі не мәтіні бойынша іздеу.</p></div>
+            <div class="lp-feature"><div class="lp-feature-icon">🌐</div><h3>Үш тілде</h3><p>Қазақша, орысша, ағылшынша — тілді кез келген сұрақта ауыстыруға болады.</p></div>
+            <div class="lp-feature"><div class="lp-feature-icon">📱</div><h3>Телефонда да ыңғайлы</h3><p>Қосымша орнатудың қажеті жоқ: браузерден ашасыз, нәтижелеріңіз сақталады.</p></div>
+          </div>
+        </section>
+
+        <section class="lp-section" id="lpPricing">
+          <div class="lp-head">
+            <span class="lp-kicker">Тарифтер</span>
+            <h2 class="lp-title">Бір рет төлейсіз — жазылым жоқ</h2>
+          </div>
+          <div class="lp-prices">
+            <div class="lp-price">
+              <div class="lp-price-name">Демо</div>
+              <div class="lp-price-value">Тегін</div>
+              <ul><li>Таңдалған 20 сұрақ</li><li>20 минут</li><li>Тіркелусіз</li></ul>
+              <button class="btn btn-secondary btn-block" onclick="app.startDemoTest()">Демоны бастау</button>
+            </div>
+            <div class="lp-price">
+              <div class="lp-price-name">7 күн</div>
+              <div class="lp-price-value">1 490 ₸</div>
+              <ul><li>Барлық 1103 сұрақ</li><li>Емтихан және жаттау</li><li>Қателермен жұмыс</li></ul>
+              <button class="btn btn-secondary btn-block" onclick="app.goToAuth('register')">Тіркелу</button>
+            </div>
+            <div class="lp-price">
+              <div class="lp-price-name">30 күн</div>
+              <div class="lp-price-value">2 990 ₸</div>
+              <ul><li>Барлық 1103 сұрақ</li><li>Емтихан және жаттау</li><li>Қателермен жұмыс</li></ul>
+              <button class="btn btn-secondary btn-block" onclick="app.goToAuth('register')">Тіркелу</button>
+            </div>
+            <div class="lp-price lp-price-hit">
+              <div class="lp-price-badge">ХИТ 🔥</div>
+              <div class="lp-price-name">Тапсырғанша · 90 күн</div>
+              <div class="lp-price-value">3 990 ₸</div>
+              <ul><li>Емтиханды тапсырғанша жетеді</li><li>Барлық мүмкіндіктер</li><li>Ең тиімді баға</li></ul>
+              <button class="btn btn-primary btn-block" onclick="app.goToAuth('register')">Тіркелу</button>
+            </div>
+            <div class="lp-price">
+              <div class="lp-price-name">Автомектепке</div>
+              <div class="lp-price-value">20 000 ₸</div>
+              <ul><li>10 оқушы</li><li>Әрқайсысына 90 күн</li><li>Оқушыларды әкімші тіркейді</li></ul>
+              <button class="btn btn-secondary btn-block" onclick="app.openWhatsAppPurchase()">WhatsApp-қа жазу</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="lp-section" id="lpFaq">
+          <div class="lp-head">
+            <span class="lp-kicker">Сұрақ-жауап</span>
+            <h2 class="lp-title">Жиі қойылатын сұрақтар</h2>
+          </div>
+          <div class="lp-faq">
+            <details><summary>Сұрақтар нағыз емтихандағыдай ма?</summary><p>Платформада ҚР жүргізуші куәлігі емтиханының 1103 ресми сұрағы бар. Емтихан режимі АвтоЦОН форматын қайталайды: кездейсоқ 40 сұрақ, 40 минут, өту шегі — 32 дұрыс жауап.</p></details>
+            <details><summary>Қалай төлеймін?</summary><p>Тіркеліп, WhatsApp батырмасы арқылы әкімшіге жазыңыз. Төлемнен кейін әкімші сіздің логиніңізге таңдаған мерзімге доступ ашады.</p></details>
+            <details><summary>Қай тілдерде дайындалуға болады?</summary><p>Қазақ, орыс және ағылшын тілдерінде. Тест кезінде сұрақтың тілін кез келген уақытта ауыстыруға болады.</p></details>
+            <details><summary>Телефоннан қолдануға бола ма?</summary><p>Иә, платформа телефонда, планшетте және компьютерде браузер арқылы ашылады. Қосымша орнатудың қажеті жоқ.</p></details>
+            <details><summary>Бір аккаунтты бірнеше адам қолдана ала ма?</summary><p>Жоқ. Бір аккаунт бір уақытта тек бір құрылғыда жұмыс істейді: жаңа құрылғыдан кірсеңіз, алдыңғысы жабылады.</p></details>
+            <details><summary>Доступ мерзімі біткенде не болады?</summary><p>Аккаунтыңыз сақталады, бірақ тест тарихы мерзім біткеннен кейін бір күнде тазаланады. Ұзарту үшін әкімшіге WhatsApp арқылы жазыңыз.</p></details>
+            <details><summary>Автомектептер үшін тариф бар ма?</summary><p>Иә: 10 оқушыға 90 күндік доступ — 20 000 ₸. Оқушыларды әкімші тіркеп, әрқайсысына жеке логин береді.</p></details>
+          </div>
+        </section>
+
+        <section class="lp-cta">
+          <h2>Жол ережесін оңай үйреніңіз</h2>
+          <p>Алдымен тегін демоны тапсырып көріңіз — тіркелудің қажеті жоқ.</p>
+          <div class="lp-cta-actions">
+            <button class="btn btn-lg lp-cta-primary" onclick="app.startDemoTest()">🎯 Тегін демо (20 сұрақ)</button>
+            <button class="btn btn-lg lp-cta-secondary" onclick="app.goToAuth('register')">Тіркелу</button>
+          </div>
+        </section>
+
+        <footer class="lp-footer">
+          <div class="lp-footer-brand">
+            <strong><span class="brand-title-light">PDD</span> ARZAN</strong>
+            <span>Жол ережесін оңай үйрен</span>
+          </div>
+          <nav class="lp-footer-links">
+            <a href="#lpFeatures">Мүмкіндіктер</a>
+            <a href="#lpPricing">Тарифтер</a>
+            <a href="#lpFaq">Сұрақ-жауап</a>
+            <a href="#" onclick="app.openWhatsAppPurchase(); return false;">WhatsApp</a>
+          </nav>
+          <div class="lp-footer-copy">© 2026 PDD ARZAN</div>
+        </footer>
       </div>
     </section>
 
@@ -505,13 +639,13 @@
               <div class="course-meta"><span>Жауапты бірден тексеру</span></div>
             </div>
           </article>
-          <article class="course-card" onclick="document.getElementById('historySection').scrollIntoView({behavior:'smooth'})">
-            <div class="course-thumb"><img src="/images/brand/student.jpg" alt="Нәтижелер" loading="lazy"></div>
+          <article class="course-card" onclick="app.startMistakesTest()">
+            <div class="course-thumb"><img src="/images/brand/student.jpg" alt="Қателермен жұмыс" loading="lazy"></div>
             <div class="course-body">
-              <span class="course-tag">Нәтижелер</span>
-              <h3 class="course-title">Тест тарихы мен талдау</h3>
-              <div class="course-progress"><div class="course-progress-bar" id="coursePassProgress"></div></div>
-              <div class="course-meta"><span id="coursePassMeta">Сәтті: 0 %</span></div>
+              <span class="course-tag">Қателер</span>
+              <h3 class="course-title">Қателермен жұмыс</h3>
+              <div class="course-progress"><div class="course-progress-bar course-progress-warn" id="courseMistakesProgress"></div></div>
+              <div class="course-meta"><span id="courseMistakesMeta">Қате жоқ — алдымен тест тапсырыңыз</span></div>
             </div>
           </article>
         </div>
@@ -660,7 +794,7 @@
           <!-- Right: Questions Palette Grid (1..40) -->
           <aside class="test-sidebar">
             <div class="palette-card">
-              <div class="palette-title">Сұрақтар картасы (40)</div>
+              <div class="palette-title" id="paletteTitle">Сұрақтар картасы (40)</div>
               
               <div class="palette-legend">
                 <span class="legend-item"><span class="dot dot-answered"></span> Жауап берілді</span>
